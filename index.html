@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Soft Landing — Provence Africa Connect</title>
+<meta name="theme-color" content="#F6F7FB">
+<link rel="icon" type="image/png" href="assets/mark.png">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-400-800-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/roboto-400-latin.woff2" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+  /* Posé avant le premier rendu : sinon la page clignote au chargement,
+     le temps que app.js applique le thème choisi. Clair par défaut. */
+  document.documentElement.dataset.theme =
+    localStorage.getItem('slpac.theme') === 'dark' ? 'dark' : 'light';
+</script>
+</head>
+<body>
+
+<!-- ───────────────────────── Porte d'entrée ───────────────────────── -->
+<div id="gate" class="gate">
+  <form class="gate__card" id="gate-form" autocomplete="off">
+    <div class="gate__brand">
+      <img class="logo logo--dark" src="assets/logo-dark.png"
+           alt="Soft Landing Provence Africa Connect" width="900" height="281">
+      <img class="logo logo--light" src="assets/logo.png" alt="" aria-hidden="true"
+           width="900" height="281">
+    </div>
+
+    <label class="eyebrow gate__label" for="gate-password" data-i18n="gate.label">Mot de passe de la promotion</label>
+    <input class="field" id="gate-password" type="password" autocomplete="current-password"
+           required aria-describedby="gate-error">
+    <button class="btn btn--primary btn--lg btn--block" type="submit" data-i18n="gate.submit">Entrer</button>
+
+    <p class="alert" id="gate-error" role="alert" hidden></p>
+    <p class="gate__hint" data-i18n="gate.hint">Espace privé réservé aux participants du programme.</p>
+
+    <div class="gate__langs">
+      <button type="button" class="langbtn" data-lang="fr">FR</button>
+      <button type="button" class="langbtn" data-lang="en">EN</button>
+    </div>
+  </form>
+</div>
+
+<!-- ───────────────────────── Application ───────────────────────── -->
+<div id="app" class="app" hidden>
+
+  <aside class="rail">
+    <div class="rail__brand">
+      <img class="logo logo--dark" src="assets/logo-dark.png"
+           alt="Soft Landing Provence Africa Connect" width="900" height="281">
+      <img class="logo logo--light" src="assets/logo.png" alt="" aria-hidden="true"
+           width="900" height="281">
+    </div>
+
+    <nav class="nav" id="nav" aria-label="Navigation principale"></nav>
+
+    <div class="rail__foot">
+      <div class="rail__row">
+        <div class="gate__langs">
+          <button type="button" class="langbtn" data-lang="fr">FR</button>
+          <button type="button" class="langbtn" data-lang="en">EN</button>
+        </div>
+        <button type="button" class="iconbtn" data-theme-toggle aria-label="Thème"></button>
+      </div>
+      <p class="rail__meta" id="promo"></p>
+      <div class="rail__row">
+        <button type="button" class="linkbtn" id="edit-toggle" data-i18n="app.edit">Mode édition</button>
+        <button type="button" class="linkbtn" id="lock" data-i18n="app.lock">Verrouiller</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <p class="topbar__t" id="topbar-title">Soft Landing</p>
+      <div class="gate__langs">
+        <button type="button" class="langbtn" data-lang="fr">FR</button>
+        <button type="button" class="langbtn" data-lang="en">EN</button>
+      </div>
+      <button type="button" class="iconbtn" data-theme-toggle aria-label="Thème"></button>
+    </header>
+
+    <main class="main" id="main">
+      <section class="view" id="view-accueil" hidden></section>
+      <section class="view" id="view-programme" hidden></section>
+      <section class="view" id="view-visa" hidden></section>
+      <section class="view" id="view-business-plan" hidden></section>
+      <section class="view" id="view-interculturel" hidden></section>
+      <section class="view" id="view-acteurs" hidden></section>
+      <section class="view" id="view-hotels" hidden></section>
+      <section class="view" id="view-contacts" hidden></section>
+      <section class="view" id="view-marseille" hidden></section>
+    </main>
+
+    <footer class="foot">
+      <span id="foot-updated"></span>
+      <span class="foot__dot">·</span>
+      <span data-i18n="app.confidential">Document interne — ne pas diffuser</span>
+    </footer>
+  </div>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- Barre du mode édition -->
+  <div class="editbar" id="editbar" hidden>
+    <span class="editbar__c" id="editbar-count"></span>
+    <button type="button" class="btn" id="edit-cancel" data-i18n="edit.cancel">Annuler</button>
+    <button type="button" class="btn" id="edit-json" data-i18n="edit.json">content.json</button>
+    <button type="button" class="btn btn--primary" id="edit-publish" data-i18n="edit.publish">Publier</button>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

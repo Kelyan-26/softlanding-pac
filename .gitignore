@@ -1,0 +1,8 @@
+# Contenu reel : donnees personnelles (carnet d'adresses, telephones, emails).
+# Ne JAMAIS versionner. Seule la version chiffree part en ligne.
+data/content.json
+data/content.review.json
+
+# Systeme
+.DS_Store
+node_modules/
