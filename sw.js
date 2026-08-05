@@ -2,17 +2,20 @@
    Utile pour de vrai : les participants arrivent en France, parfois sans
    forfait data actif pendant plusieurs jours.
 
-   Trois stratégies, choisies selon ce que le fichier risque :
-   - le contenu chiffré : le RÉSEAU D'ABORD, repli sur le cache. Une correction
-     publiée doit parvenir tout de suite ;
-   - le code et les pages (HTML, CSS, JS) : le CACHE PUIS RAFRAÎCHISSEMENT. On
-     répond instantanément avec le cache, on retélécharge en fond, la visite
-     suivante a la version à jour. Un cache simple bloquerait les mises à jour
-     jusqu'au prochain changement de VERSION — le piège classique ;
-   - les polices et les images : le CACHE D'ABORD, elles ne changent jamais
-     sans changer de nom. */
+   Deux stratégies seulement, et le choix est tranché :
+   - tout ce qui peut changer (page, code, styles, contenu chiffré) : le RÉSEAU
+     D'ABORD, le cache ne sert que de filet quand le réseau manque. Une version
+     publiée doit être vue immédiatement ;
+   - les polices et les images : le CACHE D'ABORD, elles ne changent pas sans
+     changer de nom.
 
-const VERSION = 'slpac-v1';
+   Le « cache puis rafraîchissement » de la version précédente était une
+   fausse bonne idée : il servait systématiquement la version de la veille, et
+   une correction publiée n'apparaissait qu'au deuxième chargement. Sur un site
+   dont le contenu est corrigé au fil de l'eau, c'est inacceptable — l'écart de
+   quelques centaines de millisecondes au chargement ne pèse rien à côté. */
+
+const VERSION = 'slpac-v2';
 const COQUILLE = [
   './',
   'index.html',
@@ -58,37 +61,31 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (url.pathname.endsWith('content.enc.json')) {
+  const immuable = /\.(woff2|png|jpg|jpeg|svg|webp|ico)$/.test(url.pathname);
+
+  if (immuable) {
     e.respondWith(
-      fetch(request)
-        .then((rep) => {
+      caches.match(request).then((cache) => cache || fetch(request).then((rep) => {
+        if (rep.ok) {
           const copie = rep.clone();
           caches.open(VERSION).then((c) => c.put(request, copie));
-          return rep;
-        })
-        .catch(() => caches.match(request)),
+        }
+        return rep;
+      })),
     );
     return;
   }
 
-  const immuable = /\.(woff2|png|jpg|svg|webp)$/.test(url.pathname);
-
+  // Réseau d'abord : on ne sert le cache que s'il n'y a pas de réseau.
   e.respondWith(
-    caches.match(request).then((cache) => {
-      const reseau = fetch(request)
-        .then((rep) => {
-          if (rep.ok) {
-            const copie = rep.clone();
-            caches.open(VERSION).then((c) => c.put(request, copie));
-          }
-          return rep;
-        })
-        .catch(() => cache);
-
-      if (immuable) return cache || reseau;
-      // Le cache répond tout de suite, le réseau met à jour pour la prochaine fois.
-      if (cache) { e.waitUntil(reseau); return cache; }
-      return reseau;
-    }),
+    fetch(request)
+      .then((rep) => {
+        if (rep.ok) {
+          const copie = rep.clone();
+          caches.open(VERSION).then((c) => c.put(request, copie));
+        }
+        return rep;
+      })
+      .catch(() => caches.match(request).then((cache) => cache || caches.match('./'))),
   );
 });

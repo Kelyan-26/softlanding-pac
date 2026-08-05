@@ -1107,6 +1107,19 @@
 
   function activerHorsLigne() {
     if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
+
+    /* Quand une nouvelle version prend la main, on repart dessus immédiatement.
+       Sans ça, l'onglet ouvert continue de tourner sur l'ancien code et on croit
+       que la correction n'a pas été publiée. Une seule fois, et jamais à la
+       première installation — sinon la page se recharge dès la première visite. */
+    const dejaControle = !!navigator.serviceWorker.controller;
+    let rechargee = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!dejaControle || rechargee) return;
+      rechargee = true;
+      location.reload();
+    });
+
     navigator.serviceWorker.register('sw.js').catch(() => {
       /* Un enregistrement refusé (contexte non sécurisé) n'empêche rien : le
          site fonctionne, il ne sera simplement pas consultable hors réseau. */
