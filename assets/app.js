@@ -51,6 +51,28 @@
     'nav.hotels':        { fr: 'Hôtels partenaires', en: 'Partner hotels' },
     'nav.contacts':      { fr: 'Carnet d’adresses', en: 'Address book' },
     'nav.marseille':     { fr: 'Marseille', en: 'Marseille' },
+    'nav.installation':  { fr: 'S’installer en France', en: 'Settling in France' },
+    'nav.glossaire':     { fr: 'Glossaire', en: 'Glossary' },
+
+    'sub.installation': { fr: 'La chaîne des démarches, dans l’ordre. Chaque étape débloque la suivante.', en: 'The chain of formalities, in order. Each step unlocks the next.' },
+    'sub.glossaire':    { fr: 'Les mots français que personne ne traduit et sans lesquels aucun formulaire ne se comprend.', en: 'The French words nobody translates, without which no form makes sense.' },
+
+    'inst.when':     { fr: 'Quand', en: 'When' },
+    'inst.why':      { fr: 'Pourquoi maintenant', en: 'Why now' },
+    'inst.unlocks':  { fr: 'Ce que ça débloque', en: 'What it unlocks' },
+    'inst.blocker':  { fr: 'L’obstacle', en: 'The obstacle' },
+    'inst.ways':     { fr: 'Comment s’en sortir', en: 'How to get around it' },
+    'inst.docs':     { fr: 'À prévoir', en: 'What to bring' },
+    'inst.warning':  { fr: 'À lire avant', en: 'Read this first' },
+    'inst.urgent':   { fr: 'Numéros d’urgence', en: 'Emergency numbers' },
+
+    'glo.trap':      { fr: 'Le piège', en: 'The catch' },
+    'glo.search':    { fr: 'Chercher un mot…', en: 'Search a word…' },
+    'glo.entreprise':    { fr: 'Entreprise', en: 'Company' },
+    'glo.logement':      { fr: 'Logement', en: 'Housing' },
+    'glo.banque':        { fr: 'Banque', en: 'Banking' },
+    'glo.sante':         { fr: 'Santé', en: 'Health' },
+    'glo.administration':{ fr: 'Administration', en: 'Administration' },
 
     'now.live':   { fr: 'En ce moment', en: 'Happening now' },
     'now.next':   { fr: 'Prochaine session', en: 'Next session' },
@@ -126,6 +148,9 @@
     sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M21.4 12h-2.2M4.8 12H2.6M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6 17 17M7 7 5.4 5.4"/>',
     moon: '<path d="M20.4 13.6A8.4 8.4 0 1 1 10.4 3.6a6.6 6.6 0 0 0 10 10Z"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
+    installation: '<circle cx="6" cy="6.4" r="2.6"/><circle cx="18" cy="17.6" r="2.6"/><path d="M8.6 6.4h5.4a3.6 3.6 0 0 1 0 7.2h-4a3.6 3.6 0 0 0 0 7.2"/>',
+    glossaire: '<path d="M4 4.6h6a3 3 0 0 1 3 3v12a2.4 2.4 0 0 0-2.4-2.4H4Z"/><path d="M20 4.6h-6a3 3 0 0 0-3 3v12a2.4 2.4 0 0 1 2.4-2.4H20Z"/>',
+    alert: '<path d="M12 3.6 21.4 20H2.6Z"/><path d="M12 9.6v4.4M12 17.2h.01"/>',
     search: '<circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/>',
     download: '<path d="M12 3.6v11.4"/><path d="m7.4 10.4 4.6 4.6 4.6-4.6"/><path d="M4.4 19.4h15.2"/>',
     trash: '<path d="M4 6.5h16"/><path d="M9 6.5V4.2h6v2.3"/><path d="M6.4 6.5 7.3 20h9.4l.9-13.5"/>',
@@ -135,8 +160,9 @@
     ? `<svg viewBox="0 0 24 24" width="${taille}" height="${taille}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[nom]}</svg>`
     : '');
 
-  const SECTIONS = ['accueil', 'programme', 'visa', 'business-plan', 'interculturel',
-                    'acteurs', 'hotels', 'contacts', 'marseille'];
+  const SECTIONS = ['accueil', 'programme', 'installation', 'glossaire', 'visa',
+                    'business-plan', 'interculturel', 'acteurs', 'hotels',
+                    'contacts', 'marseille'];
 
   /* Les listes qu'on peut allonger ou raccourcir en mode édition. */
   const MODELES = {
@@ -151,6 +177,8 @@
                        website: '', languages: [], tags: [], note: { fr: '', en: '' } }),
     marseille: () => ({ name: '', category: '', district: '', address: '', why: { fr: '', en: '' },
                         priceLevel: '', website: '', map: '' }),
+    glossaire: () => ({ terme: '', categorie: 'administration',
+                        definition: { fr: '', en: '' }, piege: { fr: '', en: '' } }),
   };
 
   /* ═══════════════════════ État ═══════════════════════ */
@@ -790,6 +818,97 @@
       + boutonAjout('marseille');
   }
 
+
+  function rendreInstallation() {
+    const inst = state.data.installation || {};
+
+    const alerte = filled(inst.avertissement) ? `
+      <div class="warn">
+        <span class="warn__i">${svg('alert', 17)}</span>
+        <div><p class="eyebrow">${esc(ui('inst.warning'))}</p>
+          <p class="warn__t">${field('installation.avertissement', inst.avertissement)}</p></div>
+      </div>` : '';
+
+    const bloc = (cle, titre, contenu) => (contenu
+      ? `<div class="etape__b"><p class="eyebrow">${esc(ui(cle))}</p>${contenu}</div>` : '');
+
+    const etapes = list(inst.etapes).map((e, i) => {
+      const sorties = list(e.solutions).filter(filled);
+      const pieces = list(e.documents).filter(filled);
+      const liens = list(e.liens).map((l) => lien(l.url, l.label, 'link')).filter(Boolean).join('');
+
+      return `<article class="etape">
+        <div class="etape__n"><span class="etape__num num">${i}</span></div>
+        <div class="etape__c">
+          <h3 class="etape__t">${field(`installation.etapes.${i}.titre`, e.titre)}</h3>
+          ${filled(e.quand) ? `<p class="etape__q">${svg('programme', 13)}${field(`installation.etapes.${i}.quand`, e.quand)}</p>` : ''}
+
+          ${bloc('inst.why', 0, filled(e.pourquoi) ? `<p class="etape__p">${field(`installation.etapes.${i}.pourquoi`, e.pourquoi)}</p>` : '')}
+          ${bloc('inst.unlocks', 0, filled(e.debloque) ? `<p class="etape__p">${field(`installation.etapes.${i}.debloque`, e.debloque)}</p>` : '')}
+          ${filled(e.obstacle) ? `<div class="etape__stop"><p class="eyebrow">${esc(ui('inst.blocker'))}</p>
+              <p>${field(`installation.etapes.${i}.obstacle`, e.obstacle)}</p></div>` : ''}
+          ${sorties.length ? `<div class="etape__b"><p class="eyebrow">${esc(ui('inst.ways'))}</p>
+              <ul class="checks">${sorties.map((x, k) => `<li>${field(`installation.etapes.${i}.solutions.${k}`, x)}</li>`).join('')}</ul></div>` : ''}
+          ${pieces.length ? `<div class="etape__b"><p class="eyebrow">${esc(ui('inst.docs'))}</p>
+              <ul class="step__list">${pieces.map((x, k) => `<li>${field(`installation.etapes.${i}.documents.${k}`, x)}</li>`).join('')}</ul></div>` : ''}
+          ${liens ? `<div class="card__acts">${liens}</div>` : ''}
+        </div>
+      </article>`;
+    }).join('');
+
+    const urgences = list(inst.urgences).length ? `
+      <section class="section">
+        <div class="section__head"><h2>${esc(ui('inst.urgent'))}</h2></div>
+        <div class="grid grid--3">${list(inst.urgences).map((u, i) => `
+          <div class="sos">
+            <p class="sos__n num">${esc(u.numero)}</p>
+            <p class="sos__q">${field(`installation.urgences.${i}.quand`, u.quand)}</p>
+          </div>`).join('')}</div>
+      </section>` : '';
+
+    return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')))
+      + alerte
+      + `<div class="etapes">${etapes}</div>`
+      + urgences;
+  }
+
+  function rendreGlossaire() {
+    const tout = list(state.data.glossaire);
+    const q = (state.filters.glossaire || '').toLowerCase();
+    const cat = state.filters.glossaireCat || '';
+    const categories = [...new Set(tout.map((t2) => String(t2.categorie || '').trim()).filter(Boolean))];
+
+    const retenus = tout.map((g, i) => ({ g, i }))
+      .filter(({ g }) => (!cat || g.categorie === cat)
+        && (!q || foin([g.terme, g.definition, g.piege, g.categorie]).includes(q)))
+      .sort((a, b2) => String(a.g.terme).localeCompare(String(b2.g.terme), 'fr'));
+
+    const cartes = retenus.map(({ g, i }) => `
+      <article class="mot">
+        <div class="mot__h">
+          <h3 class="mot__t">${field(`glossaire.${i}.terme`, g.terme)}</h3>
+          <span class="tag">${esc(ui(`glo.${g.categorie}`))}</span>
+        </div>
+        <p class="mot__d">${field(`glossaire.${i}.definition`, g.definition)}</p>
+        ${filled(g.piege) ? `<p class="mot__p"><span class="eyebrow">${esc(ui('glo.trap'))}</span>
+            ${field(`glossaire.${i}.piege`, g.piege)}</p>` : ''}
+        ${boutonsLigne('glossaire', i)}
+      </article>`).join('');
+
+    const filtres = categories.map((c) =>
+      `<button type="button" class="chipbtn" data-gcat="${esc(c)}" aria-pressed="${cat === c}">${esc(ui(`glo.${c}`))}</button>`).join('');
+
+    return entete(ui('nav.glossaire'), esc(ui('sub.glossaire')))
+      + `<div class="tools">
+          <input class="search" type="search" data-filter="glossaire"
+                 value="${esc(state.filters.glossaire || '')}" placeholder="${esc(ui('glo.search'))}">
+          <button type="button" class="chipbtn" data-gcat="" aria-pressed="${cat === ''}">${esc(ui('label.all'))}</button>
+          ${filtres}
+        </div>`
+      + (cartes ? `<div class="mots">${cartes}</div>` : vide(q || cat ? ui('empty.search') : ''))
+      + boutonAjout('glossaire');
+  }
+
   const RENDUS = {
     'accueil': rendreAccueil,
     'programme': () => entete(ui('nav.programme'), esc(ui('sub.programme'))) + rendreProgramme(),
@@ -800,6 +919,8 @@
     'hotels': rendreHotels,
     'contacts': rendreContacts,
     'marseille': rendreMarseille,
+    'installation': rendreInstallation,
+    'glossaire': rendreGlossaire,
   };
 
 
@@ -877,6 +998,8 @@
     list((state.data.visa || {}).steps).forEach((x) => pousse('visa', t(x.title), ui('nav.visa'), t(x.body)));
     list((state.data.businessPlan || {}).sections).forEach((x) => pousse('business-plan', t(x.title), ui('nav.business-plan'), t(x.body)));
     list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
+    list((state.data.installation || {}).etapes).forEach((x) => pousse('installation', t(x.titre), t(x.quand), `${t(x.pourquoi)} ${t(x.obstacle)} ${list(x.solutions).map(t).join(' ')}`));
+    list(state.data.glossaire).forEach((x) => pousse('glossaire', t(x.terme), t(x.definition), t(x.piege)));
     return entrees;
   }
 
@@ -1054,7 +1177,12 @@
       }
 
       const cat = e.target.closest('.chipbtn');
-      if (cat) { state.filters.marseilleCat = cat.dataset.cat; afficherSection(); return; }
+      if (cat) {
+        if ('gcat' in cat.dataset) state.filters.glossaireCat = cat.dataset.gcat;
+        else state.filters.marseilleCat = cat.dataset.cat;
+        afficherSection();
+        return;
+      }
 
       const ajout = e.target.closest('[data-add]');
       if (ajout) {
