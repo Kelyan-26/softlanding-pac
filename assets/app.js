@@ -53,9 +53,6 @@
     'nav.marseille':     { fr: 'Marseille', en: 'Marseille' },
     'nav.installation':  { fr: 'S’installer en France', en: 'Settling in France' },
     'nav.glossaire':     { fr: 'Glossaire', en: 'Glossary' },
-    'nav.restaurants':   { fr: 'Où manger, où travailler', en: 'Where to eat and work' },
-
-    'sub.restaurants': { fr: 'Recevoir un partenaire, déjeuner vite, ou s’installer pour travailler : trois usages, trois listes.', en: 'Hosting a partner, eating fast, or settling in to work: three uses, three lists.' },
     'res.dejeuner-pro': { fr: 'Déjeuner professionnel', en: 'Business lunch' },
     'res.rapide':       { fr: 'Manger vite', en: 'Quick bite' },
     'res.coworking':    { fr: 'Travailler', en: 'Work from there' },
@@ -133,7 +130,8 @@
 
     'sub.programme': { fr: 'Le déroulé complet. La session en cours est repérée automatiquement.', en: 'The full schedule. The current session is flagged automatically.' },
     'sub.contacts':  { fr: 'Les personnes du programme et ce sur quoi les solliciter.', en: 'The people of the programme and what to reach out to them about.' },
-    'sub.marseille': { fr: 'Où manger, marcher et souffler entre deux rendez-vous.', en: 'Where to eat, walk and breathe between meetings.' },
+    'sub.marseille': { fr: 'Où recevoir, où déjeuner, où travailler, où souffler.', en: 'Where to host, eat, work and unwind.' },
+    'res.sortir':    { fr: 'Découvrir la ville', en: 'Discover the city' },
     'sub.hotels':    { fr: 'Les établissements partenaires et les conditions négociées.', en: 'Partner venues and negotiated terms.' },
     'sub.acteurs':   { fr: 'L’opérateur, le consortium, les partenaires et les intervenants.', en: 'The operator, the consortium, the partners and the speakers.' },
   };
@@ -176,7 +174,7 @@
 
   const SECTIONS = ['accueil', 'programme', 'installation', 'glossaire', 'visa',
                     'business-plan', 'interculturel', 'acteurs', 'hotels',
-                    'restaurants', 'contacts', 'marseille'];
+                    'contacts', 'marseille'];
 
   /* Les listes qu'on peut allonger ou raccourcir en mode édition. */
   const MODELES = {
@@ -189,13 +187,12 @@
                      booking: { contact: '', code: { fr: '', en: '' } }, notes: { fr: '', en: '' }, website: '', map: '' }),
     contacts: () => ({ name: '', org: '', role: { fr: '', en: '' }, email: '', phone: '', linkedin: '',
                        website: '', languages: [], tags: [], note: { fr: '', en: '' } }),
-    marseille: () => ({ name: '', category: '', district: '', address: '', why: { fr: '', en: '' },
-                        priceLevel: '', website: '', map: '' }),
+    marseille: () => ({ name: '', category: 'dejeuner-pro', district: '', address: '',
+                        distance: { fr: '', en: '' }, why: { fr: '', en: '' },
+                        priceLevel: '', website: '', map: '', statut: 'a-valider' }),
     glossaire: () => ({ terme: '', categorie: 'administration',
                         definition: { fr: '', en: '' }, piege: { fr: '', en: '' } }),
-    restaurants: () => ({ name: '', categorie: 'dejeuner-pro', address: '',
-                          distance: { fr: '', en: '' }, priceRange: '',
-                          why: { fr: '', en: '' }, website: '', map: '', statut: 'a-valider' }),
+
   };
 
   /* ═══════════════════════ État ═══════════════════════ */
@@ -814,54 +811,6 @@
       + boutonAjout('contacts');
   }
 
-  function rendreMarseille() {
-    const lieux = list(state.data.marseille);
-    const categories = [...new Set(lieux.map((p) => String(p.category || '').trim()).filter(Boolean))];
-    const active = state.filters.marseilleCat || '';
-    const q = (state.filters.marseille || '').toLowerCase();
-
-    const cartes = lieux.map((p, i) => ({ p, i }))
-      .filter(({ p }) => {
-        if (active && String(p.category || '') !== active) return false;
-        if (!q) return true;
-        return foin([p.name, p.district, p.address, p.why, p.category]).includes(q);
-      })
-      .map(({ p, i }) => {
-        const infos = [];
-        if (filled(p.district)) infos.push(meta('pin', field(`marseille.${i}.district`, p.district)));
-        if (filled(p.priceLevel)) infos.push(`<span class="tag">${field(`marseille.${i}.priceLevel`, p.priceLevel)}</span>`);
-        const actions = [lien(p.website, ui('action.website'), 'link'), lien(p.map, ui('action.map'), 'pin')]
-          .filter(Boolean).join('');
-
-        return `<article class="card">
-          <div class="card__top">${mono(t(p.name))}
-            <div>
-              <p class="card__title">${field(`marseille.${i}.name`, p.name)}</p>
-              ${filled(p.address) ? `<p class="card__role">${field(`marseille.${i}.address`, p.address)}</p>` : ''}
-            </div>
-          </div>
-          ${filled(p.why) ? `<p class="card__text">${field(`marseille.${i}.why`, p.why)}</p>` : ''}
-          ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
-          ${actions ? `<div class="card__acts">${actions}</div>` : ''}
-          ${boutonsLigne('marseille', i)}
-        </article>`;
-      }).join('');
-
-    const filtres = categories.length ? `
-      <button type="button" class="chipbtn" data-cat="" aria-pressed="${active === ''}">${esc(ui('label.all'))}</button>
-      ${categories.map((c) => `<button type="button" class="chipbtn" data-cat="${esc(c)}" aria-pressed="${active === c}">${esc(c)}</button>`).join('')}` : '';
-
-    return entete(ui('nav.marseille'), esc(ui('sub.marseille')))
-      + `<div class="tools">
-          <input class="search" type="search" data-filter="marseille"
-                 value="${esc(state.filters.marseille || '')}" placeholder="${esc(ui('search.places'))}">
-          ${filtres}
-        </div>`
-      + (cartes ? `<div class="grid grid--2">${cartes}</div>` : vide(q || active ? ui('empty.search') : ''))
-      + boutonAjout('marseille');
-  }
-
-
   function rendreInstallation() {
     const inst = state.data.installation || {};
 
@@ -953,65 +902,77 @@
   }
 
 
-  function rendreRestaurants() {
-    const bloc = state.data.restaurants || {};
-    const lieux = list(bloc.lieux);
-    const q = (state.filters.restaurants || '').toLowerCase();
-    const cat = state.filters.restaurantsCat || '';
-    const familles = ['dejeuner-pro', 'rapide', 'coworking'];
+  /* Une catégorie connue porte un libellé traduit ; les autres — celles que
+     Jade ajoutera — s'affichent telles quelles. */
+  const libelleCat = (c) => (UI[`res.${c}`] ? ui(`res.${c}`) : String(c || ''));
 
-    const retenus = lieux.map((r, i) => ({ r, i }))
-      .filter(({ r }) => (!cat || r.categorie === cat)
-        && (!q || foin([r.name, r.address, r.why, r.categorie]).includes(q)));
+  function rendreMarseille() {
+    const lieux = list(state.data.marseille);
+    const q = (state.filters.marseille || '').toLowerCase();
+    const cat = state.filters.marseilleCat || '';
 
-    const carte = ({ r, i }) => {
+    /* L'ordre des usages est délibéré : du plus professionnel au plus libre. */
+    const ORDRE = ['dejeuner-pro', 'rapide', 'coworking', 'sortir'];
+    const presentes = [...new Set(lieux.map((p) => String(p.category || '').trim()).filter(Boolean))];
+    const familles = [...ORDRE.filter((c) => presentes.includes(c)),
+                      ...presentes.filter((c) => !ORDRE.includes(c))];
+
+    const retenus = lieux.map((p, i) => ({ p, i })).filter(({ p }) => {
+      if (cat && String(p.category || '') !== cat) return false;
+      if (!q) return true;
+      return foin([p.name, p.district, p.address, p.why, p.category]).includes(q);
+    });
+
+    const carte = ({ p, i }) => {
       const infos = [];
-      if (filled(r.distance)) infos.push(meta('walk', field(`restaurants.lieux.${i}.distance`, r.distance)));
-      if (filled(r.priceRange)) infos.push(`<span class="tag">${field(`restaurants.lieux.${i}.priceRange`, r.priceRange)}</span>`);
-      const actions = [lien(r.website, ui('action.website'), 'link'), lien(r.map, ui('action.map'), 'pin')]
+      if (filled(p.distance)) infos.push(meta('walk', field(`marseille.${i}.distance`, p.distance)));
+      if (filled(p.district)) infos.push(meta('pin', field(`marseille.${i}.district`, p.district)));
+      if (filled(p.priceLevel)) infos.push(`<span class="tag">${field(`marseille.${i}.priceLevel`, p.priceLevel)}</span>`);
+      const actions = [lien(p.website, ui('action.website'), 'link'), lien(p.map, ui('action.map'), 'pin')]
         .filter(Boolean).join('');
 
       return `<article class="card">
-        <div class="card__top">${mono(t(r.name))}
+        <div class="card__top">${mono(t(p.name))}
           <div>
-            <p class="card__title">${field(`restaurants.lieux.${i}.name`, r.name)} ${badgeStatut(r.statut)}</p>
-            ${filled(r.address) ? `<p class="card__role">${field(`restaurants.lieux.${i}.address`, r.address)}</p>` : ''}
+            <p class="card__title">${field(`marseille.${i}.name`, p.name)} ${badgeStatut(p.statut)}</p>
+            ${filled(p.address) ? `<p class="card__role">${field(`marseille.${i}.address`, p.address)}</p>` : ''}
           </div>
         </div>
-        ${filled(r.why) ? `<p class="card__text">${field(`restaurants.lieux.${i}.why`, r.why)}</p>` : ''}
+        ${filled(p.why) ? `<p class="card__text">${field(`marseille.${i}.why`, p.why)}</p>` : ''}
         ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
         ${actions ? `<div class="card__acts">${actions}</div>` : ''}
-        ${boutonsLigne('restaurants', i)}
+        ${boutonsLigne('marseille', i)}
       </article>`;
     };
 
-    /* Sans filtre on montre les trois usages séparément : c'est la distinction
-       qui compte, pas la liste. */
-    const corps = cat || q
+    /* Sans filtre, on montre les usages séparément : c'est la distinction qui
+       compte, pas la liste. Filtré ou cherché, une seule grille suffit. */
+    const corps = (cat || q)
       ? (retenus.length ? `<div class="grid grid--2">${retenus.map(carte).join('')}</div>` : vide(ui('empty.search')))
       : familles.map((f) => {
-          const dedans = retenus.filter(({ r }) => r.categorie === f);
+          const dedans = retenus.filter(({ p }) => p.category === f);
           if (!dedans.length) return '';
           return `<section class="section">
-            <div class="section__head"><h2>${esc(ui(`res.${f}`))}</h2><span class="day__c num">${dedans.length}</span></div>
+            <div class="section__head"><h2>${esc(libelleCat(f))}</h2><span class="day__c num">${dedans.length}</span></div>
             <div class="grid grid--2">${dedans.map(carte).join('')}</div>
           </section>`;
         }).join('');
 
     const filtres = familles.map((f) =>
-      `<button type="button" class="chipbtn" data-rcat="${f}" aria-pressed="${cat === f}">${esc(ui(`res.${f}`))}</button>`).join('');
+      `<button type="button" class="chipbtn" data-cat="${esc(f)}" aria-pressed="${cat === f}">${esc(libelleCat(f))}</button>`).join('');
 
-    return entete(ui('nav.restaurants'), filled(bloc.intro) ? field('restaurants.intro', bloc.intro) : esc(ui('sub.restaurants')))
+    const intro = state.data.marseilleIntro;
+    return entete(ui('nav.marseille'), filled(intro) ? field('marseilleIntro', intro) : esc(ui('sub.marseille')))
       + bandeauAncrage()
       + `<p class="note">${esc(ui('st.hint'))}</p>`
       + `<div class="tools">
-          <input class="search" type="search" data-filter="restaurants"
-                 value="${esc(state.filters.restaurants || '')}" placeholder="${esc(ui('search.places'))}">
-          <button type="button" class="chipbtn" data-rcat="" aria-pressed="${cat === ''}">${esc(ui('label.all'))}</button>
+          <input class="search" type="search" data-filter="marseille"
+                 value="${esc(state.filters.marseille || '')}" placeholder="${esc(ui('search.places'))}">
+          <button type="button" class="chipbtn" data-cat="" aria-pressed="${cat === ''}">${esc(ui('label.all'))}</button>
           ${filtres}
         </div>`
-      + corps
-      + boutonAjout('restaurants');
+      + (retenus.length || state.editing ? corps : vide())
+      + boutonAjout('marseille');
   }
 
   const RENDUS = {
@@ -1026,7 +987,6 @@
     'marseille': rendreMarseille,
     'installation': rendreInstallation,
     'glossaire': rendreGlossaire,
-    'restaurants': rendreRestaurants,
   };
 
 
@@ -1106,7 +1066,6 @@
     list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
     list((state.data.installation || {}).etapes).forEach((x) => pousse('installation', t(x.titre), t(x.quand), `${t(x.pourquoi)} ${t(x.obstacle)} ${list(x.solutions).map(t).join(' ')}`));
     list(state.data.glossaire).forEach((x) => pousse('glossaire', t(x.terme), t(x.definition), t(x.piege)));
-    list((state.data.restaurants || {}).lieux).forEach((x) => pousse('restaurants', t(x.name), t(x.address), `${t(x.why)} ${t(x.categorie)}`));
     return entrees;
   }
 
