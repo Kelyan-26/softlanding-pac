@@ -73,6 +73,15 @@
     'label.price':     { fr: 'Tarif', en: 'Price' },
     'label.all':       { fr: 'Tout', en: 'All' },
     'label.explore':   { fr: 'Explorer', en: 'Explore' },
+    'label.ics':       { fr: 'Ajouter à mon agenda', en: 'Add to my calendar' },
+    'label.icsHint':   { fr: 'Fichier .ics — les heures sont celles de Paris.', en: '.ics file — times are Paris times.' },
+
+    'find.open':    { fr: 'Rechercher', en: 'Search' },
+    'find.holder':  { fr: 'Chercher partout : une session, une personne, un lieu…', en: 'Search everything: a session, a person, a place…' },
+    'find.empty':   { fr: 'Aucun résultat.', en: 'No results.' },
+    'find.hint':    { fr: 'Entrée pour ouvrir · Échap pour fermer', en: 'Enter to open · Esc to close' },
+
+    'off.ready':    { fr: 'Site disponible hors ligne.', en: 'Site available offline.' },
 
     'action.website': { fr: 'Site web', en: 'Website' },
     'action.map':     { fr: 'Carte', en: 'Map' },
@@ -117,6 +126,8 @@
     sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M21.4 12h-2.2M4.8 12H2.6M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6 17 17M7 7 5.4 5.4"/>',
     moon: '<path d="M20.4 13.6A8.4 8.4 0 1 1 10.4 3.6a6.6 6.6 0 0 0 10 10Z"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
+    search: '<circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/>',
+    download: '<path d="M12 3.6v11.4"/><path d="m7.4 10.4 4.6 4.6 4.6-4.6"/><path d="M4.4 19.4h15.2"/>',
     trash: '<path d="M4 6.5h16"/><path d="M9 6.5V4.2h6v2.3"/><path d="M6.4 6.5 7.3 20h9.4l.9-13.5"/>',
   };
 
@@ -323,6 +334,7 @@
 
   function marquerModifie() {
     state.dirty = true;
+    indexCache = null;   /* le contenu a bougé : l'index de recherche aussi */
     sauverBrouillon();
     majBarreEdition();
   }
@@ -475,8 +487,14 @@
       </section>`;
     }).join('');
 
+    const agenda = m.sessions.length
+      ? `<div class="tools"><button type="button" class="btn btn--primary" id="ics">${svg('download', 15)}${esc(ui('label.ics'))}</button>
+           <span class="find__d">${esc(ui('label.icsHint'))}</span></div>`
+      : '';
+
     return banniere
       + (tz ? `<p class="day__c" style="margin-bottom:var(--s5)">${esc(ui('now.tz'))}</p>` : '')
+      + agenda
       + jours
       + boutonAjout('programme');
   }
@@ -784,6 +802,128 @@
     'marseille': rendreMarseille,
   };
 
+
+  /* ═══════════════════════ Agenda : export .ics ═══════════════════════ */
+
+  /* Les heures du programme sont saisies en heure de Paris et affichées telles
+     quelles ; on les exporte donc en heure « flottante », sans fuseau. Un
+     agenda les pose à l'heure locale de l'appareil — ce qui est exactement le
+     comportement attendu une fois sur place. */
+  function versICS() {
+    /* Le pliage se compte en OCTETS, pas en caractères : « é » en pèse deux, et
+       une ligne de 75 caractères accentués dépasse la limite de la norme. On
+       n'ampute jamais un caractère au milieu. */
+    const mesure = new TextEncoder();
+    const plie = (ligne) => {
+      const morceaux = [];
+      let courant = '';
+      let taille = 0;
+      for (const c of ligne) {
+        const poids = mesure.encode(c).length;
+        if (taille + poids > 73) { morceaux.push(courant); courant = ' '; taille = 1; }
+        courant += c;
+        taille += poids;
+      }
+      if (courant.trim()) morceaux.push(courant);
+      return morceaux.join('\r\n');
+    };
+    const echappe = (v) => String(v ?? '')
+      .replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+    const horo = (date, heure) => `${date.replace(/-/g, '')}T${(heure || '00:00').replace(':', '')}00`;
+
+    const lignes = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Soft Landing PAC//FR', 'CALSCALE:GREGORIAN',
+                    plie(`X-WR-CALNAME:${echappe('Soft Landing PAC — ' + t((state.data.meta || {}).promotion))}`)];
+
+    list(state.data.programme).forEach((item, i) => {
+      const b = bornes(item);
+      if (!b) return;
+      const lieu = item.location || {};
+      const lien = (list(item.resources).find((r) => href(r.url)) || {}).url || '';
+      const details = [t(item.description), list(item.speakers).length ? `${ui('label.speakers')} : ${list(item.speakers).map(t).join(', ')}` : '', lien]
+        .filter(Boolean).join('\n\n');
+
+      lignes.push('BEGIN:VEVENT',
+        plie(`UID:slpac-${i}-${item.date}@softlanding-pac`),
+        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`,
+        `DTSTART:${horo(item.date, item.start)}`,
+        `DTEND:${horo(item.date, item.end || item.start)}`,
+        plie(`SUMMARY:${echappe(t(item.title))}`));
+      if (details) lignes.push(plie(`DESCRIPTION:${echappe(details)}`));
+      if (t(lieu.name)) lignes.push(plie(`LOCATION:${echappe([t(lieu.name), t(lieu.address)].filter(Boolean).join(', '))}`));
+      lignes.push('BEGIN:VALARM', 'TRIGGER:-PT30M', 'ACTION:DISPLAY', 'DESCRIPTION:Rappel', 'END:VALARM', 'END:VEVENT');
+    });
+
+    lignes.push('END:VCALENDAR');
+    return lignes.join('\r\n') + '\r\n';
+  }
+
+  /* ═══════════════════════ Recherche globale ═══════════════════════ */
+
+  /* Un index à plat de tout le contenu : une entrée = un endroit où aller. */
+  function indexer() {
+    const entrees = [];
+    const pousse = (section, titre, detail, texte) => {
+      if (!String(titre || '').trim()) return;
+      entrees.push({ section, titre: String(titre), detail: String(detail || ''),
+                     cle: `${titre} ${detail} ${texte || ''}`.toLowerCase() });
+    };
+
+    list(state.data.programme).forEach((x) => pousse('programme', t(x.title),
+      `${dateLongue(x.date)} · ${x.start || ''}`, `${t(x.description)} ${list(x.speakers).map(t).join(' ')}`));
+    list(state.data.acteurs).forEach((x) => pousse('acteurs', t(x.name), t(x.role), `${t(x.description)} ${list(x.tags).map(t).join(' ')}`));
+    list(state.data.contacts).forEach((x) => pousse('contacts', t(x.name), [t(x.org), t(x.role)].filter(Boolean).join(' · '), `${t(x.note)} ${list(x.tags).map(t).join(' ')}`));
+    list(state.data.hotels).forEach((x) => pousse('hotels', t(x.name), t(x.address), t(x.notes)));
+    list(state.data.marseille).forEach((x) => pousse('marseille', t(x.name), [t(x.category), t(x.district)].filter(Boolean).join(' · '), t(x.why)));
+    list((state.data.visa || {}).steps).forEach((x) => pousse('visa', t(x.title), ui('nav.visa'), t(x.body)));
+    list((state.data.businessPlan || {}).sections).forEach((x) => pousse('business-plan', t(x.title), ui('nav.business-plan'), t(x.body)));
+    list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
+    return entrees;
+  }
+
+  let indexCache = null;
+  const index = () => (indexCache = indexCache || indexer());
+
+  function chercher(q) {
+    const mots = q.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!mots.length) return [];
+    return index().filter((e) => mots.every((m) => e.cle.includes(m))).slice(0, 24);
+  }
+
+  function afficherResultats(q) {
+    const boite = $('#find-results');
+    const res = chercher(q);
+    if (!q.trim()) { boite.innerHTML = ''; return; }
+    if (!res.length) { boite.innerHTML = `<p class="find__empty">${esc(ui('find.empty'))}</p>`; return; }
+    boite.innerHTML = res.map((e, i) => `
+      <button type="button" class="find__hit" data-goto="${esc(e.section)}" ${i === 0 ? 'data-first' : ''}>
+        <span class="find__ico">${svg(e.section, 16)}</span>
+        <span class="find__txt"><span class="find__t">${esc(e.titre)}</span>
+          <span class="find__d">${esc(e.detail)}</span></span>
+        <span class="find__sec">${esc(ui(`nav.${e.section}`))}</span>
+      </button>`).join('');
+  }
+
+  function ouvrirRecherche() {
+    const boite = $('#find');
+    boite.hidden = false;
+    const champ = $('#find-input');
+    champ.value = '';
+    afficherResultats('');
+    champ.focus();
+  }
+
+  const fermerRecherche = () => { $('#find').hidden = true; };
+
+  /* ═══════════════════════ Hors ligne ═══════════════════════ */
+
+  function activerHorsLigne() {
+    if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
+    navigator.serviceWorker.register('sw.js').catch(() => {
+      /* Un enregistrement refusé (contexte non sécurisé) n'empêche rien : le
+         site fonctionne, il ne sera simplement pas consultable hors réseau. */
+    });
+  }
+
   /* ═══════════════════════ Rendu et navigation ═══════════════════════ */
 
   function afficherNav() {
@@ -811,10 +951,14 @@
     $('#promo').textContent = t(m.promotion) || '';
     $('#foot-updated').textContent = filled(m.updatedAt) ? `${ui('app.updated')} ${dateLongue(t(m.updatedAt))}` : '';
     $$('[data-i18n]').forEach((n) => { n.textContent = ui(n.dataset.i18n); });
+    $$('[data-i18n-placeholder]').forEach((n) => { n.placeholder = ui(n.dataset.i18nPlaceholder); });
     $$('.langbtn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
     document.documentElement.lang = state.lang;
     appliquerTheme();
     majBarreEdition();
+    $('.findbtn__i').innerHTML = svg('search', 15);
+    $('.find__headi').innerHTML = svg('search', 17);
+    indexCache = null;   /* les libellés de section changent avec la langue */
   }
 
   function toutAfficher() { afficherChrome(); afficherNav(); afficherSection(); }
@@ -930,6 +1074,15 @@
         return;
       }
 
+      if (e.target.closest('#ics')) {
+        telecharger('soft-landing-pac.ics', versICS(), 'text/calendar;charset=utf-8');
+        return;
+      }
+      if (e.target.closest('#find-open')) { ouvrirRecherche(); return; }
+      if (e.target.closest('#find-close') || e.target.id === 'find') { fermerRecherche(); return; }
+      const cible = e.target.closest('[data-goto]');
+      if (cible) { fermerRecherche(); aller(cible.dataset.goto); return; }
+
       if (e.target.closest('#edit-toggle')) { basculerEdition(); return; }
       if (e.target.closest('#edit-json')) {
         telecharger('content.json', JSON.stringify(state.data, null, 2) + '\n', 'application/json');
@@ -970,6 +1123,8 @@
         return;
       }
 
+      if (e.target.id === 'find-input') { afficherResultats(e.target.value); return; }
+
       const champ = e.target.closest('[data-filter]');
       if (!champ) return;
       state.filters[champ.dataset.filter] = champ.value;
@@ -978,9 +1133,22 @@
       if (restaure) { restaure.focus(); restaure.setSelectionRange(restaure.value.length, restaure.value.length); }
     });
 
-    /* Entrée valide le champ au lieu d'insérer un saut de ligne. */
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && e.target.closest('.ed')) { e.preventDefault(); e.target.blur(); }
+      /* Entrée valide le champ au lieu d'insérer un saut de ligne. */
+      if (e.key === 'Enter' && e.target.closest('.ed')) { e.preventDefault(); e.target.blur(); return; }
+
+      const dansLaRecherche = !$('#find').hidden;
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        dansLaRecherche ? fermerRecherche() : ouvrirRecherche();
+        return;
+      }
+      if (!dansLaRecherche) return;
+      if (e.key === 'Escape') { fermerRecherche(); return; }
+      if (e.key === 'Enter' && e.target.id === 'find-input') {
+        const premier = $('#find-results [data-first]');
+        if (premier) premier.click();
+      }
     });
 
     window.addEventListener('hashchange', () => {
@@ -995,6 +1163,7 @@
 
   async function amorcer() {
     brancher();
+    activerHorsLigne();
     definirLangue(state.lang);
     const retenu = sessionStorage.getItem(CLE_SESSION);
     if (retenu) await ouvrir(retenu, { silencieux: true });

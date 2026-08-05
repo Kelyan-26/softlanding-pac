@@ -7,6 +7,7 @@
 <title>Soft Landing — Provence Africa Connect</title>
 <meta name="theme-color" content="#F6F7FB">
 <link rel="icon" type="image/png" href="assets/mark.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-400-800-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/roboto-400-latin.woff2" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
@@ -54,6 +55,12 @@
       <img class="logo logo--light" src="assets/logo.png" alt="" aria-hidden="true"
            width="900" height="281">
     </div>
+
+    <button type="button" class="findbtn" id="find-open">
+      <span class="findbtn__i"></span>
+      <span data-i18n="find.open">Rechercher</span>
+      <kbd class="findbtn__k">⌘K</kbd>
+    </button>
 
     <nav class="nav" id="nav" aria-label="Navigation principale"></nav>
 
@@ -106,6 +113,20 @@
   </div>
 
   <div class="scrim" id="scrim" hidden></div>
+
+  <!-- Recherche globale -->
+  <div class="find" id="find" hidden>
+    <div class="find__box" role="dialog" aria-modal="true" aria-label="Recherche">
+      <div class="find__head">
+        <span class="find__headi"></span>
+        <input class="find__in" id="find-input" type="search" autocomplete="off"
+               placeholder="Chercher partout…" data-i18n-placeholder="find.holder">
+        <button type="button" class="iconbtn" id="find-close" aria-label="Fermer">✕</button>
+      </div>
+      <div class="find__res" id="find-results"></div>
+      <p class="find__foot" data-i18n="find.hint">Entrée pour ouvrir · Échap pour fermer</p>
+    </div>
+  </div>
 
   <!-- Barre du mode édition -->
   <div class="editbar" id="editbar" hidden>
