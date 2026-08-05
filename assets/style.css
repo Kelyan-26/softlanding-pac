@@ -1146,3 +1146,22 @@ body.editing .listadd { display: inline-flex; }
 .tag--todo { color: var(--warn-ink); background: var(--warn-wash); border-color: transparent; }
 .tag--ok { color: var(--live); background: var(--live-wash); border-color: transparent; }
 .card__title .tag { vertical-align: 1px; margin-left: var(--s1); font-weight: 500; }
+
+/* ══════════════════════════════ Point d'ancrage ════════════════ */
+
+.anc {
+  display: flex;
+  gap: var(--s3);
+  padding: var(--s4) var(--s5);
+  margin-bottom: var(--s4);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  box-shadow: var(--sh-1);
+}
+.anc--warn { background: var(--warn-wash); border-color: color-mix(in oklab, var(--warn-ink) 26%, transparent); }
+.anc--warn .eyebrow { color: var(--warn-ink); }
+.anc__i { flex: none; padding-top: 2px; color: var(--ink-4); }
+.anc--warn .anc__i { color: var(--warn-ink); }
+.anc__t { margin-top: var(--s1); font-size: var(--fs-sm); color: var(--ink-2); }
+.anc__w { margin-top: var(--s1); font-size: var(--fs-sm); line-height: 1.6; color: var(--ink-3); max-width: var(--measure); }

@@ -62,7 +62,10 @@
 
     'st.a-valider':  { fr: 'À valider', en: 'To be validated' },
     'st.partenaire': { fr: 'Partenaire', en: 'Partner' },
-    'st.hint': { fr: 'Présélection trouvée par recherche web en août 2026, distances estimées. Rien n’est partenaire du programme tant que ce n’est pas confirmé.', en: 'Shortlist found by web search in August 2026, distances estimated. Nothing is a programme partner until confirmed.' },
+    'st.hint': { fr: 'Présélection trouvée par recherche web en août 2026. Rien n’est partenaire du programme tant que ce n’est pas confirmé.', en: 'Shortlist found by web search in August 2026. Nothing is a programme partner until confirmed.' },
+    'anc.from':  { fr: 'Distances mesurées depuis', en: 'Distances measured from' },
+    'anc.warn':  { fr: 'Ancrage provisoire — cette sélection sera à refaire', en: 'Provisional anchor — this selection will need redoing' },
+    'anc.why':   { fr: 'Le bon point de référence serait', en: 'The right reference point would be' },
 
     'sub.installation': { fr: 'La chaîne des démarches, dans l’ordre. Chaque étape débloque la suivante.', en: 'The chain of formalities, in order. Each step unlocks the next.' },
     'sub.glossaire':    { fr: 'Les mots français que personne ne traduit et sans lesquels aucun formulaire ne se comprend.', en: 'The French words nobody translates, without which no form makes sense.' },
@@ -553,6 +556,24 @@
     ? `<div class="rowtools"><button type="button" class="btn" data-del="${liste}.${index}">${svg('trash', 13)}${esc(ui('edit.remove'))}</button></div>`
     : '');
 
+  /* Un seul point de référence pour toutes les distances. Le nommer une fois
+     en tête de page évite d'avoir à le répéter — et à le corriger partout — dans
+     chaque fiche le jour où il change. */
+  function bandeauAncrage() {
+    const a = (state.data.meta || {}).ancrage;
+    if (!a) return '';
+    const provisoire = a.provisoire === true;
+    return `<div class="anc${provisoire ? ' anc--warn' : ''}">
+      ${provisoire ? `<span class="anc__i">${svg('alert', 16)}</span>` : `<span class="anc__i">${svg('pin', 16)}</span>`}
+      <div>
+        <p class="eyebrow">${esc(provisoire ? ui('anc.warn') : ui('anc.from'))}</p>
+        <p class="anc__t"><strong>${field('meta.ancrage.nom', a.nom)}</strong> — ${field('meta.ancrage.adresse', a.adresse)}</p>
+        ${provisoire && filled(a.remplacePar)
+          ? `<p class="anc__w">${esc(ui('anc.why'))} ${field('meta.ancrage.remplacePar', a.remplacePar)}.</p>` : ''}
+      </div>
+    </div>`;
+  }
+
   const boutonAjout = (liste) => (state.editing
     ? `<button type="button" class="btn listadd" data-add="${liste}">${svg('plus', 14)}${esc(ui('edit.add'))}</button>`
     : '');
@@ -749,6 +770,7 @@
     }).join('');
 
     return entete(ui('nav.hotels'), esc(ui('sub.hotels')))
+      + bandeauAncrage()
       + `<p class="note">${esc(ui('st.hint'))}</p>`
       + (cartes ? `<div class="grid grid--2">${cartes}</div>` : vide())
       + boutonAjout('hotels');
@@ -980,6 +1002,7 @@
       `<button type="button" class="chipbtn" data-rcat="${f}" aria-pressed="${cat === f}">${esc(ui(`res.${f}`))}</button>`).join('');
 
     return entete(ui('nav.restaurants'), filled(bloc.intro) ? field('restaurants.intro', bloc.intro) : esc(ui('sub.restaurants')))
+      + bandeauAncrage()
       + `<p class="note">${esc(ui('st.hint'))}</p>`
       + `<div class="tools">
           <input class="search" type="search" data-filter="restaurants"
