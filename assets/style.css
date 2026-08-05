@@ -1130,3 +1130,19 @@ body.editing .listadd { display: inline-flex; }
   .etape__c { padding: var(--s4); }
   .mots { grid-template-columns: 1fr; }
 }
+
+/* ══════════════════════════════ Statuts et notes ═══════════════ */
+
+.note {
+  max-width: var(--measure);
+  margin-bottom: var(--s5);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--hair-2);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+
+.tag--todo { color: var(--warn-ink); background: var(--warn-wash); border-color: transparent; }
+.tag--ok { color: var(--live); background: var(--live-wash); border-color: transparent; }
+.card__title .tag { vertical-align: 1px; margin-left: var(--s1); font-weight: 500; }

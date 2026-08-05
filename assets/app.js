@@ -53,6 +53,16 @@
     'nav.marseille':     { fr: 'Marseille', en: 'Marseille' },
     'nav.installation':  { fr: 'S’installer en France', en: 'Settling in France' },
     'nav.glossaire':     { fr: 'Glossaire', en: 'Glossary' },
+    'nav.restaurants':   { fr: 'Où manger, où travailler', en: 'Where to eat and work' },
+
+    'sub.restaurants': { fr: 'Recevoir un partenaire, déjeuner vite, ou s’installer pour travailler : trois usages, trois listes.', en: 'Hosting a partner, eating fast, or settling in to work: three uses, three lists.' },
+    'res.dejeuner-pro': { fr: 'Déjeuner professionnel', en: 'Business lunch' },
+    'res.rapide':       { fr: 'Manger vite', en: 'Quick bite' },
+    'res.coworking':    { fr: 'Travailler', en: 'Work from there' },
+
+    'st.a-valider':  { fr: 'À valider', en: 'To be validated' },
+    'st.partenaire': { fr: 'Partenaire', en: 'Partner' },
+    'st.hint': { fr: 'Présélection trouvée par recherche web en août 2026, distances estimées. Rien n’est partenaire du programme tant que ce n’est pas confirmé.', en: 'Shortlist found by web search in August 2026, distances estimated. Nothing is a programme partner until confirmed.' },
 
     'sub.installation': { fr: 'La chaîne des démarches, dans l’ordre. Chaque étape débloque la suivante.', en: 'The chain of formalities, in order. Each step unlocks the next.' },
     'sub.glossaire':    { fr: 'Les mots français que personne ne traduit et sans lesquels aucun formulaire ne se comprend.', en: 'The French words nobody translates, without which no form makes sense.' },
@@ -148,6 +158,7 @@
     sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M21.4 12h-2.2M4.8 12H2.6M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6 17 17M7 7 5.4 5.4"/>',
     moon: '<path d="M20.4 13.6A8.4 8.4 0 1 1 10.4 3.6a6.6 6.6 0 0 0 10 10Z"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
+    restaurants: '<path d="M6.4 3.4v7a2.6 2.6 0 0 0 5.2 0v-7"/><path d="M9 3.4v17.2"/><path d="M17.6 3.4c-1.8 1.4-2.6 3.4-2.6 6s.9 3 2.6 3v8.2"/>',
     installation: '<circle cx="6" cy="6.4" r="2.6"/><circle cx="18" cy="17.6" r="2.6"/><path d="M8.6 6.4h5.4a3.6 3.6 0 0 1 0 7.2h-4a3.6 3.6 0 0 0 0 7.2"/>',
     glossaire: '<path d="M4 4.6h6a3 3 0 0 1 3 3v12a2.4 2.4 0 0 0-2.4-2.4H4Z"/><path d="M20 4.6h-6a3 3 0 0 0-3 3v12a2.4 2.4 0 0 1 2.4-2.4H20Z"/>',
     alert: '<path d="M12 3.6 21.4 20H2.6Z"/><path d="M12 9.6v4.4M12 17.2h.01"/>',
@@ -162,7 +173,7 @@
 
   const SECTIONS = ['accueil', 'programme', 'installation', 'glossaire', 'visa',
                     'business-plan', 'interculturel', 'acteurs', 'hotels',
-                    'contacts', 'marseille'];
+                    'restaurants', 'contacts', 'marseille'];
 
   /* Les listes qu'on peut allonger ou raccourcir en mode édition. */
   const MODELES = {
@@ -179,6 +190,9 @@
                         priceLevel: '', website: '', map: '' }),
     glossaire: () => ({ terme: '', categorie: 'administration',
                         definition: { fr: '', en: '' }, piege: { fr: '', en: '' } }),
+    restaurants: () => ({ name: '', categorie: 'dejeuner-pro', address: '',
+                          distance: { fr: '', en: '' }, priceRange: '',
+                          why: { fr: '', en: '' }, website: '', map: '', statut: 'a-valider' }),
   };
 
   /* ═══════════════════════ État ═══════════════════════ */
@@ -529,6 +543,12 @@
 
   /* ═══════════════════════ Fragments d'édition ═══════════════════════ */
 
+  /* Un badge visible vaut mieux qu'une note en bas de page : tant que Jade n'a
+     pas confirmé, personne ne doit croire que l'adresse est réservée. */
+  const badgeStatut = (statut) => (statut && statut !== 'partenaire'
+    ? `<span class="tag tag--todo">${esc(ui(`st.${statut}`))}</span>`
+    : statut === 'partenaire' ? `<span class="tag tag--ok">${esc(ui('st.partenaire'))}</span>` : '');
+
   const boutonsLigne = (liste, index) => (state.editing
     ? `<div class="rowtools"><button type="button" class="btn" data-del="${liste}.${index}">${svg('trash', 13)}${esc(ui('edit.remove'))}</button></div>`
     : '');
@@ -716,7 +736,7 @@
       return `<article class="card">
         <div class="card__top">${mono(t(h.name))}
           <div>
-            <p class="card__title">${field(`hotels.${i}.name`, h.name)}</p>
+            <p class="card__title">${field(`hotels.${i}.name`, h.name)} ${badgeStatut(h.statut)}</p>
             ${filled(h.address) ? `<p class="card__role">${field(`hotels.${i}.address`, h.address)}</p>` : ''}
           </div>
         </div>
@@ -729,6 +749,7 @@
     }).join('');
 
     return entete(ui('nav.hotels'), esc(ui('sub.hotels')))
+      + `<p class="note">${esc(ui('st.hint'))}</p>`
       + (cartes ? `<div class="grid grid--2">${cartes}</div>` : vide())
       + boutonAjout('hotels');
   }
@@ -909,6 +930,67 @@
       + boutonAjout('glossaire');
   }
 
+
+  function rendreRestaurants() {
+    const bloc = state.data.restaurants || {};
+    const lieux = list(bloc.lieux);
+    const q = (state.filters.restaurants || '').toLowerCase();
+    const cat = state.filters.restaurantsCat || '';
+    const familles = ['dejeuner-pro', 'rapide', 'coworking'];
+
+    const retenus = lieux.map((r, i) => ({ r, i }))
+      .filter(({ r }) => (!cat || r.categorie === cat)
+        && (!q || foin([r.name, r.address, r.why, r.categorie]).includes(q)));
+
+    const carte = ({ r, i }) => {
+      const infos = [];
+      if (filled(r.distance)) infos.push(meta('walk', field(`restaurants.lieux.${i}.distance`, r.distance)));
+      if (filled(r.priceRange)) infos.push(`<span class="tag">${field(`restaurants.lieux.${i}.priceRange`, r.priceRange)}</span>`);
+      const actions = [lien(r.website, ui('action.website'), 'link'), lien(r.map, ui('action.map'), 'pin')]
+        .filter(Boolean).join('');
+
+      return `<article class="card">
+        <div class="card__top">${mono(t(r.name))}
+          <div>
+            <p class="card__title">${field(`restaurants.lieux.${i}.name`, r.name)} ${badgeStatut(r.statut)}</p>
+            ${filled(r.address) ? `<p class="card__role">${field(`restaurants.lieux.${i}.address`, r.address)}</p>` : ''}
+          </div>
+        </div>
+        ${filled(r.why) ? `<p class="card__text">${field(`restaurants.lieux.${i}.why`, r.why)}</p>` : ''}
+        ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
+        ${actions ? `<div class="card__acts">${actions}</div>` : ''}
+        ${boutonsLigne('restaurants', i)}
+      </article>`;
+    };
+
+    /* Sans filtre on montre les trois usages séparément : c'est la distinction
+       qui compte, pas la liste. */
+    const corps = cat || q
+      ? (retenus.length ? `<div class="grid grid--2">${retenus.map(carte).join('')}</div>` : vide(ui('empty.search')))
+      : familles.map((f) => {
+          const dedans = retenus.filter(({ r }) => r.categorie === f);
+          if (!dedans.length) return '';
+          return `<section class="section">
+            <div class="section__head"><h2>${esc(ui(`res.${f}`))}</h2><span class="day__c num">${dedans.length}</span></div>
+            <div class="grid grid--2">${dedans.map(carte).join('')}</div>
+          </section>`;
+        }).join('');
+
+    const filtres = familles.map((f) =>
+      `<button type="button" class="chipbtn" data-rcat="${f}" aria-pressed="${cat === f}">${esc(ui(`res.${f}`))}</button>`).join('');
+
+    return entete(ui('nav.restaurants'), filled(bloc.intro) ? field('restaurants.intro', bloc.intro) : esc(ui('sub.restaurants')))
+      + `<p class="note">${esc(ui('st.hint'))}</p>`
+      + `<div class="tools">
+          <input class="search" type="search" data-filter="restaurants"
+                 value="${esc(state.filters.restaurants || '')}" placeholder="${esc(ui('search.places'))}">
+          <button type="button" class="chipbtn" data-rcat="" aria-pressed="${cat === ''}">${esc(ui('label.all'))}</button>
+          ${filtres}
+        </div>`
+      + corps
+      + boutonAjout('restaurants');
+  }
+
   const RENDUS = {
     'accueil': rendreAccueil,
     'programme': () => entete(ui('nav.programme'), esc(ui('sub.programme'))) + rendreProgramme(),
@@ -921,6 +1003,7 @@
     'marseille': rendreMarseille,
     'installation': rendreInstallation,
     'glossaire': rendreGlossaire,
+    'restaurants': rendreRestaurants,
   };
 
 
@@ -1000,6 +1083,7 @@
     list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
     list((state.data.installation || {}).etapes).forEach((x) => pousse('installation', t(x.titre), t(x.quand), `${t(x.pourquoi)} ${t(x.obstacle)} ${list(x.solutions).map(t).join(' ')}`));
     list(state.data.glossaire).forEach((x) => pousse('glossaire', t(x.terme), t(x.definition), t(x.piege)));
+    list((state.data.restaurants || {}).lieux).forEach((x) => pousse('restaurants', t(x.name), t(x.address), `${t(x.why)} ${t(x.categorie)}`));
     return entrees;
   }
 
@@ -1179,6 +1263,7 @@
       const cat = e.target.closest('.chipbtn');
       if (cat) {
         if ('gcat' in cat.dataset) state.filters.glossaireCat = cat.dataset.gcat;
+        else if ('rcat' in cat.dataset) state.filters.restaurantsCat = cat.dataset.rcat;
         else state.filters.marseilleCat = cat.dataset.cat;
         afficherSection();
         return;
