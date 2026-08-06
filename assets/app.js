@@ -51,6 +51,24 @@
     'nav.hotels':        { fr: 'Hôtels partenaires', en: 'Partner hotels' },
     'nav.contacts':      { fr: 'Carnet d’adresses', en: 'Address book' },
     'nav.marseille':     { fr: 'Marseille', en: 'Marseille' },
+    'nav.entreprises':   { fr: 'Entreprises de la promotion', en: 'Cohort companies' },
+    'sub.entreprises':   { fr: 'Les startups accompagnées cette année. Passez en mode édition pour en ajouter.', en: 'The startups supported this year. Switch to edit mode to add them.' },
+    'ent.logo':          { fr: 'Logo', en: 'Logo' },
+    'ent.addLogo':       { fr: 'Choisir un logo', en: 'Choose a logo' },
+    'ent.delLogo':       { fr: 'Retirer le logo', en: 'Remove logo' },
+    'ent.noLogo':        { fr: 'Pas de logo', en: 'No logo' },
+    'ent.name':          { fr: 'Nom de l’entreprise', en: 'Company name' },
+    'ent.activity':      { fr: 'Ce qu’elle fait', en: 'What it does' },
+    'ent.tooBig':        { fr: 'Image trop lourde même après réduction. Essayez un PNG ou un JPEG plus simple.', en: 'Image still too heavy after downscaling. Try a simpler PNG or JPEG.' },
+
+    'save.saved':    { fr: 'Enregistré', en: 'Saved' },
+    'save.nothing':  { fr: 'Aucune modification', en: 'No changes' },
+    'save.newer':    { fr: 'Une version plus récente a été publiée en ligne. Vos modifications locales sont conservées.', en: 'A newer version was published online. Your local changes are kept.' },
+    'save.takeNew':  { fr: 'Reprendre la version en ligne', en: 'Take the online version' },
+    'save.takeAsk':  { fr: 'Reprendre la version en ligne ? Vos modifications locales seront perdues. Exportez-les d’abord si vous voulez les garder.', en: 'Take the online version? Your local changes will be lost. Export them first if you want to keep them.' },
+    'save.full':     { fr: 'Espace de stockage plein : vos dernières modifications ne sont PAS enregistrées. Exportez content.json tout de suite, puis allégez les logos.', en: 'Storage full: your latest changes are NOT saved. Export content.json now, then reduce logo sizes.' },
+    'save.lockAsk':  { fr: 'Verrouiller efface aussi vos modifications locales. Les avez-vous exportées ou publiées ?', en: 'Locking also erases your local changes. Have you exported or published them?' },
+    'save.where':    { fr: 'Vos modifications sont enregistrées dans ce navigateur. Pour qu’elles apparaissent pour tout le monde, cliquez Publier.', en: 'Your changes are saved in this browser. To make them visible to everyone, click Publish.' },
     'nav.installation':  { fr: 'S’installer en France', en: 'Settling in France' },
     'nav.glossaire':     { fr: 'Glossaire', en: 'Glossary' },
     'res.dejeuner-pro': { fr: 'Déjeuner professionnel', en: 'Business lunch' },
@@ -161,6 +179,8 @@
     plus: '<path d="M12 5v14M5 12h14"/>',
     restaurants: '<path d="M6.4 3.4v7a2.6 2.6 0 0 0 5.2 0v-7"/><path d="M9 3.4v17.2"/><path d="M17.6 3.4c-1.8 1.4-2.6 3.4-2.6 6s.9 3 2.6 3v8.2"/>',
     installation: '<circle cx="6" cy="6.4" r="2.6"/><circle cx="18" cy="17.6" r="2.6"/><path d="M8.6 6.4h5.4a3.6 3.6 0 0 1 0 7.2h-4a3.6 3.6 0 0 0 0 7.2"/>',
+    entreprises: '<path d="M3.4 20.6h17.2"/><path d="M5.4 20.6V6.4l7-2.8v17"/><path d="M12.4 9.6h6.2v11"/><path d="M8.4 9.4h1M8.4 13h1M15.4 13h1M15.4 16.6h1"/>',
+    image: '<rect x="3.4" y="4.6" width="17.2" height="14.8" rx="2"/><circle cx="8.8" cy="9.8" r="1.7"/><path d="m4.4 17.4 5-5 4.4 4.4 2.8-2.6 4 3.8"/>',
     glossaire: '<path d="M4 4.6h6a3 3 0 0 1 3 3v12a2.4 2.4 0 0 0-2.4-2.4H4Z"/><path d="M20 4.6h-6a3 3 0 0 0-3 3v12a2.4 2.4 0 0 1 2.4-2.4H20Z"/>',
     alert: '<path d="M12 3.6 21.4 20H2.6Z"/><path d="M12 9.6v4.4M12 17.2h.01"/>',
     search: '<circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/>',
@@ -173,8 +193,8 @@
     : '');
 
   const SECTIONS = ['accueil', 'programme', 'installation', 'glossaire', 'visa',
-                    'business-plan', 'interculturel', 'acteurs', 'hotels',
-                    'contacts', 'marseille'];
+                    'business-plan', 'interculturel', 'entreprises', 'acteurs',
+                    'hotels', 'contacts', 'marseille'];
 
   /* Les listes qu'on peut allonger ou raccourcir en mode édition. */
   const MODELES = {
@@ -190,6 +210,7 @@
     marseille: () => ({ name: '', category: 'dejeuner-pro', district: '', address: '',
                         distance: { fr: '', en: '' }, why: { fr: '', en: '' },
                         priceLevel: '', website: '', map: '', statut: 'a-valider' }),
+    entreprises: () => ({ nom: '', activite: { fr: '', en: '' }, logo: '', site: '' }),
     glossaire: () => ({ terme: '', categorie: 'administration',
                         definition: { fr: '', en: '' }, piege: { fr: '', en: '' } }),
 
@@ -198,14 +219,16 @@
   /* ═══════════════════════ État ═══════════════════════ */
 
   const state = {
-    /* Clair par défaut ; le sombre ne s'applique que si on l'a choisi. */
-    theme: localStorage.getItem('slpac.theme') === 'dark' ? 'dark' : 'light',
     lang: localStorage.getItem('slpac.lang') === 'en' ? 'en' : 'fr',
     data: null,
     section: 'accueil',
     filters: {},
     editing: false,
     dirty: false,
+    base: '',              /* builtAt de la version publiée qui sert de socle */
+    enregistreLe: null,
+    versionPlusRecente: false,
+    stockagePlein: false,
     timer: null,
   };
 
@@ -257,17 +280,6 @@
 
   const vide = (msg) => `<div class="empty">${esc(msg || ui('empty.generic'))}</div>`;
   const meta = (icone, html) => `<span class="meta">${svg(icone, 14)}${html}</span>`;
-
-  /* Monogramme : deux initiales, teintées dans une gamme dérivée de la marque. */
-  const TEINTES = [24, 234, 12, 208, 38, 260];
-  function mono(nom) {
-    const propre = String(nom || '?').trim();
-    const initiales = propre.split(/\s+/).filter(Boolean).slice(0, 2)
-      .map((m) => m[0]).join('').toUpperCase() || '?';
-    let h = 0;
-    for (const c of propre) h = (h * 31 + c.charCodeAt(0)) % 9973;
-    return `<span class="mono" style="--h:${TEINTES[h % TEINTES.length]}" aria-hidden="true">${esc(initiales)}</span>`;
-  }
 
   /* ═══════════════════════ Chemins JSON ═══════════════════════ */
 
@@ -340,12 +352,23 @@
     if (!silencieux) { bouton.disabled = true; bouton.textContent = ui('gate.working'); }
     erreurPorte('');
     try {
-      const donnees = await dechiffrer(mdp, await chargerEnveloppe());
+      const enveloppe = await chargerEnveloppe();
+      const donnees = await dechiffrer(mdp, enveloppe);
       sessionStorage.setItem(CLE_SESSION, mdp);
-      const brouillon = sessionStorage.getItem(CLE_BROUILLON);
-      if (brouillon) {
-        try { state.data = JSON.parse(brouillon); state.dirty = true; }
-        catch { state.data = donnees; }
+      state.base = enveloppe.builtAt || '';
+      state.publie = donnees;
+
+      const brut = localStorage.getItem(CLE_BROUILLON);
+      if (brut) {
+        try {
+          const b = JSON.parse(brut);
+          state.data = b.data;
+          state.dirty = true;
+          state.enregistreLe = b.enregistreLe ? new Date(b.enregistreLe) : null;
+          /* Une publication plus récente ne doit jamais écraser le travail en
+             cours en silence : on le signale, on ne décide pas à sa place. */
+          state.versionPlusRecente = !!(state.base && b.base && state.base !== b.base);
+        } catch { state.data = donnees; }
       } else {
         state.data = donnees;
       }
@@ -367,29 +390,56 @@
 
   /* ═══════════════════════ Mode édition ═══════════════════════ */
 
-  /* Le brouillon vit en sessionStorage, pas en localStorage : il contient des
-     données personnelles et disparaît à la fermeture du navigateur. Seul
-     l'export le rend durable. */
+  /* Le brouillon vit en localStorage : il doit survivre à la fermeture du
+     navigateur. Un travail de saisie perdu parce qu'on a fermé un onglet est
+     inacceptable — c'était le cas jusqu'au 2026-08-06.
+     Contrepartie assumée : le contenu reste sur le disque de cette machine.
+     Sur un poste partagé, « Verrouiller » l'efface. */
   function sauverBrouillon() {
-    try { sessionStorage.setItem(CLE_BROUILLON, JSON.stringify(state.data)); } catch {}
+    try {
+      localStorage.setItem(CLE_BROUILLON, JSON.stringify({
+        base: state.base,
+        enregistreLe: new Date().toISOString(),
+        data: state.data,
+      }));
+      state.enregistreLe = new Date();
+      state.stockagePlein = false;
+      return true;
+    } catch (e) {
+      /* Quota dépassé, souvent à cause des logos. On le DIT : avaler l'erreur
+         ferait croire que c'est enregistré alors que non. */
+      state.stockagePlein = true;
+      return false;
+    }
   }
 
   function marquerModifie() {
     state.dirty = true;
     indexCache = null;   /* le contenu a bougé : l'index de recherche aussi */
-    sauverBrouillon();
+    const ok = sauverBrouillon();
     majBarreEdition();
+    if (!ok && !state.alerteStockage) {
+      state.alerteStockage = true;
+      alert(ui('save.full'));
+    }
   }
+
+  const heure = (d) => (d ? d.toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' }) : '');
 
   function majBarreEdition() {
     const barre = $('#editbar');
     barre.hidden = !state.editing;
-    $('#editbar-count').innerHTML = state.dirty
-      ? `<b>●</b> ${esc(ui('edit.count'))}`
-      : esc(ui('edit.clean'));
+
+    let etat;
+    if (state.stockagePlein) etat = `<b>⚠</b> ${esc(ui('save.full'))}`;
+    else if (state.dirty) etat = `<b class="editbar__ok">✓</b> ${esc(ui('save.saved'))} ${esc(heure(state.enregistreLe))} — ${esc(ui('save.where'))}`;
+    else etat = esc(ui('edit.clean'));
+    $('#editbar-count').innerHTML = etat;
+
+    const recent = $('#edit-take');
+    if (recent) recent.hidden = !state.versionPlusRecente;
+
     $('#edit-cancel').disabled = !state.dirty;
-    $('#edit-json').disabled = false;
-    $('#edit-publish').disabled = false;
     $('#edit-toggle').textContent = state.editing ? ui('app.editOff') : ui('app.edit');
     document.body.classList.toggle('editing', state.editing);
   }
@@ -716,12 +766,10 @@
         ].filter(Boolean).join('');
 
         return `<article class="card">
-          <div class="card__top">${mono(t(a.name))}
-            <div>
+        <div class="card__top">
               <p class="card__title">${field(`acteurs.${i}.name`, a.name)}</p>
               ${filled(a.role) ? `<p class="card__role">${field(`acteurs.${i}.role`, a.role)}</p>` : ''}
-            </div>
-          </div>
+        </div>
           ${filled(a.description) ? `<p class="card__text">${field(`acteurs.${i}.description`, a.description)}</p>` : ''}
           ${list(a.tags).length ? `<div class="tags">${list(a.tags).map((tg) => `<span class="tag">${esc(t(tg))}</span>`).join('')}</div>` : ''}
           ${actions ? `<div class="card__acts">${actions}</div>` : ''}
@@ -752,11 +800,9 @@
         .filter(Boolean).join('');
 
       return `<article class="card">
-        <div class="card__top">${mono(t(h.name))}
-          <div>
+        <div class="card__top">
             <p class="card__title">${field(`hotels.${i}.name`, h.name)} ${badgeStatut(h.statut)}</p>
             ${filled(h.address) ? `<p class="card__role">${field(`hotels.${i}.address`, h.address)}</p>` : ''}
-          </div>
         </div>
         ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
         ${resa}
@@ -790,12 +836,10 @@
         if (list(c.languages).length) infos.push(meta('speech', list(c.languages).map((l) => esc(String(l).toUpperCase())).join(' / ')));
 
         return `<article class="card">
-          <div class="card__top">${mono(t(c.name))}
-            <div>
+        <div class="card__top">
               <p class="card__title">${field(`contacts.${i}.name`, c.name)}</p>
               ${filled(c.role) ? `<p class="card__role">${field(`contacts.${i}.role`, c.role)}</p>` : ''}
-            </div>
-          </div>
+        </div>
           ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
           ${filled(c.note) ? `<p class="card__text">${field(`contacts.${i}.note`, c.note)}</p>` : ''}
           ${list(c.tags).length ? `<div class="tags">${list(c.tags).map((tg) => `<span class="tag tag--accent">${esc(t(tg))}</span>`).join('')}</div>` : ''}
@@ -932,11 +976,9 @@
         .filter(Boolean).join('');
 
       return `<article class="card">
-        <div class="card__top">${mono(t(p.name))}
-          <div>
+        <div class="card__top">
             <p class="card__title">${field(`marseille.${i}.name`, p.name)} ${badgeStatut(p.statut)}</p>
             ${filled(p.address) ? `<p class="card__role">${field(`marseille.${i}.address`, p.address)}</p>` : ''}
-          </div>
         </div>
         ${filled(p.why) ? `<p class="card__text">${field(`marseille.${i}.why`, p.why)}</p>` : ''}
         ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
@@ -975,6 +1017,73 @@
       + boutonAjout('marseille');
   }
 
+
+  /* ═══════════════════════ Entreprises de la promotion ═══════════════════════ */
+
+  /* Le seul endroit du site qui accepte un logo. L'image est réduite avant
+     d'être stockée : un logo de 2 Mo dans le contenu chiffré rendrait le
+     fichier publié inutilisable. */
+  const LOGO_MAX_PX = 260;
+  const LOGO_MAX_OCTETS = 120 * 1024;
+
+  function choisirLogo(index) {
+    const champ = document.createElement('input');
+    champ.type = 'file';
+    champ.accept = 'image/png,image/jpeg,image/webp,image/svg+xml';
+    champ.addEventListener('change', () => {
+      const fichier = champ.files && champ.files[0];
+      if (!fichier) return;
+      const lecteur = new FileReader();
+      lecteur.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = Math.min(1, LOGO_MAX_PX / Math.max(img.width, img.height));
+          const toile = document.createElement('canvas');
+          toile.width = Math.round(img.width * ratio);
+          toile.height = Math.round(img.height * ratio);
+          toile.getContext('2d').drawImage(img, 0, 0, toile.width, toile.height);
+          const donnees = toile.toDataURL('image/png');
+          if (donnees.length > LOGO_MAX_OCTETS * 1.4) { alert(ui('ent.tooBig')); return; }
+          ecrire(state.data, `entreprises.${index}.logo`, donnees);
+          marquerModifie();
+          afficherSection();
+        };
+        img.onerror = () => alert(ui('ent.tooBig'));
+        img.src = String(lecteur.result);
+      };
+      lecteur.readAsDataURL(fichier);
+    });
+    champ.click();
+  }
+
+  function rendreEntreprises() {
+    const boites = list(state.data.entreprises);
+
+    const cartes = boites.map((e, i) => {
+      const logo = typeof e.logo === 'string' && e.logo.startsWith('data:image/')
+        ? `<img src="${esc(e.logo)}" alt="${esc(t(e.nom))}">`
+        : `<span class="boite__vide">${esc(ui('ent.noLogo'))}</span>`;
+
+      return `<article class="boite">
+        <div class="boite__logo">${logo}</div>
+        <div>
+          <p class="boite__n">${field(`entreprises.${i}.nom`, e.nom, { vide: ui('ent.name') })}</p>
+          <p class="boite__a">${field(`entreprises.${i}.activite`, e.activite, { vide: ui('ent.activity') })}</p>
+        </div>
+        ${lien(e.site, ui('action.website'), 'link')}
+        <div class="boite__tools">
+          <button type="button" class="btn" data-logo="${i}">${svg('image', 14)}${esc(ui('ent.addLogo'))}</button>
+          ${e.logo ? `<button type="button" class="btn" data-dellogo="${i}">${esc(ui('ent.delLogo'))}</button>` : ''}
+          <button type="button" class="btn" data-del="entreprises.${i}">${svg('trash', 13)}${esc(ui('edit.remove'))}</button>
+        </div>
+      </article>`;
+    }).join('');
+
+    return entete(ui('nav.entreprises'), esc(ui('sub.entreprises')))
+      + (cartes ? `<div class="boites">${cartes}</div>` : vide())
+      + boutonAjout('entreprises');
+  }
+
   const RENDUS = {
     'accueil': rendreAccueil,
     'programme': () => entete(ui('nav.programme'), esc(ui('sub.programme'))) + rendreProgramme(),
@@ -987,6 +1096,7 @@
     'marseille': rendreMarseille,
     'installation': rendreInstallation,
     'glossaire': rendreGlossaire,
+    'entreprises': rendreEntreprises,
   };
 
 
@@ -1066,6 +1176,7 @@
     list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
     list((state.data.installation || {}).etapes).forEach((x) => pousse('installation', t(x.titre), t(x.quand), `${t(x.pourquoi)} ${t(x.obstacle)} ${list(x.solutions).map(t).join(' ')}`));
     list(state.data.glossaire).forEach((x) => pousse('glossaire', t(x.terme), t(x.definition), t(x.piege)));
+    list(state.data.entreprises).forEach((x) => pousse('entreprises', t(x.nom), '', t(x.activite)));
     return entrees;
   }
 
@@ -1156,7 +1267,6 @@
     $$('[data-i18n-placeholder]').forEach((n) => { n.placeholder = ui(n.dataset.i18nPlaceholder); });
     $$('.langbtn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
     document.documentElement.lang = state.lang;
-    appliquerTheme();
     majBarreEdition();
     $('.findbtn__i').innerHTML = svg('search', 15);
     $('.find__headi').innerHTML = svg('search', 17);
@@ -1190,22 +1300,6 @@
     $('#burger').setAttribute('aria-expanded', 'false');
   }
 
-  function appliquerTheme() {
-    document.documentElement.dataset.theme = state.theme;
-    $$('[data-theme-toggle]').forEach((b) => {
-      b.innerHTML = svg(state.theme === 'dark' ? 'sun' : 'moon', 15);
-      b.title = state.theme === 'dark'
-        ? (state.lang === 'en' ? 'Light theme' : 'Thème clair')
-        : (state.lang === 'en' ? 'Dark theme' : 'Thème sombre');
-    });
-  }
-
-  function definirTheme(theme) {
-    state.theme = theme === 'dark' ? 'dark' : 'light';
-    localStorage.setItem('slpac.theme', state.theme);
-    appliquerTheme();
-  }
-
   function definirLangue(lang) {
     state.lang = lang === 'en' ? 'en' : 'fr';
     localStorage.setItem('slpac.lang', state.lang);
@@ -1214,7 +1308,6 @@
       $$('[data-i18n]').forEach((n) => { n.textContent = ui(n.dataset.i18n); });
       $$('.langbtn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
       document.documentElement.lang = state.lang;
-      appliquerTheme();
     }
   }
 
@@ -1240,8 +1333,6 @@
     });
 
     document.addEventListener('click', (e) => {
-      if (e.target.closest('[data-theme-toggle]')) { definirTheme(state.theme === 'dark' ? 'light' : 'dark'); return; }
-
       const lang = e.target.closest('.langbtn');
       if (lang) { definirLangue(lang.dataset.lang); return; }
 
@@ -1261,6 +1352,15 @@
         else if ('rcat' in cat.dataset) state.filters.restaurantsCat = cat.dataset.rcat;
         else state.filters.marseilleCat = cat.dataset.cat;
         afficherSection();
+        return;
+      }
+
+      const logo = e.target.closest('[data-logo]');
+      if (logo) { choisirLogo(Number(logo.dataset.logo)); return; }
+      const sansLogo = e.target.closest('[data-dellogo]');
+      if (sansLogo) {
+        ecrire(state.data, `entreprises.${sansLogo.dataset.dellogo}.logo`, '');
+        marquerModifie(); afficherSection();
         return;
       }
 
@@ -1299,7 +1399,7 @@
       if (e.target.closest('#edit-publish')) { publier(); return; }
       if (e.target.closest('#edit-cancel')) {
         if (!confirm(ui('edit.confirm'))) return;
-        sessionStorage.removeItem(CLE_BROUILLON);
+        localStorage.removeItem(CLE_BROUILLON);
         location.reload();
         return;
       }
@@ -1314,9 +1414,19 @@
       }
       if (e.target.closest('#scrim')) { fermerMenu(); return; }
 
+      if (e.target.closest('#edit-take')) {
+        if (!confirm(ui('save.takeAsk'))) return;
+        localStorage.removeItem(CLE_BROUILLON);
+        location.reload();
+        return;
+      }
+
       if (e.target.closest('#lock')) {
+        /* Verrouiller efface aussi le brouillon : c'est le geste à faire sur un
+           poste partagé, et il est annoncé comme tel. */
+        if (state.dirty && !confirm(ui('save.lockAsk'))) return;
         sessionStorage.removeItem(CLE_SESSION);
-        sessionStorage.removeItem(CLE_BROUILLON);
+        localStorage.removeItem(CLE_BROUILLON);
         location.reload();
       }
     });
@@ -1364,9 +1474,9 @@
       if (RENDUS[h] && h !== state.section) aller(h, { push: false });
     });
 
-    window.addEventListener('beforeunload', (e) => {
-      if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
-    });
+    /* Plus de garde à la fermeture : tout est enregistré à chaque frappe, il
+       n'y a plus rien à perdre — et la boîte de dialogue bloquait la
+       navigation à chaque changement de page. */
   }
 
   async function amorcer() {

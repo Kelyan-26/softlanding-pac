@@ -40,6 +40,7 @@ const vider = (objet, champs) => {
 for (const c of data.contacts || []) vider(c, ['email', 'phone', 'linkedin']);
 for (const a of data.acteurs || []) vider(a.contact, ['email', 'phone']);
 for (const h of data.hotels || []) vider(h.booking, ['contact']);
+// Les entreprises de la promotion sont publiques par nature : rien à retirer.
 
 // Le relecteur doit savoir ce qu'il ne voit pas.
 data.meta = data.meta || {};
