@@ -59,6 +59,16 @@
     'ent.noLogo':        { fr: 'Pas de logo', en: 'No logo' },
     'ent.name':          { fr: 'Nom de l’entreprise', en: 'Company name' },
     'ent.activity':      { fr: 'Ce qu’elle fait', en: 'What it does' },
+    'ent.open':          { fr: 'Voir la fiche', en: 'Open profile' },
+    'ent.back':          { fr: 'Toutes les entreprises', en: 'All companies' },
+    'ent.country':       { fr: 'Pays', en: 'Country' },
+    'ent.sector':        { fr: 'Secteur', en: 'Sector' },
+    'ent.stage':         { fr: 'Stade', en: 'Stage' },
+    'ent.founders':      { fr: 'Fondateurs', en: 'Founders' },
+    'ent.addBlock':      { fr: 'Ajouter une rubrique', en: 'Add a section' },
+    'ent.blockTitle':    { fr: 'Titre de la rubrique', en: 'Section title' },
+    'ent.blockBody':     { fr: 'Contenu', en: 'Content' },
+    'ent.addFounder':    { fr: 'Ajouter un fondateur', en: 'Add a founder' },
     'ent.tooBig':        { fr: 'Image trop lourde même après réduction. Essayez un PNG ou un JPEG plus simple.', en: 'Image still too heavy after downscaling. Try a simpler PNG or JPEG.' },
 
     'save.saved':    { fr: 'Enregistré', en: 'Saved' },
@@ -210,7 +220,11 @@
     marseille: () => ({ name: '', category: 'dejeuner-pro', district: '', address: '',
                         distance: { fr: '', en: '' }, why: { fr: '', en: '' },
                         priceLevel: '', website: '', map: '', statut: 'a-valider' }),
-    entreprises: () => ({ nom: '', activite: { fr: '', en: '' }, logo: '', site: '' }),
+    /* Un noyau fixe, et « blocs » qui accueille tout le reste : le contenu du
+       Loop n'a pas de schéma connu, il ne faut pas le forcer dans le mien. */
+    entreprises: () => ({ nom: '', activite: { fr: '', en: '' }, logo: '', site: '',
+                          pays: '', secteur: '', stade: '',
+                          fondateurs: [], blocs: [] }),
     glossaire: () => ({ terme: '', categorie: 'administration',
                         definition: { fr: '', en: '' }, piege: { fr: '', en: '' } }),
 
@@ -224,6 +238,7 @@
     section: 'accueil',
     filters: {},
     editing: false,
+    detail: null,          /* index de la fiche entreprise ouverte, sinon null */
     dirty: false,
     base: '',              /* builtAt de la version publiée qui sert de socle */
     enregistreLe: null,
@@ -1056,10 +1071,61 @@
     champ.click();
   }
 
-  function rendreEntreprises() {
-    const boites = list(state.data.entreprises);
+  function ficheEntreprise(i) {
+    const e = list(state.data.entreprises)[i];
+    if (!e) { state.detail = null; return rendreEntreprises(); }
 
-    const cartes = boites.map((e, i) => {
+    const logo = typeof e.logo === 'string' && e.logo.startsWith('data:image/')
+      ? `<div class="fiche__logo"><img src="${esc(e.logo)}" alt="${esc(t(e.nom))}"></div>` : '';
+
+    const reperes = [
+      ['ent.country', 'pays', e.pays],
+      ['ent.sector', 'secteur', e.secteur],
+      ['ent.stage', 'stade', e.stade],
+    ].filter(([, , v]) => filled(v)).map(([cle, champ, v]) => `
+      <div class="stat">
+        <p class="stat__k">${esc(ui(cle))}</p>
+        <p class="stat__v">${field(`entreprises.${i}.${champ}`, v)}</p>
+      </div>`).join('');
+
+    const fondateurs = list(e.fondateurs).map((f, k) => `
+      <div class="fond">
+        <p class="fond__n">${field(`entreprises.${i}.fondateurs.${k}.nom`, f.nom)}</p>
+        <p class="fond__r">${field(`entreprises.${i}.fondateurs.${k}.role`, f.role)}</p>
+        ${state.editing ? `<div class="rowtools"><button type="button" class="btn" data-delsub="entreprises.${i}.fondateurs.${k}">${svg('trash', 13)}</button></div>` : ''}
+      </div>`).join('');
+
+    /* Les rubriques accueillent ce que le noyau ne prévoit pas : marché,
+       traction, besoins, tout ce que le Loop contient. */
+    const blocs = list(e.blocs).map((b, k) => `
+      <section class="section">
+        <div class="section__head"><h2>${field(`entreprises.${i}.blocs.${k}.titre`, b.titre, { vide: ui('ent.blockTitle') })}</h2></div>
+        <p class="fiche__p">${field(`entreprises.${i}.blocs.${k}.contenu`, b.contenu, { vide: ui('ent.blockBody') })}</p>
+        ${state.editing ? `<div class="rowtools"><button type="button" class="btn" data-delsub="entreprises.${i}.blocs.${k}">${svg('trash', 13)}${esc(ui('edit.remove'))}</button></div>` : ''}
+      </section>`).join('');
+
+    return `<p><button type="button" class="btn" data-open="">${svg('arrow', 14)}${esc(ui('ent.back'))}</button></p>
+      <header class="head fiche__head">
+        ${logo}
+        <p class="eyebrow">${esc(ui('nav.entreprises'))}</p>
+        <h1>${field(`entreprises.${i}.nom`, e.nom, { vide: ui('ent.name') })}</h1>
+        <p class="head__lede">${field(`entreprises.${i}.activite`, e.activite, { vide: ui('ent.activity') })}</p>
+        ${lien(e.site, ui('action.website'), 'link')}
+      </header>
+      ${reperes ? `<div class="stats">${reperes}</div>` : ''}
+      ${fondateurs || state.editing ? `<section class="section">
+          <div class="section__head"><h2>${esc(ui('ent.founders'))}</h2></div>
+          <div class="fonds">${fondateurs}</div>
+          ${state.editing ? `<button type="button" class="btn listadd" data-addsub="entreprises.${i}.fondateurs">${svg('plus', 14)}${esc(ui('ent.addFounder'))}</button>` : ''}
+        </section>` : ''}
+      ${blocs}
+      ${state.editing ? `<button type="button" class="btn listadd" data-addsub="entreprises.${i}.blocs">${svg('plus', 14)}${esc(ui('ent.addBlock'))}</button>` : ''}`;
+  }
+
+  function rendreEntreprises() {
+    if (state.detail !== null && state.detail !== undefined) return ficheEntreprise(state.detail);
+
+    const cartes = list(state.data.entreprises).map((e, i) => {
       const logo = typeof e.logo === 'string' && e.logo.startsWith('data:image/')
         ? `<img src="${esc(e.logo)}" alt="${esc(t(e.nom))}">`
         : `<span class="boite__vide">${esc(ui('ent.noLogo'))}</span>`;
@@ -1070,7 +1136,7 @@
           <p class="boite__n">${field(`entreprises.${i}.nom`, e.nom, { vide: ui('ent.name') })}</p>
           <p class="boite__a">${field(`entreprises.${i}.activite`, e.activite, { vide: ui('ent.activity') })}</p>
         </div>
-        ${lien(e.site, ui('action.website'), 'link')}
+        <button type="button" class="btn" data-open="${i}">${esc(ui('ent.open'))}${svg('arrow', 14)}</button>
         <div class="boite__tools">
           <button type="button" class="btn" data-logo="${i}">${svg('image', 14)}${esc(ui('ent.addLogo'))}</button>
           ${e.logo ? `<button type="button" class="btn" data-dellogo="${i}">${esc(ui('ent.delLogo'))}</button>` : ''}
@@ -1159,9 +1225,10 @@
   /* Un index à plat de tout le contenu : une entrée = un endroit où aller. */
   function indexer() {
     const entrees = [];
-    const pousse = (section, titre, detail, texte) => {
+    const pousse = (section, titre, detail, texte, fiche) => {
       if (!String(titre || '').trim()) return;
       entrees.push({ section, titre: String(titre), detail: String(detail || ''),
+                     fiche: fiche === undefined ? null : fiche,
                      cle: `${titre} ${detail} ${texte || ''}`.toLowerCase() });
     };
 
@@ -1176,7 +1243,7 @@
     list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
     list((state.data.installation || {}).etapes).forEach((x) => pousse('installation', t(x.titre), t(x.quand), `${t(x.pourquoi)} ${t(x.obstacle)} ${list(x.solutions).map(t).join(' ')}`));
     list(state.data.glossaire).forEach((x) => pousse('glossaire', t(x.terme), t(x.definition), t(x.piege)));
-    list(state.data.entreprises).forEach((x) => pousse('entreprises', t(x.nom), '', t(x.activite)));
+    list(state.data.entreprises).forEach((x, i) => pousse('entreprises', t(x.nom), t(x.secteur), `${t(x.activite)} ${t(x.pays)}`, i));
     return entrees;
   }
 
@@ -1195,7 +1262,8 @@
     if (!q.trim()) { boite.innerHTML = ''; return; }
     if (!res.length) { boite.innerHTML = `<p class="find__empty">${esc(ui('find.empty'))}</p>`; return; }
     boite.innerHTML = res.map((e, i) => `
-      <button type="button" class="find__hit" data-goto="${esc(e.section)}" ${i === 0 ? 'data-first' : ''}>
+      <button type="button" class="find__hit" data-goto="${esc(e.section)}"
+              ${e.fiche === null ? '' : `data-fiche="${e.fiche}"`} ${i === 0 ? 'data-first' : ''}>
         <span class="find__ico">${svg(e.section, 16)}</span>
         <span class="find__txt"><span class="find__t">${esc(e.titre)}</span>
           <span class="find__d">${esc(e.detail)}</span></span>
@@ -1277,6 +1345,7 @@
 
   function aller(section, { push = true } = {}) {
     if (!RENDUS[section]) section = 'accueil';
+    if (section !== state.section) state.detail = null;
     state.section = section;
     if (push && location.hash !== `#${section}`) history.replaceState(null, '', `#${section}`);
     const appliquer = () => { afficherNav(); afficherSection(); };
@@ -1364,6 +1433,38 @@
         return;
       }
 
+      const ouvrirFiche = e.target.closest('[data-open]');
+      if (ouvrirFiche) {
+        const v = ouvrirFiche.dataset.open;
+        state.detail = v === '' ? null : Number(v);
+        afficherSection();
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return;
+      }
+
+      /* Ajout et suppression dans une sous-liste : fondateurs, rubriques. */
+      const ajoutSub = e.target.closest('[data-addsub]');
+      if (ajoutSub) {
+        const chemin = ajoutSub.dataset.addsub;
+        const liste = lire(state.data, chemin) || [];
+        liste.push(chemin.endsWith('fondateurs')
+          ? { nom: '', role: '' }
+          : { titre: { fr: '', en: '' }, contenu: { fr: '', en: '' } });
+        ecrire(state.data, chemin, liste);
+        marquerModifie(); afficherSection();
+        return;
+      }
+      const supprSub = e.target.closest('[data-delsub]');
+      if (supprSub) {
+        if (!confirm(ui('edit.removeAsk'))) return;
+        const morceaux = supprSub.dataset.delsub.split('.');
+        const index = Number(morceaux.pop());
+        const liste = lire(state.data, morceaux.join('.'));
+        if (Array.isArray(liste)) liste.splice(index, 1);
+        marquerModifie(); afficherSection();
+        return;
+      }
+
       const ajout = e.target.closest('[data-add]');
       if (ajout) {
         const liste = ajout.dataset.add;
@@ -1389,7 +1490,12 @@
       if (e.target.closest('#find-open')) { ouvrirRecherche(); return; }
       if (e.target.closest('#find-close') || e.target.id === 'find') { fermerRecherche(); return; }
       const cible = e.target.closest('[data-goto]');
-      if (cible) { fermerRecherche(); aller(cible.dataset.goto); return; }
+      if (cible) {
+        fermerRecherche();
+        aller(cible.dataset.goto);
+        if ('fiche' in cible.dataset) { state.detail = Number(cible.dataset.fiche); afficherSection(); }
+        return;
+      }
 
       if (e.target.closest('#edit-toggle')) { basculerEdition(); return; }
       if (e.target.closest('#edit-json')) {

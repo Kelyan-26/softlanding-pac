@@ -668,3 +668,15 @@ body.editing .shell { padding-bottom: var(--s9); }
 ::view-transition-old(view) { animation: fade-out .16s var(--ease) both; }
 ::view-transition-new(view) { animation: enter .3s var(--ease-out) both; }
 @keyframes fade-out { to { opacity: 0; } }
+
+/* ══════════════════════════════ Fiche entreprise ═══════════════ */
+
+.fiche__head { gap: var(--s4); }
+.fiche__logo { display: grid; place-items: start; width: 100%; max-width: 200px; padding: var(--s4); background: var(--sand); }
+.fiche__logo img { max-width: 100%; max-height: 72px; object-fit: contain; }
+.fiche__p { max-width: var(--measure); color: var(--ink-2); }
+
+.fonds { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--s3); }
+.fond { padding: var(--s4); background: var(--sand); }
+.fond__n { font-family: var(--f-display); font-weight: 650; letter-spacing: var(--tr-title); }
+.fond__r { font-size: var(--fs-sm); color: var(--orange-deep); }
