@@ -680,3 +680,39 @@ body.editing .shell { padding-bottom: var(--s9); }
 .fond { padding: var(--s4); background: var(--sand); }
 .fond__n { font-family: var(--f-display); font-weight: 650; letter-spacing: var(--tr-title); }
 .fond__r { font-size: var(--fs-sm); color: var(--orange-deep); }
+
+/* ══════════════════════════════ Panneau de détail ══════════════ */
+
+/* Ce qui s'ouvre au clic sur un cadre. Il glisse par-dessus la liste au lieu
+   de changer de page : on garde le contexte, et un seul mécanisme sert à
+   toutes les sections. */
+.card--ouvrable, .mot[data-panel], .slot--ouvrable { cursor: pointer; }
+.slot--ouvrable:hover { background: var(--sand); }
+
+.pan { position: fixed; inset: 0; z-index: 90; display: flex; justify-content: flex-end; background: rgba(14, 17, 22, .4); }
+.pan__box {
+  position: relative;
+  width: min(100%, 560px);
+  height: 100%;
+  padding: var(--s8) var(--s7) var(--s9);
+  background: var(--paper);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: glisse .3s var(--ease-out) both;
+}
+@keyframes glisse { from { transform: translateX(24px); opacity: 0; } }
+
+.pan__x { position: absolute; top: var(--s4); right: var(--s4); }
+.pan__t { font-size: var(--fs-h1); letter-spacing: var(--tr-hero); line-height: var(--lh-tight); margin: var(--s2) 0 var(--s6); }
+.pan__b { display: grid; gap: var(--s2); padding: var(--s5) 0; border-top: 1px solid var(--hair); }
+.pan__b:first-of-type { border-top: 0; padding-top: 0; }
+.pan__p { color: var(--ink-2); }
+.pan__l { list-style: none; padding: 0; display: grid; gap: var(--s2); }
+.pan__l li { position: relative; padding-left: var(--s5); font-size: var(--fs-sm); color: var(--ink-2); }
+.pan__l li::before { content: ""; position: absolute; left: 0; top: .68em; width: 8px; height: 2px; background: var(--orange); }
+.pan__warn { padding: var(--s4); margin-top: var(--s4); background: var(--warn-wash); border-top: 0; }
+.pan__warn .eyebrow { color: var(--warn); }
+
+@media (max-width: 1024px) {
+  .pan__box { padding: var(--s7) var(--s4) var(--s8); }
+}

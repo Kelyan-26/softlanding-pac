@@ -104,6 +104,16 @@
     'inst.warning':  { fr: 'À lire avant', en: 'Read this first' },
     'inst.urgent':   { fr: 'Numéros d’urgence', en: 'Emergency numbers' },
 
+    'pan.close':     { fr: 'Fermer', en: 'Close' },
+    'pan.detail':    { fr: 'En détail', en: 'In detail' },
+    'pan.where':     { fr: 'Où vous le rencontrerez', en: 'Where you will meet it' },
+    'pan.seeAlso':   { fr: 'Voir aussi', en: 'See also' },
+    'pan.def':       { fr: 'Définition', en: 'Definition' },
+    'pan.about':     { fr: 'À propos', en: 'About' },
+    'pan.contact':   { fr: 'Contact', en: 'Contact' },
+    'pan.practical': { fr: 'Informations pratiques', en: 'Practical information' },
+    'pan.session':   { fr: 'La session', en: 'The session' },
+    'pan.more':      { fr: 'Ouvrir', en: 'Open' },
     'glo.trap':      { fr: 'Le piège', en: 'The catch' },
     'glo.search':    { fr: 'Chercher un mot…', en: 'Search a word…' },
     'glo.entreprise':    { fr: 'Entreprise', en: 'Company' },
@@ -242,6 +252,7 @@
     filters: {},
     editing: false,
     detail: null,          /* index de la fiche entreprise ouverte, sinon null */
+    panneau: null,         /* { section, index } du panneau de détail ouvert */
     dirty: false,
     base: '',              /* builtAt de la version publiée qui sert de socle */
     enregistreLe: null,
@@ -576,7 +587,7 @@
           .map((res) => lien(res.url, t(res.label) || ui('label.resources'), 'link'))
           .filter(Boolean).join('');
 
-        return `<article class="${cls}">
+        return `<article class="${cls} slot--ouvrable" data-panel="programme.${index}" tabindex="0" role="button">
           <div class="slot__when">
             <span class="slot__h num">${field(`programme.${index}.start`, item.start)}</span>
             <span class="slot__e num">${field(`programme.${index}.end`, item.end)}</span>
@@ -782,7 +793,7 @@
         c.phone ? lien(`tel:${String(c.phone).replace(/[^\d+]/g, '')}`, ui('action.call'), 'phone') : '',
       ].filter(Boolean).join('');
 
-      return `<article class="card">
+      return `<article class="card card--ouvrable" data-panel="acteurs.${i}" tabindex="0" role="button">
         <div class="card__top">
             <p class="card__title">${field(`acteurs.${i}.name`, a.name)} ${badgeStatut(a.statut)}</p>
             ${filled(a.role) ? `<p class="card__role">${field(`acteurs.${i}.role`, a.role)}</p>` : ''}
@@ -835,7 +846,7 @@
       const actions = [lien(h.website, ui('action.website'), 'link'), lien(h.map, ui('action.map'), 'pin')]
         .filter(Boolean).join('');
 
-      return `<article class="card">
+      return `<article class="card card--ouvrable" data-panel="hotels.${i}" tabindex="0" role="button">
         <div class="card__top">
             <p class="card__title">${field(`hotels.${i}.name`, h.name)} ${badgeStatut(h.statut)}</p>
             ${filled(h.address) ? `<p class="card__role">${field(`hotels.${i}.address`, h.address)}</p>` : ''}
@@ -871,7 +882,7 @@
         if (filled(c.org)) infos.push(`<span>${field(`contacts.${i}.org`, c.org)}</span>`);
         if (list(c.languages).length) infos.push(meta('speech', list(c.languages).map((l) => esc(String(l).toUpperCase())).join(' / ')));
 
-        return `<article class="card">
+        return `<article class="card card--ouvrable" data-panel="contacts.${i}" tabindex="0" role="button">
         <div class="card__top">
               <p class="card__title">${field(`contacts.${i}.name`, c.name)}</p>
               ${filled(c.role) ? `<p class="card__role">${field(`contacts.${i}.role`, c.role)}</p>` : ''}
@@ -956,7 +967,7 @@
       .sort((a, b2) => String(a.g.terme).localeCompare(String(b2.g.terme), 'fr'));
 
     const cartes = retenus.map(({ g, i }) => `
-      <article class="mot">
+      <article class="mot" data-panel="glossaire.${i}" tabindex="0" role="button">
         <div class="mot__h">
           <h3 class="mot__t">${field(`glossaire.${i}.terme`, g.terme)}</h3>
           <span class="tag">${esc(ui(`glo.${g.categorie}`))}</span>
@@ -1011,7 +1022,7 @@
       const actions = [lien(p.website, ui('action.website'), 'link'), lien(p.map, ui('action.map'), 'pin')]
         .filter(Boolean).join('');
 
-      return `<article class="card">
+      return `<article class="card card--ouvrable" data-panel="marseille.${i}" tabindex="0" role="button">
         <div class="card__top">
             <p class="card__title">${field(`marseille.${i}.name`, p.name)} ${badgeStatut(p.statut)}</p>
             ${filled(p.address) ? `<p class="card__role">${field(`marseille.${i}.address`, p.address)}</p>` : ''}
@@ -1326,6 +1337,154 @@
     });
   }
 
+
+  /* ═══════════════════════ Panneau de détail ═══════════════════════ */
+
+  /* Un cadre sur lequel on a envie de cliquer doit s'ouvrir. Le panneau glisse
+     par-dessus la liste au lieu de changer de page : on garde le contexte, et
+     le même mécanisme sert à toutes les sections. */
+
+  const bloc = (titre, contenu) => (contenu
+    ? `<section class="pan__b"><p class="eyebrow">${esc(titre)}</p>${contenu}</section>` : '');
+
+  const liste = (items) => (items.length
+    ? `<ul class="pan__l">${items.map((x) => `<li>${x}</li>`).join('')}</ul>` : '');
+
+  function panneauGlossaire(i) {
+    const g = list(state.data.glossaire)[i];
+    if (!g) return '';
+    const voir = list(g.voirAussi)
+      .map((nom) => {
+        const k = list(state.data.glossaire).findIndex((x) => x.terme === nom);
+        return k < 0 ? '' : `<button type="button" class="chipbtn" data-panel="glossaire.${k}">${esc(nom)}</button>`;
+      }).filter(Boolean).join('');
+
+    return { titre: field(`glossaire.${i}.terme`, g.terme),
+             surtitre: ui(`glo.${g.categorie}`),
+             corps:
+      bloc(ui('pan.def'), `<p class="pan__p">${field(`glossaire.${i}.definition`, g.definition)}</p>`)
+      + bloc(ui('pan.detail'), filled(g.detail) ? `<p class="pan__p">${field(`glossaire.${i}.detail`, g.detail)}</p>` : '')
+      + bloc(ui('pan.where'), liste(list(g.contextes).map((c, k) => field(`glossaire.${i}.contextes.${k}`, c))))
+      + (filled(g.piege) ? `<section class="pan__b pan__warn"><p class="eyebrow">${esc(ui('glo.trap'))}</p>
+          <p class="pan__p">${field(`glossaire.${i}.piege`, g.piege)}</p></section>` : '')
+      + bloc(ui('pan.seeAlso'), voir ? `<div class="tools">${voir}</div>` : '') };
+  }
+
+  function panneauActeur(i) {
+    const a = list(state.data.acteurs)[i];
+    if (!a) return '';
+    const c = a.contact || {};
+    const actions = [
+      lien(a.website, ui('action.website'), 'link'),
+      c.email ? lien(`mailto:${c.email}`, ui('action.email'), 'mail') : '',
+      c.phone ? lien(`tel:${String(c.phone).replace(/[^\d+]/g, '')}`, ui('action.call'), 'phone') : '',
+    ].filter(Boolean).join('');
+    return { titre: field(`acteurs.${i}.name`, a.name),
+             surtitre: ui(`grp.${a.groupe || 'partenaire'}`),
+             corps:
+      bloc(ui('pan.about'), `<p class="pan__p">${field(`acteurs.${i}.role`, a.role)}</p>
+          <p class="pan__p">${field(`acteurs.${i}.description`, a.description)}</p>`)
+      + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '')
+      + (list(a.tags).length ? `<div class="tags">${list(a.tags).map((tg) => `<span class="tag">${esc(t(tg))}</span>`).join('')}</div>` : '') };
+  }
+
+  function panneauContact(i) {
+    const c = list(state.data.contacts)[i];
+    if (!c) return '';
+    const actions = [
+      c.email ? lien(`mailto:${c.email}`, ui('action.email'), 'mail') : '',
+      c.phone ? lien(`tel:${String(c.phone).replace(/[^\d+]/g, '')}`, ui('action.call'), 'phone') : '',
+      lien(c.website, ui('action.website'), 'link'),
+      lien(c.linkedin, 'LinkedIn', 'link'),
+    ].filter(Boolean).join('');
+    const infos = [];
+    if (filled(c.org)) infos.push(field(`contacts.${i}.org`, c.org));
+    if (list(c.languages).length) infos.push(list(c.languages).map((l) => esc(String(l).toUpperCase())).join(' / '));
+    return { titre: field(`contacts.${i}.name`, c.name),
+             surtitre: t(c.role) || ui('nav.contacts'),
+             corps:
+      bloc(ui('pan.about'), `<p class="pan__p">${field(`contacts.${i}.role`, c.role)}</p>`
+          + (filled(c.note) ? `<p class="pan__p">${field(`contacts.${i}.note`, c.note)}</p>` : ''))
+      + bloc(ui('pan.practical'), liste(infos))
+      + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '')
+      + (list(c.tags).length ? `<div class="tags">${list(c.tags).map((tg) => `<span class="tag tag--accent">${esc(t(tg))}</span>`).join('')}</div>` : '') };
+  }
+
+  function panneauLieu(section, i) {
+    const x = list(state.data[section])[i];
+    if (!x) return '';
+    const b2 = x.booking || {};
+    const infos = [];
+    if (filled(x.distance)) infos.push(field(`${section}.${i}.distance`, x.distance));
+    if (filled(x.district)) infos.push(field(`${section}.${i}.district`, x.district));
+    if (filled(x.priceRange)) infos.push(field(`${section}.${i}.priceRange`, x.priceRange));
+    if (filled(x.priceLevel)) infos.push(field(`${section}.${i}.priceLevel`, x.priceLevel));
+    const actions = [lien(x.website, ui('action.website'), 'link'), lien(x.map, ui('action.map'), 'pin')]
+      .filter(Boolean).join('');
+    return { titre: field(`${section}.${i}.name`, x.name),
+             surtitre: t(x.address) || ui(`nav.${section}`),
+             corps:
+      bloc(ui('pan.about'), (filled(x.notes) ? `<p class="pan__p">${field(`${section}.${i}.notes`, x.notes)}</p>` : '')
+          + (filled(x.why) ? `<p class="pan__p">${field(`${section}.${i}.why`, x.why)}</p>` : ''))
+      + bloc(ui('pan.practical'), liste(infos))
+      + (filled(b2.contact) || filled(b2.code) ? bloc(ui('label.booking'),
+          `<p class="pan__p">${field(`${section}.${i}.booking.contact`, b2.contact)} ${field(`${section}.${i}.booking.code`, b2.code)}</p>`) : '')
+      + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '') };
+  }
+
+  function panneauSession(i) {
+    const x = list(state.data.programme)[i];
+    if (!x) return '';
+    const l = x.location || {};
+    const infos = [];
+    if (filled(l.name)) infos.push(field(`programme.${i}.location.name`, l.name));
+    if (filled(l.address)) infos.push(field(`programme.${i}.location.address`, l.address));
+    if (list(x.speakers).length) infos.push(list(x.speakers).map((y) => esc(t(y))).join(', '));
+    const res = list(x.resources).map((r) => lien(r.url, t(r.label) || ui('label.resources'), 'link'))
+      .filter(Boolean).join('');
+    return { titre: field(`programme.${i}.title`, x.title),
+             surtitre: `${dateLongue(x.date)} · ${t(x.start)}–${t(x.end)}`,
+             corps:
+      bloc(ui('pan.session'), filled(x.description) ? `<p class="pan__p">${field(`programme.${i}.description`, x.description)}</p>` : '')
+      + bloc(ui('pan.practical'), liste(infos))
+      + bloc(ui('label.resources'), res ? `<div class="card__acts">${res}</div>` : '') };
+  }
+
+  const PANNEAUX = {
+    glossaire: panneauGlossaire,
+    acteurs: panneauActeur,
+    contacts: panneauContact,
+    hotels: (i) => panneauLieu('hotels', i),
+    marseille: (i) => panneauLieu('marseille', i),
+    programme: panneauSession,
+  };
+
+  function afficherPanneau() {
+    const boite = $('#panel');
+    if (!state.panneau) { boite.hidden = true; document.body.classList.remove('paneled'); return; }
+    const { section, index } = state.panneau;
+    const fabrique = PANNEAUX[section];
+    const contenu = fabrique && fabrique(index);
+    if (!contenu) { state.panneau = null; boite.hidden = true; return; }
+
+    $('#panel-body').innerHTML = `
+      <p class="eyebrow">${esc(contenu.surtitre)}</p>
+      <h2 class="pan__t">${contenu.titre}</h2>
+      ${contenu.corps}`;
+    boite.hidden = false;
+    document.body.classList.add('paneled');
+    $('#panel-close').focus();
+  }
+
+  function ouvrirPanneau(cle) {
+    const [section, index] = String(cle).split('.');
+    if (!PANNEAUX[section]) return;
+    state.panneau = { section, index: Number(index) };
+    afficherPanneau();
+  }
+
+  const fermerPanneau = () => { state.panneau = null; afficherPanneau(); };
+
   /* ═══════════════════════ Rendu et navigation ═══════════════════════ */
 
   function afficherNav() {
@@ -1346,6 +1505,7 @@
       if (actif) vue.innerHTML = RENDUS[id]();
     });
     $('#topbar-title').textContent = ui(`nav.${state.section}`);
+    if (state.panneau) afficherPanneau();
   }
 
   function afficherChrome() {
@@ -1367,6 +1527,8 @@
   function aller(section, { push = true } = {}) {
     if (!RENDUS[section]) section = 'accueil';
     if (section !== state.section) state.detail = null;
+    state.panneau = null;
+    afficherPanneau();
     state.section = section;
     if (push && location.hash !== `#${section}`) history.replaceState(null, '', `#${section}`);
     const appliquer = () => { afficherNav(); afficherSection(); };
@@ -1451,6 +1613,16 @@
       if (sansLogo) {
         ecrire(state.data, `entreprises.${sansLogo.dataset.dellogo}.logo`, '');
         marquerModifie(); afficherSection();
+        return;
+      }
+
+      if (e.target.closest('#panel-close') || e.target.id === 'panel') { fermerPanneau(); return; }
+
+      /* Un clic sur un lien ou un bouton DANS la carte garde sa fonction : le
+         panneau ne s'ouvre que sur le reste de la surface. */
+      const ouvrable = e.target.closest('[data-panel]');
+      if (ouvrable && !e.target.closest('a, button:not([data-panel]), .ed')) {
+        ouvrirPanneau(ouvrable.dataset.panel);
         return;
       }
 
@@ -1581,6 +1753,11 @@
     document.addEventListener('keydown', (e) => {
       /* Entrée valide le champ au lieu d'insérer un saut de ligne. */
       if (e.key === 'Enter' && e.target.closest('.ed')) { e.preventDefault(); e.target.blur(); return; }
+
+      if (e.key === 'Escape' && state.panneau) { fermerPanneau(); return; }
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-panel]')) {
+        e.preventDefault(); ouvrirPanneau(e.target.dataset.panel); return;
+      }
 
       const dansLaRecherche = !$('#find').hidden;
       if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
