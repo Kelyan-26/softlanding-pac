@@ -161,7 +161,9 @@
     'sub.marseille': { fr: 'Où recevoir, où déjeuner, où travailler, où souffler.', en: 'Where to host, eat, work and unwind.' },
     'res.sortir':    { fr: 'Découvrir la ville', en: 'Discover the city' },
     'sub.hotels':    { fr: 'Les établissements partenaires et les conditions négociées.', en: 'Partner venues and negotiated terms.' },
-    'sub.acteurs':   { fr: 'L’opérateur, le consortium, les partenaires et les intervenants.', en: 'The operator, the consortium, the partners and the speakers.' },
+    'grp.consortium': { fr: 'Le consortium', en: 'The consortium' },
+    'grp.partenaire': { fr: 'Les partenaires', en: 'The partners' },
+    'sub.acteurs':   { fr: 'Les trois structures du consortium, puis tous les partenaires du programme.', en: 'The three consortium organisations, then all the programme partners.' },
   };
 
   /* ═══════════════════════ Icônes, en trait fin ═══════════════════════ */
@@ -211,8 +213,9 @@
     programme: () => ({ date: new Date().toISOString().slice(0, 10), start: '09:00', end: '10:00', type: '',
                         title: { fr: '', en: '' }, description: { fr: '', en: '' },
                         location: { name: '', address: '', map: '' }, speakers: [], resources: [] }),
-    acteurs: () => ({ name: '', role: { fr: '', en: '' }, description: { fr: '', en: '' },
-                      website: '', contact: { email: '', phone: '' }, tags: [] }),
+    acteurs: () => ({ name: '', groupe: 'partenaire', role: { fr: '', en: '' },
+                      description: { fr: '', en: '' }, website: '',
+                      contact: { email: '', phone: '' }, tags: [] }),
     hotels: () => ({ name: '', address: '', district: '', distance: { fr: '', en: '' }, priceRange: '',
                      booking: { contact: '', code: { fr: '', en: '' } }, notes: { fr: '', en: '' }, website: '', map: '' }),
     contacts: () => ({ name: '', org: '', role: { fr: '', en: '' }, email: '', phone: '', linkedin: '',
@@ -770,32 +773,50 @@
   function rendreActeurs() {
     const q = (state.filters.acteurs || '').toLowerCase();
     const tout = list(state.data.acteurs);
-    const cartes = tout.map((a, i) => ({ a, i }))
-      .filter(({ a }) => !q || foin([a.name, a.role, a.description, ...list(a.tags)]).includes(q))
-      .map(({ a, i }) => {
-        const c = a.contact || {};
-        const actions = [
-          lien(a.website, ui('action.website'), 'link'),
-          c.email ? lien(`mailto:${c.email}`, ui('action.email'), 'mail') : '',
-          c.phone ? lien(`tel:${String(c.phone).replace(/[^\d+]/g, '')}`, ui('action.call'), 'phone') : '',
-        ].filter(Boolean).join('');
 
-        return `<article class="card">
+    const carte = ({ a, i }) => {
+      const c = a.contact || {};
+      const actions = [
+        lien(a.website, ui('action.website'), 'link'),
+        c.email ? lien(`mailto:${c.email}`, ui('action.email'), 'mail') : '',
+        c.phone ? lien(`tel:${String(c.phone).replace(/[^\d+]/g, '')}`, ui('action.call'), 'phone') : '',
+      ].filter(Boolean).join('');
+
+      return `<article class="card">
         <div class="card__top">
-              <p class="card__title">${field(`acteurs.${i}.name`, a.name)}</p>
-              ${filled(a.role) ? `<p class="card__role">${field(`acteurs.${i}.role`, a.role)}</p>` : ''}
+            <p class="card__title">${field(`acteurs.${i}.name`, a.name)} ${badgeStatut(a.statut)}</p>
+            ${filled(a.role) ? `<p class="card__role">${field(`acteurs.${i}.role`, a.role)}</p>` : ''}
         </div>
-          ${filled(a.description) ? `<p class="card__text">${field(`acteurs.${i}.description`, a.description)}</p>` : ''}
-          ${list(a.tags).length ? `<div class="tags">${list(a.tags).map((tg) => `<span class="tag">${esc(t(tg))}</span>`).join('')}</div>` : ''}
-          ${actions ? `<div class="card__acts">${actions}</div>` : ''}
-          ${boutonsLigne('acteurs', i)}
-        </article>`;
-      }).join('');
+        ${filled(a.description) ? `<p class="card__text">${field(`acteurs.${i}.description`, a.description)}</p>` : ''}
+        ${list(a.tags).length ? `<div class="tags">${list(a.tags).map((tg) => `<span class="tag">${esc(t(tg))}</span>`).join('')}</div>` : ''}
+        ${actions ? `<div class="card__acts">${actions}</div>` : ''}
+        ${boutonsLigne('acteurs', i)}
+      </article>`;
+    };
+
+    const retenus = tout.map((a, i) => ({ a, i }))
+      .filter(({ a }) => !q || foin([a.name, a.role, a.description, ...list(a.tags)]).includes(q));
+
+    /* Deux rubriques et deux seulement : le consortium, puis tout le reste.
+       Chaque fiche garde son rôle propre — que la Métropole soit l'opérateur
+       reste écrit sur sa carte, seul son regroupement change. */
+    const rubrique = (groupe) => {
+      const dedans = retenus.filter(({ a }) => (a.groupe || 'partenaire') === groupe);
+      if (!dedans.length) return '';
+      return `<section class="section">
+        <div class="section__head"><h2>${esc(ui(`grp.${groupe}`))}</h2><span class="day__c num">${dedans.length}</span></div>
+        <div class="grid grid--2">${dedans.map(carte).join('')}</div>
+      </section>`;
+    };
+
+    const corps = retenus.length
+      ? rubrique('consortium') + rubrique('partenaire')
+      : vide(q ? ui('empty.search') : '');
 
     return entete(ui('nav.acteurs'), esc(ui('sub.acteurs')))
       + `<div class="tools"><input class="search" type="search" data-filter="acteurs"
             value="${esc(state.filters.acteurs || '')}" placeholder="${esc(ui('search.acteurs'))}"></div>`
-      + (cartes ? `<div class="grid grid--2">${cartes}</div>` : vide(q ? ui('empty.search') : ''))
+      + corps
       + boutonAjout('acteurs');
   }
 
