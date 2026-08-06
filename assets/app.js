@@ -409,7 +409,10 @@
       } else {
         state.data = donnees;
       }
-      demarrer();
+      /* On n'anime que si le mot de passe vient d'être saisi : une reprise de
+         session silencieuse ne doit pas rejouer la transition à chaque
+         rechargement. */
+      demarrer(!silencieux);
       return true;
     } catch (e) {
       if (!silencieux) {
@@ -1610,12 +1613,25 @@
 
   /* ═══════════════════════ Démarrage ═══════════════════════ */
 
-  function demarrer() {
-    $('#gate').hidden = true;
-    $('#app').hidden = false;
+  function demarrer(anime = false) {
+    const porte = $('#gate');
+    const app = $('#app');
+
+    /* On rend d'abord, la porte encore visible par-dessus : le site est prêt
+       au moment où elle s'efface, sinon on voit une page vide apparaître. */
+    app.hidden = false;
     const h = location.hash.replace('#', '');
     state.section = RENDUS[h] ? h : 'accueil';
     toutAfficher();
+
+    if (!anime || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      porte.hidden = true;
+    } else {
+      porte.classList.add('gate--part');
+      app.classList.add('app--entre');
+      setTimeout(() => { porte.hidden = true; porte.classList.remove('gate--part'); }, 420);
+      setTimeout(() => app.classList.remove('app--entre'), 900);
+    }
 
     if (state.timer) clearInterval(state.timer);
     state.timer = setInterval(() => {

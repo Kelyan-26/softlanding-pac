@@ -757,3 +757,26 @@ body.editing .shell { padding-bottom: var(--s9); }
 @media (prefers-reduced-motion: reduce) {
   .ticker__t { animation: none; }
 }
+
+/* ══════════════════════════════ Entrée dans le site ════════════ */
+
+/* La porte s'efface en s'éloignant, le site monte derrière elle. Le site est
+   déjà rendu quand l'animation commence : sinon on verrait une page vide. */
+.gate--part {
+  pointer-events: none;
+  animation: porte-part .42s var(--ease) forwards;
+}
+@keyframes porte-part {
+  to { opacity: 0; transform: scale(1.03); filter: blur(3px); }
+}
+
+.app--entre .rail { animation: entre-rail .5s var(--ease-out) both; }
+.app--entre .main { animation: entre-main .55s .08s var(--ease-out) both; }
+.app--entre .foot { animation: entre-main .55s .16s var(--ease-out) both; }
+
+@keyframes entre-rail { from { opacity: 0; transform: translateX(-14px); } }
+@keyframes entre-main { from { opacity: 0; transform: translateY(14px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .gate--part, .app--entre .rail, .app--entre .main, .app--entre .foot { animation: none; }
+}
