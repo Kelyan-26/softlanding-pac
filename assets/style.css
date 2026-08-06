@@ -716,3 +716,44 @@ body.editing .shell { padding-bottom: var(--s9); }
 @media (max-width: 1024px) {
   .pan__box { padding: var(--s7) var(--s4) var(--s8); }
 }
+
+/* ══════════════════════════════ Bande défilante ════════════════ */
+
+/* Elle remplace la ligne de pied de page : un peu de mouvement, et les noms
+   des partenaires qui passent. Masquée aux lecteurs d'écran — l'information
+   reste accessible en texte via .sr. */
+.ticker {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.ticker__t {
+  display: flex;
+  width: max-content;
+  animation: defile var(--duree, 40s) linear infinite;
+}
+.ticker:hover .ticker__t { animation-play-state: paused; }
+@keyframes defile { to { transform: translateX(-50%); } }
+
+.ticker__i {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--s5);
+  font-family: var(--f-display);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.ticker__i::after { content: ""; margin-left: var(--s5); width: 4px; height: 4px; background: var(--orange); }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.pan__keep { padding: var(--s4); margin-top: var(--s4); background: var(--orange-wash); border-top: 0; }
+.pan__src { margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--hair); font-size: var(--fs-xs); color: var(--ink-4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker__t { animation: none; }
+}

@@ -113,6 +113,14 @@
     'pan.contact':   { fr: 'Contact', en: 'Contact' },
     'pan.practical': { fr: 'Informations pratiques', en: 'Practical information' },
     'pan.session':   { fr: 'La session', en: 'The session' },
+    'pan.hours':     { fr: 'Horaires', en: 'Opening hours' },
+    'pan.access':    { fr: 'Y aller', en: 'Getting there' },
+    'pan.services':  { fr: 'Services et équipements', en: 'Services and facilities' },
+    'pan.keep':      { fr: 'À retenir', en: 'Worth knowing' },
+    'pan.type':      { fr: 'Type', en: 'Type' },
+    'pan.rating':    { fr: 'Avis', en: 'Reviews' },
+    'pan.sourced':   { fr: 'Relevé sur les sources publiques le', en: 'Recorded from public sources on' },
+    'pan.notSourced':{ fr: 'Aucune donnée relevée sur les sources publiques pour cette adresse.', en: 'No data recorded from public sources for this place.' },
     'pan.more':      { fr: 'Ouvrir', en: 'Open' },
     'glo.trap':      { fr: 'Le piège', en: 'The catch' },
     'glo.search':    { fr: 'Chercher un mot…', en: 'Search a word…' },
@@ -1415,21 +1423,39 @@
     if (!x) return '';
     const b2 = x.booking || {};
     const infos = [];
+    if (filled(x.categorie_lieu)) infos.push(`${esc(ui('pan.type'))} : ${field(`${section}.${i}.categorie_lieu`, x.categorie_lieu)}`);
     if (filled(x.distance)) infos.push(field(`${section}.${i}.distance`, x.distance));
-    if (filled(x.district)) infos.push(field(`${section}.${i}.district`, x.district));
+    if (filled(x.note)) infos.push(`${esc(ui('pan.rating'))} : ${field(`${section}.${i}.note`, x.note)}`);
     if (filled(x.priceRange)) infos.push(field(`${section}.${i}.priceRange`, x.priceRange));
     if (filled(x.priceLevel)) infos.push(field(`${section}.${i}.priceLevel`, x.priceLevel));
-    const actions = [lien(x.website, ui('action.website'), 'link'), lien(x.map, ui('action.map'), 'pin')]
-      .filter(Boolean).join('');
+
+    const actions = [
+      lien(x.website, ui('action.website'), 'link'),
+      lien(x.map, ui('action.map'), 'pin'),
+      x.telephone ? lien(`tel:${String(x.telephone).replace(/[^\d+]/g, '')}`, t(x.telephone), 'phone') : '',
+      x.email ? lien(`mailto:${x.email}`, ui('action.email'), 'mail') : '',
+    ].filter(Boolean).join('');
+
+    const services = list(x.services).filter(filled)
+      .map((sv, k) => field(`${section}.${i}.services.${k}`, sv));
+
     return { titre: field(`${section}.${i}.name`, x.name),
              surtitre: t(x.address) || ui(`nav.${section}`),
              corps:
       bloc(ui('pan.about'), (filled(x.notes) ? `<p class="pan__p">${field(`${section}.${i}.notes`, x.notes)}</p>` : '')
           + (filled(x.why) ? `<p class="pan__p">${field(`${section}.${i}.why`, x.why)}</p>` : ''))
       + bloc(ui('pan.practical'), liste(infos))
+      + bloc(ui('pan.hours'), filled(x.horaires) ? `<p class="pan__p">${field(`${section}.${i}.horaires`, x.horaires)}</p>` : '')
+      + bloc(ui('pan.access'), filled(x.acces) ? `<p class="pan__p">${field(`${section}.${i}.acces`, x.acces)}</p>` : '')
+      + bloc(ui('pan.services'), liste(services))
       + (filled(b2.contact) || filled(b2.code) ? bloc(ui('label.booking'),
           `<p class="pan__p">${field(`${section}.${i}.booking.contact`, b2.contact)} ${field(`${section}.${i}.booking.code`, b2.code)}</p>`) : '')
-      + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '') };
+      + (filled(x.aRetenir) ? `<section class="pan__b pan__keep"><p class="eyebrow">${esc(ui('pan.keep'))}</p>
+          <p class="pan__p">${field(`${section}.${i}.aRetenir`, x.aRetenir)}</p></section>` : '')
+      + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '')
+      + `<p class="pan__src">${x.releve
+            ? `${esc(ui('pan.sourced'))} ${esc(dateLongue(x.releve))}.`
+            : esc(ui('pan.notSourced'))}</p>` };
   }
 
   function panneauSession(i) {
@@ -1508,10 +1534,29 @@
     if (state.panneau) afficherPanneau();
   }
 
+  /* La bande défilante remplace la ligne de pied de page : elle fait tourner
+     les partenaires, la date de mise à jour et la mention de confidentialité.
+     La piste est écrite deux fois pour que la boucle soit invisible. */
+  function afficherBande() {
+    const m = state.data.meta || {};
+    const noms = list(state.data.acteurs).map((a) => t(a.name)).filter(Boolean);
+    const items = [
+      ...noms,
+      filled(m.updatedAt) ? `${ui('app.updated')} ${dateLongue(t(m.updatedAt))}` : '',
+      ui('app.confidential'),
+    ].filter(Boolean);
+    if (!items.length) return;
+    const piste = items.map((x) => `<span class="ticker__i">${esc(x)}</span>`).join('');
+    $('#ticker-track').innerHTML = piste + piste;
+    /* La durée suit le nombre d'éléments : sinon une longue liste défile trop vite. */
+    $('#ticker-track').style.setProperty('--duree', `${Math.max(28, items.length * 4)}s`);
+  }
+
   function afficherChrome() {
     const m = state.data.meta || {};
     $('#promo').textContent = t(m.promotion) || '';
     $('#foot-updated').textContent = filled(m.updatedAt) ? `${ui('app.updated')} ${dateLongue(t(m.updatedAt))}` : '';
+    afficherBande();
     $$('[data-i18n]').forEach((n) => { n.textContent = ui(n.dataset.i18n); });
     $$('[data-i18n-placeholder]').forEach((n) => { n.placeholder = ui(n.dataset.i18nPlaceholder); });
     $$('.langbtn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
