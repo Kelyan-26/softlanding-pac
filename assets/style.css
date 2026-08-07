@@ -780,3 +780,63 @@ body.editing .shell { padding-bottom: var(--s9); }
 @media (prefers-reduced-motion: reduce) {
   .gate--part, .app--entre .rail, .app--entre .main, .app--entre .foot { animation: none; }
 }
+
+/* ══════════════════════════════ Ma progression ═════════════════ */
+
+.jauge { height: 4px; background: var(--sand-2); margin-bottom: var(--s5); }
+.jauge__b { height: 100%; background: var(--orange); transition: width .4s var(--ease); }
+
+.coches { list-style: none; padding: 0; display: grid; gap: 1px; background: var(--hair); }
+.coche { background: var(--paper); transition: background .16s var(--ease); }
+.coche:hover { background: var(--sand); }
+.coche label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  padding: var(--s4) var(--s5);
+  cursor: pointer;
+}
+.coche input {
+  flex: none;
+  width: 18px; height: 18px;
+  accent-color: var(--orange);
+  cursor: pointer;
+}
+.coche__t { font-family: var(--f-display); font-weight: 550; letter-spacing: var(--tr-title); }
+.coche__q { margin-left: auto; flex: none; font-size: var(--fs-xs); color: var(--ink-4); }
+.coche--ok .coche__t { color: var(--ink-4); text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* ══════════════════════════════ Le jour où l'on est ════════════ */
+
+.jour { padding: var(--s5) var(--s6); margin-bottom: var(--s8); background: var(--sand); }
+.jour--actif { background: var(--ink-block); color: #fff; }
+.jour--actif .eyebrow { color: var(--orange); }
+.jour__g { margin-top: var(--s2); font-family: var(--f-display); font-size: var(--fs-h3); font-weight: 550; }
+.jour__n { font-size: clamp(2rem, 1.4rem + 2vw, 3rem); font-weight: 800; letter-spacing: var(--tr-hero); line-height: 1; margin-right: var(--s2); }
+.jour__l2 { display: grid; gap: 1px; margin-top: var(--s4); }
+
+.jour__s {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s4);
+  width: 100%;
+  padding: var(--s3) 0;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--hair);
+  color: inherit;
+}
+.jour--actif .jour__s { border-top-color: rgba(255, 255, 255, .18); }
+.jour__s:hover .jour__t { color: var(--orange); }
+.jour__h { flex: none; font-family: var(--f-display); font-weight: 700; font-size: var(--fs-sm); }
+.jour__t { font-family: var(--f-display); font-weight: 550; letter-spacing: var(--tr-title); }
+.jour__l { margin-left: auto; flex: none; font-size: var(--fs-xs); opacity: .7; }
+
+@media (max-width: 1024px) {
+  .jour { padding: var(--s4); }
+  .jour__s { flex-wrap: wrap; gap: var(--s2); }
+  .jour__l { margin-left: 0; width: 100%; }
+  .coche__q { margin-left: 0; width: 100%; }
+  .coche label { flex-wrap: wrap; }
+}

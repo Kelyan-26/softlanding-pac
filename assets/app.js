@@ -121,6 +121,23 @@
     'pan.rating':    { fr: 'Avis', en: 'Reviews' },
     'pan.sourced':   { fr: 'Relevé sur les sources publiques le', en: 'Recorded from public sources on' },
     'pan.notSourced':{ fr: 'Aucune donnée relevée sur les sources publiques pour cette adresse.', en: 'No data recorded from public sources for this place.' },
+    'chk.title':   { fr: 'Ma progression', en: 'My progress' },
+    'chk.sub':     { fr: 'Cochez au fur et à mesure. Le site s’en souvient sur cet appareil.', en: 'Tick as you go. The site remembers on this device.' },
+    'chk.done':    { fr: 'terminé', en: 'done' },
+    'chk.of':      { fr: 'sur', en: 'of' },
+    'chk.reset':   { fr: 'Tout décocher', en: 'Uncheck all' },
+    'chk.resetAsk':{ fr: 'Décocher toutes les étapes ?', en: 'Uncheck every step?' },
+    'chk.allDone': { fr: 'Toutes les étapes sont faites.', en: 'Every step is done.' },
+
+    'jour.before':  { fr: 'Avant l’immersion', en: 'Before the immersion' },
+    'jour.countdown': { fr: 'jours avant la semaine d’immersion', en: 'days until the immersion week' },
+    'jour.oneDay':  { fr: 'jour avant la semaine d’immersion', en: 'day until the immersion week' },
+    'jour.today':   { fr: 'Aujourd’hui', en: 'Today' },
+    'jour.tomorrow':{ fr: 'Demain', en: 'Tomorrow' },
+    'jour.nothing': { fr: 'Rien de prévu aujourd’hui.', en: 'Nothing scheduled today.' },
+    'jour.during':  { fr: 'Semaine d’immersion en cours', en: 'Immersion week under way' },
+    'jour.after':   { fr: 'Après le programme', en: 'After the programme' },
+    'jour.see':     { fr: 'Voir le programme', en: 'See the schedule' },
     'pan.more':      { fr: 'Ouvrir', en: 'Open' },
     'glo.trap':      { fr: 'Le piège', en: 'The catch' },
     'glo.search':    { fr: 'Chercher un mot…', en: 'Search a word…' },
@@ -675,6 +692,120 @@
     </header>`;
   }
 
+
+  /* ═══════════════════════ Ma progression ═══════════════════════ */
+
+  /* Cochée par chaque participant, sur son appareil. Ce n'est pas du contenu
+     partagé : personne d'autre n'a à voir où en est quelqu'un. Stockée à part
+     du brouillon d'édition, pour qu'un « tout annuler » ne l'efface pas. */
+  const CLE_PROGRESSION = 'slpac.progress';
+
+  function progression() {
+    try { return JSON.parse(localStorage.getItem(CLE_PROGRESSION) || '{}'); }
+    catch { return {}; }
+  }
+
+  function cocher(cle, valeur) {
+    const p = progression();
+    if (valeur) p[cle] = new Date().toISOString(); else delete p[cle];
+    try { localStorage.setItem(CLE_PROGRESSION, JSON.stringify(p)); } catch {}
+  }
+
+  /* Les étapes cochables sont celles de la chaîne d'installation : elles sont
+     déjà ordonnées et chacune correspond à une démarche réelle. */
+  const etapesCochables = () => list((state.data.installation || {}).etapes)
+    .map((e, i) => ({ cle: `inst-${i}`, titre: t(e.titre), quand: t(e.quand) }))
+    .filter((x) => x.titre);
+
+  /* Rafraîchit le compteur et la jauge sans toucher aux cases elles-mêmes. */
+  function majProgression() {
+    const etapes = etapesCochables();
+    if (!etapes.length) return;
+    const p = progression();
+    const faites = etapes.filter((e) => p[e.cle]).length;
+    const part = Math.round((faites / etapes.length) * 100);
+    $$('#progression .day__c').forEach((n) => {
+      n.textContent = `${faites} ${ui('chk.of')} ${etapes.length} ${ui('chk.done')}`;
+    });
+    $$('#progression .jauge__b').forEach((n) => { n.style.width = `${part}%`; });
+    const bouton = $('#coche-reset');
+    if (bouton) bouton.hidden = faites === 0;
+  }
+
+  function rendreProgression() {
+    const etapes = etapesCochables();
+    if (!etapes.length) return '';
+    const p = progression();
+    const faites = etapes.filter((e) => p[e.cle]).length;
+    const part = Math.round((faites / etapes.length) * 100);
+
+    return `<section class="section" id="progression">
+      <div class="section__head">
+        <h2>${esc(ui('chk.title'))}</h2>
+        <span class="day__c num">${faites} ${esc(ui('chk.of'))} ${etapes.length} ${esc(ui('chk.done'))}</span>
+      </div>
+      <p class="note">${esc(ui('chk.sub'))}</p>
+      <div class="jauge"><div class="jauge__b" style="width:${part}%"></div></div>
+      <ul class="coches">
+        ${etapes.map((e) => `
+          <li class="coche${p[e.cle] ? ' coche--ok' : ''}">
+            <label>
+              <input type="checkbox" data-coche="${esc(e.cle)}" ${p[e.cle] ? 'checked' : ''}>
+              <span class="coche__t">${esc(e.titre)}</span>
+              ${e.quand ? `<span class="coche__q">${esc(e.quand)}</span>` : ''}
+            </label>
+          </li>`).join('')}
+      </ul>
+      <button type="button" class="btn" id="coche-reset" ${faites ? '' : 'hidden'}>${esc(ui('chk.reset'))}</button>
+    </section>`;
+  }
+
+  /* ═══════════════════════ Le jour où l'on est ═══════════════════════ */
+
+  /* L'accueil doit répondre à « qu'est-ce que je fais aujourd'hui », pas
+     présenter le dispositif à quelqu'un qui l'a déjà rejoint. */
+  function rendreJour() {
+    const m = modeleProgramme(new Date());
+    if (!m.sessions.length) return '';
+
+    const auj = new Date(); auj.setHours(0, 0, 0, 0);
+    const jour = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
+
+    const duJour = m.sessions.filter((r) => jour(r.b.de).getTime() === auj.getTime());
+    const aVenir = m.sessions.filter((r) => jour(r.b.de) > auj);
+
+    const ligne = (r) => `<button type="button" class="jour__s" data-panel="programme.${r.index}">
+        <span class="jour__h num">${esc(t(r.item.start))}</span>
+        <span class="jour__t">${esc(t(r.item.title))}</span>
+        ${filled(r.item.location && r.item.location.name)
+          ? `<span class="jour__l">${esc(t(r.item.location.name))}</span>` : ''}
+      </button>`;
+
+    if (duJour.length) {
+      return `<section class="jour jour--actif">
+        <p class="eyebrow">${esc(ui('jour.today'))}</p>
+        <div class="jour__l2">${duJour.map(ligne).join('')}</div>
+      </section>`;
+    }
+
+    if (!aVenir.length) {
+      return `<section class="jour">
+        <p class="eyebrow">${esc(ui('jour.after'))}</p>
+        <p class="jour__g">${esc(ui('now.done'))}</p>
+      </section>`;
+    }
+
+    const prochaine = aVenir[0];
+    const jours = Math.round((jour(prochaine.b.de) - auj) / 86400000);
+    const demain = jours === 1;
+
+    return `<section class="jour">
+      <p class="eyebrow">${esc(demain ? ui('jour.tomorrow') : ui('jour.before'))}</p>
+      ${demain ? '' : `<p class="jour__g"><span class="jour__n num">${jours}</span> ${esc(jours === 1 ? ui('jour.oneDay') : ui('jour.countdown'))}</p>`}
+      <div class="jour__l2">${ligne(prochaine)}</div>
+    </section>`;
+  }
+
   function rendreAccueil() {
     const site = state.data.site || {};
     const home = state.data.home || {};
@@ -699,7 +830,7 @@
 
     const dates = [m.startDate, m.endDate].filter(filled).map((d) => dateLongue(t(d)));
 
-    return `<div class="hero">
+    return rendreJour() + `<div class="hero">
         <h1>${field('site.title', site.title)}</h1>
         <p class="hero__lede">${field('site.tagline', site.tagline)}</p>
         ${filled(home.intro) ? `<p class="hero__intro">${field('home.intro', home.intro)}</p>` : ''}
@@ -715,7 +846,8 @@
 
       ${tuiles ? `<section class="section"><div class="section__head">
           <h2>${esc(state.lang === 'en' ? 'Go straight to' : 'Aller droit au but')}</h2></div>
-        <div class="grid grid--2">${tuiles}</div></section>` : ''}`;
+        <div class="grid grid--2">${tuiles}</div></section>` : ''}
+      ${rendreProgression()}`;
   }
 
   function rendreVisa() {
@@ -962,6 +1094,7 @@
 
     return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')))
       + alerte
+      + rendreProgression()
       + `<div class="etapes">${etapes}</div>`
       + urgences;
   }
@@ -1679,6 +1812,13 @@
 
       if (e.target.closest('#panel-close') || e.target.id === 'panel') { fermerPanneau(); return; }
 
+      if (e.target.closest('#coche-reset')) {
+        if (!confirm(ui('chk.resetAsk'))) return;
+        localStorage.removeItem(CLE_PROGRESSION);
+        afficherSection();
+        return;
+      }
+
       /* Un clic sur un lien ou un bouton DANS la carte garde sa fonction : le
          panneau ne s'ouvre que sur le reste de la surface. */
       const ouvrable = e.target.closest('[data-panel]');
@@ -1789,6 +1929,16 @@
         localStorage.removeItem(CLE_BROUILLON);
         location.reload();
       }
+    });
+
+    document.addEventListener('change', (e) => {
+      const c = e.target.closest('[data-coche]');
+      if (!c) return;
+      cocher(c.dataset.coche, c.checked);
+      /* On met à jour sur place plutôt que de re-rendre la section : un
+         re-rendu détruit les cases voisines et fait perdre le focus. */
+      c.closest('.coche').classList.toggle('coche--ok', c.checked);
+      majProgression();
     });
 
     document.addEventListener('input', (e) => {

@@ -89,6 +89,21 @@ cd ~/dev/softlanding-pac && python3 -m http.server 8080
 # puis http://localhost:8080
 ```
 
+## Sauvegarde — à faire après chaque séance de saisie
+
+`data/content.json` est la seule copie du contenu réel : exclu de git par choix,
+absent d'iCloud, et aucune destination Time Machine n'est configurée sur la
+machine. Le script `sauvegarde.js` le chiffre avec une phrase de passe
+**distincte de celle du site** et l'écrit dans un dépôt **privé** séparé.
+
+```bash
+SOFTLANDING_BACKUP_PASSWORD='…' node sauvegarde.js
+cd ../softlanding-pac-sauvegarde && git add -A && git commit -m "sauvegarde" && git push
+```
+
+Pour restaurer : `node sauvegarde.js --restaurer`. Le fichier existant est mis de
+côté avant d'être remplacé.
+
 ## Version de revue
 
 Pour faire relire la plateforme avant que les personnes du carnet aient été

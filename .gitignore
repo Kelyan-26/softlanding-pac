@@ -2,6 +2,7 @@
 # Ne JAMAIS versionner. Seule la version chiffree part en ligne.
 data/content.json
 data/content.review.json
+data/content.json.avant-restauration-*
 
 # Systeme
 .DS_Store
