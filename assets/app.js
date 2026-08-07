@@ -46,7 +46,6 @@
     'nav.programme':     { fr: 'Programme', en: 'Schedule' },
     'nav.visa':          { fr: 'Visa & Passeport Talent', en: 'Visa & Talent Passport' },
     'nav.business-plan': { fr: 'Business plan en France', en: 'Business plan in France' },
-    'nav.interculturel': { fr: 'Navigation interculturelle', en: 'Intercultural navigation' },
     'nav.acteurs':       { fr: 'Acteurs du programme', en: 'Programme actors' },
     'nav.hotels':        { fr: 'Hôtels partenaires', en: 'Partner hotels' },
     'nav.contacts':      { fr: 'Carnet d’adresses', en: 'Address book' },
@@ -225,7 +224,6 @@
     programme: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 2.8v4M16 2.8v4M3.5 10h17"/>',
     visa: '<rect x="4" y="3" width="16" height="18" rx="2.5"/><circle cx="12" cy="9.8" r="2.5"/><path d="M8.5 16.6h7"/>',
     'business-plan': '<path d="M4 20.2h16"/><path d="M6.4 20.2v-6.4M11.4 20.2V9.4M16.4 20.2V4.6"/>',
-    interculturel: '<circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2"/><path d="M12 3.4c2.6 2.6 3.9 5.5 3.9 8.6s-1.3 6-3.9 8.6c-2.6-2.6-3.9-5.5-3.9-8.6s1.3-6 3.9-8.6Z"/>',
     acteurs: '<circle cx="9.2" cy="8.4" r="3.3"/><path d="M3.4 19.6c0-3.1 2.6-5.2 5.8-5.2s5.8 2.1 5.8 5.2"/><path d="M16.4 5.5a3.1 3.1 0 0 1 0 5.9"/><path d="M17.6 14.7c1.9.6 3.1 2.2 3.1 4.5"/>',
     hotels: '<path d="M3 19.4V9.6"/><path d="M3 13.2h13.6a4.4 4.4 0 0 1 4.4 4.4v1.8"/><circle cx="7.2" cy="9.9" r="2.1"/><path d="M3 19.4h18"/>',
     contacts: '<rect x="5" y="3" width="14.5" height="18" rx="2.5"/><path d="M2.6 8h2.4M2.6 12h2.4M2.6 16h2.4"/><circle cx="12.2" cy="10.2" r="2.3"/><path d="M8.6 16.6c0-2 1.6-3.2 3.6-3.2s3.6 1.2 3.6 3.2"/>',
@@ -257,7 +255,7 @@
     : '');
 
   const SECTIONS = ['accueil', 'programme', 'installation', 'glossaire', 'visa',
-                    'business-plan', 'interculturel', 'entreprises', 'acteurs',
+                    'business-plan', 'entreprises', 'acteurs',
                     'hotels', 'contacts', 'marseille'];
 
   /* Les listes qu'on peut allonger ou raccourcir en mode édition. */
@@ -919,26 +917,6 @@
       + (ressources ? `<section class="section"><div class="section__head"><h2>${esc(ui('label.resources'))}</h2></div><div class="card__acts">${ressources}</div></section>` : '');
   }
 
-  function rendreInterculturel() {
-    const ic = state.data.interculturel || {};
-    const sujets = list(ic.topics).map((tp, i) => {
-      const oui = list(tp.dos).filter(filled);
-      const non = list(tp.donts).filter(filled);
-      const colonnes = (oui.length || non.length) ? `<div class="split">
-          ${oui.length ? `<div class="split__col split__col--y"><h4>${esc(ui('label.dos'))}</h4><ul>${oui.map((d, k) => `<li>${field(`interculturel.topics.${i}.dos.${k}`, d)}</li>`).join('')}</ul></div>` : ''}
-          ${non.length ? `<div class="split__col split__col--n"><h4>${esc(ui('label.donts'))}</h4><ul>${non.map((d, k) => `<li>${field(`interculturel.topics.${i}.donts.${k}`, d)}</li>`).join('')}</ul></div>` : ''}
-        </div>` : '';
-      return `<article class="step">
-        <h3 class="step__t">${field(`interculturel.topics.${i}.title`, tp.title)}</h3>
-        ${filled(tp.body) ? `<p class="step__b">${field(`interculturel.topics.${i}.body`, tp.body)}</p>` : ''}
-        ${colonnes}
-      </article>`;
-    }).join('');
-
-    return entete(ui('nav.interculturel'), filled(ic.intro) ? field('interculturel.intro', ic.intro) : '')
-      + (sujets || vide());
-  }
-
   const foin = (parts) => parts.filter(Boolean).map((p) => t(p)).join(' ').toLowerCase();
 
   function rendreActeurs() {
@@ -1348,7 +1326,6 @@
     'programme': () => entete(ui('nav.programme'), esc(ui('sub.programme'))) + rendreProgramme(),
     'visa': rendreVisa,
     'business-plan': rendreBusinessPlan,
-    'interculturel': rendreInterculturel,
     'acteurs': rendreActeurs,
     'hotels': rendreHotels,
     'contacts': rendreContacts,
@@ -1433,7 +1410,6 @@
     list(state.data.marseille).forEach((x) => pousse('marseille', t(x.name), [t(x.category), t(x.district)].filter(Boolean).join(' · '), t(x.why)));
     list((state.data.visa || {}).steps).forEach((x) => pousse('visa', t(x.title), ui('nav.visa'), t(x.body)));
     list((state.data.businessPlan || {}).sections).forEach((x) => pousse('business-plan', t(x.title), ui('nav.business-plan'), t(x.body)));
-    list((state.data.interculturel || {}).topics).forEach((x) => pousse('interculturel', t(x.title), ui('nav.interculturel'), t(x.body)));
     list((state.data.installation || {}).etapes).forEach((x) => pousse('installation', t(x.titre), t(x.quand), `${t(x.pourquoi)} ${t(x.obstacle)} ${list(x.solutions).map(t).join(' ')}`));
     list(state.data.glossaire).forEach((x) => pousse('glossaire', t(x.terme), t(x.definition), t(x.piege)));
     list(state.data.entreprises).forEach((x, i) => pousse('entreprises', t(x.nom), t(x.secteur), `${t(x.activite)} ${t(x.pays)}`, i));

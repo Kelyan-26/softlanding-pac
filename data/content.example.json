@@ -1,6 +1,5 @@
 {
   "_lisezmoi": "Modele de contenu. Copier vers data/content.json, remplir, puis lancer `node build.js`. Tout champ de texte accepte la forme {\"fr\": \"...\", \"en\": \"...\"}. Les valeurs A REMPLIR / TO FILL sont des marqueurs volontaires : elles s'affichent en orange sur le site tant qu'elles n'ont pas ete remplacees.",
-
   "meta": {
     "promotion": "Promotion 2026",
     "timezone": "Europe/Paris",
@@ -8,17 +7,21 @@
     "endDate": "A REMPLIR",
     "updatedAt": "2026-08-04"
   },
-
   "site": {
-    "title": { "fr": "Soft Landing", "en": "Soft Landing" },
-    "subtitle": { "fr": "Provence Africa Connect", "en": "Provence Africa Connect" },
+    "title": {
+      "fr": "Soft Landing",
+      "en": "Soft Landing"
+    },
+    "subtitle": {
+      "fr": "Provence Africa Connect",
+      "en": "Provence Africa Connect"
+    },
     "tagline": {
       "fr": "Le carnet de bord de votre implantation en Provence.",
       "en": "Your onboarding companion for setting up in Provence."
     },
     "operator": "Accélérateur M"
   },
-
   "home": {
     "intro": {
       "fr": "A REMPLIR — deux ou trois phrases de presentation du programme Soft Landing Provence Africa Connect : a qui il s'adresse, ce qu'il apporte, sur quelle duree.",
@@ -26,7 +29,10 @@
     },
     "highlights": [
       {
-        "label": { "fr": "Le programme, jour par jour", "en": "The programme, day by day" },
+        "label": {
+          "fr": "Le programme, jour par jour",
+          "en": "The programme, day by day"
+        },
         "text": {
           "fr": "Ateliers, rendez-vous et visites. La session en cours est mise en avant automatiquement.",
           "en": "Workshops, meetings and visits. The session happening now is highlighted automatically."
@@ -34,7 +40,10 @@
         "link": "#programme"
       },
       {
-        "label": { "fr": "Visa et Passeport Talent", "en": "Visa and Talent Passport" },
+        "label": {
+          "fr": "Visa et Passeport Talent",
+          "en": "Visa and Talent Passport"
+        },
         "text": {
           "fr": "Les etapes, les pieces a reunir et les liens officiels.",
           "en": "The steps, the documents to gather and the official links."
@@ -42,7 +51,10 @@
         "link": "#visa"
       },
       {
-        "label": { "fr": "Vos contacts", "en": "Your contacts" },
+        "label": {
+          "fr": "Vos contacts",
+          "en": "Your contacts"
+        },
         "text": {
           "fr": "Toutes les personnes du programme, joignables en un clic.",
           "en": "Everyone involved in the programme, one click away."
@@ -50,7 +62,10 @@
         "link": "#contacts"
       },
       {
-        "label": { "fr": "Marseille hors programme", "en": "Marseille off-programme" },
+        "label": {
+          "fr": "Marseille hors programme",
+          "en": "Marseille off-programme"
+        },
         "text": {
           "fr": "Ou manger, ou marcher, ou souffler entre deux rendez-vous.",
           "en": "Where to eat, walk and breathe between meetings."
@@ -60,35 +75,58 @@
     ],
     "practical": [
       {
-        "label": { "fr": "Urgence / astreinte", "en": "Emergency contact" },
+        "label": {
+          "fr": "Urgence / astreinte",
+          "en": "Emergency contact"
+        },
         "value": "A REMPLIR"
       },
       {
-        "label": { "fr": "Wifi lieu principal", "en": "Main venue wifi" },
+        "label": {
+          "fr": "Wifi lieu principal",
+          "en": "Main venue wifi"
+        },
         "value": "A REMPLIR"
       },
       {
-        "label": { "fr": "Groupe WhatsApp", "en": "WhatsApp group" },
+        "label": {
+          "fr": "Groupe WhatsApp",
+          "en": "WhatsApp group"
+        },
         "value": "A REMPLIR"
       }
     ]
   },
-
   "programme": [
     {
       "date": "2026-09-14",
       "start": "09:30",
       "end": "11:00",
       "type": "kickoff",
-      "title": { "fr": "Kick-off Soft Landing", "en": "Soft Landing kick-off" },
+      "title": {
+        "fr": "Kick-off Soft Landing",
+        "en": "Soft Landing kick-off"
+      },
       "description": {
         "fr": "A REMPLIR — ouverture du programme, presentation du parcours et des participants.",
         "en": "TO FILL — programme opening, overview of the journey and of the participants."
       },
-      "location": { "name": "A REMPLIR", "address": "A REMPLIR", "map": "" },
-      "speakers": ["Accélérateur M"],
+      "location": {
+        "name": "A REMPLIR",
+        "address": "A REMPLIR",
+        "map": ""
+      },
+      "speakers": [
+        "Accélérateur M"
+      ],
       "resources": [
-        { "label": { "fr": "Replay du webinaire", "en": "Webinar replay" }, "url": "" }
+        {
+          "label": {
+            "fr": "Replay du webinaire",
+            "en": "Webinar replay"
+          },
+          "url": ""
+        }
       ]
     },
     {
@@ -96,13 +134,22 @@
       "start": "14:00",
       "end": "16:00",
       "type": "atelier",
-      "title": { "fr": "Le réseau économique régional", "en": "The regional economic network" },
+      "title": {
+        "fr": "Le réseau économique régional",
+        "en": "The regional economic network"
+      },
       "description": {
         "fr": "A REMPLIR — panorama des acteurs economiques du territoire et des portes d'entree.",
         "en": "TO FILL — overview of the region's economic players and how to reach them."
       },
-      "location": { "name": "A REMPLIR", "address": "A REMPLIR", "map": "" },
-      "speakers": ["A REMPLIR"],
+      "location": {
+        "name": "A REMPLIR",
+        "address": "A REMPLIR",
+        "map": ""
+      },
+      "speakers": [
+        "A REMPLIR"
+      ],
       "resources": []
     },
     {
@@ -110,13 +157,22 @@
       "start": "09:30",
       "end": "12:00",
       "type": "atelier",
-      "title": { "fr": "Cadre juridique et administratif", "en": "Legal and administrative framework" },
+      "title": {
+        "fr": "Cadre juridique et administratif",
+        "en": "Legal and administrative framework"
+      },
       "description": {
         "fr": "A REMPLIR — formes juridiques, immatriculation, obligations sociales et fiscales.",
         "en": "TO FILL — legal forms, registration, social and tax obligations."
       },
-      "location": { "name": "A REMPLIR", "address": "A REMPLIR", "map": "" },
-      "speakers": ["A REMPLIR"],
+      "location": {
+        "name": "A REMPLIR",
+        "address": "A REMPLIR",
+        "map": ""
+      },
+      "speakers": [
+        "A REMPLIR"
+      ],
       "resources": []
     },
     {
@@ -124,13 +180,22 @@
       "start": "14:00",
       "end": "17:00",
       "type": "visite",
-      "title": { "fr": "Visite du CISAM", "en": "CISAM visit" },
+      "title": {
+        "fr": "Visite du CISAM",
+        "en": "CISAM visit"
+      },
       "description": {
         "fr": "A REMPLIR — decouverte du lieu et des dispositifs d'accompagnement a l'innovation.",
         "en": "TO FILL — tour of the venue and of its innovation support schemes."
       },
-      "location": { "name": "CISAM", "address": "A REMPLIR", "map": "" },
-      "speakers": ["CISAM"],
+      "location": {
+        "name": "CISAM",
+        "address": "A REMPLIR",
+        "map": ""
+      },
+      "speakers": [
+        "CISAM"
+      ],
       "resources": []
     },
     {
@@ -138,17 +203,23 @@
       "start": "10:00",
       "end": "12:00",
       "type": "rendez-vous",
-      "title": { "fr": "Rendez-vous individuels", "en": "One-to-one meetings" },
+      "title": {
+        "fr": "Rendez-vous individuels",
+        "en": "One-to-one meetings"
+      },
       "description": {
         "fr": "A REMPLIR — creneaux individuels avec les experts du programme.",
         "en": "TO FILL — individual slots with the programme's experts."
       },
-      "location": { "name": "A REMPLIR", "address": "A REMPLIR", "map": "" },
+      "location": {
+        "name": "A REMPLIR",
+        "address": "A REMPLIR",
+        "map": ""
+      },
       "speakers": [],
       "resources": []
     }
   ],
-
   "visa": {
     "intro": {
       "fr": "A REMPLIR — rappel : ce recapitulatif est une aide a la preparation, il ne remplace pas les textes officiels ni le conseil d'un avocat.",
@@ -156,14 +227,20 @@
     },
     "tracks": [
       {
-        "name": { "fr": "Passeport Talent — créateur d'entreprise", "en": "Talent Passport — business founder" },
+        "name": {
+          "fr": "Passeport Talent — créateur d'entreprise",
+          "en": "Talent Passport — business founder"
+        },
         "who": {
           "fr": "A REMPLIR — profil vise et conditions d'eligibilite, a verifier sur les sources officielles.",
           "en": "TO FILL — target profile and eligibility conditions, to be checked against official sources."
         }
       },
       {
-        "name": { "fr": "Passeport Talent — projet économique innovant", "en": "Talent Passport — innovative economic project" },
+        "name": {
+          "fr": "Passeport Talent — projet économique innovant",
+          "en": "Talent Passport — innovative economic project"
+        },
         "who": {
           "fr": "A REMPLIR — profil vise et conditions d'eligibilite, a verifier sur les sources officielles.",
           "en": "TO FILL — target profile and eligibility conditions, to be checked against official sources."
@@ -172,60 +249,102 @@
     ],
     "steps": [
       {
-        "title": { "fr": "1. Vérifier son éligibilité", "en": "1. Check your eligibility" },
+        "title": {
+          "fr": "1. Vérifier son éligibilité",
+          "en": "1. Check your eligibility"
+        },
         "body": {
           "fr": "A REMPLIR — critères, seuils et justificatifs attendus.",
           "en": "TO FILL — criteria, thresholds and supporting evidence expected."
         },
-        "documents": ["A REMPLIR"],
-        "duration": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "documents": [
+          "A REMPLIR"
+        ],
+        "duration": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "links": [
-          { "label": "France-Visas", "url": "https://france-visas.gouv.fr" }
+          {
+            "label": "France-Visas",
+            "url": "https://france-visas.gouv.fr"
+          }
         ]
       },
       {
-        "title": { "fr": "2. Constituer le dossier", "en": "2. Build the application file" },
+        "title": {
+          "fr": "2. Constituer le dossier",
+          "en": "2. Build the application file"
+        },
         "body": {
           "fr": "A REMPLIR — liste des pièces, traductions, légalisations.",
           "en": "TO FILL — list of documents, translations, legalisations."
         },
-        "documents": ["A REMPLIR"],
-        "duration": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "documents": [
+          "A REMPLIR"
+        ],
+        "duration": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "links": [
-          { "label": "Service-Public", "url": "https://www.service-public.fr" }
+          {
+            "label": "Service-Public",
+            "url": "https://www.service-public.fr"
+          }
         ]
       },
       {
-        "title": { "fr": "3. Déposer la demande", "en": "3. Submit the application" },
+        "title": {
+          "fr": "3. Déposer la demande",
+          "en": "3. Submit the application"
+        },
         "body": {
           "fr": "A REMPLIR — où déposer selon que l'on est dans son pays de résidence ou déjà en France.",
           "en": "TO FILL — where to apply depending on whether you are in your country of residence or already in France."
         },
         "documents": [],
-        "duration": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "duration": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "links": [
-          { "label": "ANEF — étrangers en France", "url": "https://administration-etrangers-en-france.interieur.gouv.fr" }
+          {
+            "label": "ANEF — étrangers en France",
+            "url": "https://administration-etrangers-en-france.interieur.gouv.fr"
+          }
         ]
       },
       {
-        "title": { "fr": "4. Après l'obtention", "en": "4. After approval" },
+        "title": {
+          "fr": "4. Après l'obtention",
+          "en": "4. After approval"
+        },
         "body": {
           "fr": "A REMPLIR — validation du visa, titre de séjour, famille accompagnante, renouvellement.",
           "en": "TO FILL — visa validation, residence permit, accompanying family, renewal."
         },
         "documents": [],
-        "duration": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "duration": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "links": []
       }
     ],
     "faq": [
       {
-        "q": { "fr": "A REMPLIR — question fréquente", "en": "TO FILL — frequent question" },
-        "a": { "fr": "A REMPLIR", "en": "TO FILL" }
+        "q": {
+          "fr": "A REMPLIR — question fréquente",
+          "en": "TO FILL — frequent question"
+        },
+        "a": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        }
       }
     ]
   },
-
   "businessPlan": {
     "intro": {
       "fr": "A REMPLIR — ce qu'un lecteur français attend d'un business plan, et en quoi cela diffère des attentes locales.",
@@ -233,128 +352,191 @@
     },
     "sections": [
       {
-        "title": { "fr": "Le marché français", "en": "The French market" },
-        "body": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "title": {
+          "fr": "Le marché français",
+          "en": "The French market"
+        },
+        "body": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "checklist": [
-          { "fr": "A REMPLIR — point à vérifier", "en": "TO FILL — item to check" }
+          {
+            "fr": "A REMPLIR — point à vérifier",
+            "en": "TO FILL — item to check"
+          }
         ]
       },
       {
-        "title": { "fr": "Le prévisionnel financier", "en": "Financial forecast" },
-        "body": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "title": {
+          "fr": "Le prévisionnel financier",
+          "en": "Financial forecast"
+        },
+        "body": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "checklist": []
       },
       {
-        "title": { "fr": "Financements et aides", "en": "Funding and public support" },
-        "body": { "fr": "A REMPLIR", "en": "TO FILL" },
+        "title": {
+          "fr": "Financements et aides",
+          "en": "Funding and public support"
+        },
+        "body": {
+          "fr": "A REMPLIR",
+          "en": "TO FILL"
+        },
         "checklist": []
       }
     ],
     "resources": [
-      { "label": { "fr": "A REMPLIR — modèle ou lien utile", "en": "TO FILL — template or useful link" }, "url": "" }
-    ]
-  },
-
-  "interculturel": {
-    "intro": {
-      "fr": "A REMPLIR — pourquoi les codes professionnels français surprennent, et comment les lire sans les subir.",
-      "en": "TO FILL — why French professional codes surprise newcomers, and how to read them."
-    },
-    "topics": [
       {
-        "title": { "fr": "Le premier rendez-vous", "en": "The first meeting" },
-        "body": { "fr": "A REMPLIR", "en": "TO FILL" },
-        "dos": [{ "fr": "A REMPLIR", "en": "TO FILL" }],
-        "donts": [{ "fr": "A REMPLIR", "en": "TO FILL" }]
-      },
-      {
-        "title": { "fr": "L'écrit et le suivi", "en": "Writing and follow-up" },
-        "body": { "fr": "A REMPLIR", "en": "TO FILL" },
-        "dos": [],
-        "donts": []
-      },
-      {
-        "title": { "fr": "Le rapport au temps", "en": "Relationship to time" },
-        "body": { "fr": "A REMPLIR", "en": "TO FILL" },
-        "dos": [],
-        "donts": []
+        "label": {
+          "fr": "A REMPLIR — modèle ou lien utile",
+          "en": "TO FILL — template or useful link"
+        },
+        "url": ""
       }
     ]
   },
-
   "acteurs": [
     {
       "name": "Accélérateur M",
-      "role": { "fr": "Opérateur du programme", "en": "Programme operator" },
-      "description": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "role": {
+        "fr": "Opérateur du programme",
+        "en": "Programme operator"
+      },
+      "description": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "website": "",
-      "contact": { "email": "", "phone": "" },
-      "tags": ["accompagnement"]
+      "contact": {
+        "email": "",
+        "phone": ""
+      },
+      "tags": [
+        "accompagnement"
+      ]
     },
     {
       "name": "CISAM",
-      "role": { "fr": "A REMPLIR", "en": "TO FILL" },
-      "description": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "role": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
+      "description": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "website": "",
-      "contact": { "email": "", "phone": "" },
-      "tags": ["innovation"]
+      "contact": {
+        "email": "",
+        "phone": ""
+      },
+      "tags": [
+        "innovation"
+      ]
     },
     {
       "name": "Invest in Provence",
-      "role": { "fr": "A REMPLIR", "en": "TO FILL" },
-      "description": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "role": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
+      "description": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "website": "",
-      "contact": { "email": "", "phone": "" },
-      "tags": ["implantation"]
+      "contact": {
+        "email": "",
+        "phone": ""
+      },
+      "tags": [
+        "implantation"
+      ]
     },
     {
       "name": "French Tech Aix-Marseille",
-      "role": { "fr": "A REMPLIR", "en": "TO FILL" },
-      "description": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "role": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
+      "description": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "website": "",
-      "contact": { "email": "", "phone": "" },
-      "tags": ["écosystème"]
+      "contact": {
+        "email": "",
+        "phone": ""
+      },
+      "tags": [
+        "écosystème"
+      ]
     }
   ],
-
   "hotels": [
     {
       "name": "A REMPLIR",
       "address": "A REMPLIR",
       "district": "A REMPLIR",
-      "distance": { "fr": "A REMPLIR — temps jusqu'au lieu principal", "en": "TO FILL — time to the main venue" },
+      "distance": {
+        "fr": "A REMPLIR — temps jusqu'au lieu principal",
+        "en": "TO FILL — time to the main venue"
+      },
       "priceRange": "A REMPLIR",
       "booking": {
         "contact": "A REMPLIR",
-        "code": { "fr": "A REMPLIR — code ou tarif négocié", "en": "TO FILL — negotiated code or rate" }
+        "code": {
+          "fr": "A REMPLIR — code ou tarif négocié",
+          "en": "TO FILL — negotiated code or rate"
+        }
       },
-      "notes": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "notes": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "website": "",
       "map": ""
     }
   ],
-
   "contacts": [
     {
       "name": "A REMPLIR",
       "org": "Accélérateur M",
-      "role": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "role": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "email": "",
       "phone": "",
       "linkedin": "",
-      "languages": ["fr", "en"],
-      "tags": ["équipe"],
-      "note": { "fr": "A REMPLIR — sur quoi solliciter cette personne", "en": "TO FILL — what to reach out to this person about" }
+      "languages": [
+        "fr",
+        "en"
+      ],
+      "tags": [
+        "équipe"
+      ],
+      "note": {
+        "fr": "A REMPLIR — sur quoi solliciter cette personne",
+        "en": "TO FILL — what to reach out to this person about"
+      }
     }
   ],
-
   "marseille": [
     {
       "name": "A REMPLIR",
       "category": "restaurant",
       "district": "A REMPLIR",
       "address": "A REMPLIR",
-      "why": { "fr": "A REMPLIR — pourquoi on y va", "en": "TO FILL — why go there" },
+      "why": {
+        "fr": "A REMPLIR — pourquoi on y va",
+        "en": "TO FILL — why go there"
+      },
       "priceLevel": "€€",
       "website": "",
       "map": ""
@@ -364,7 +546,10 @@
       "category": "balade",
       "district": "A REMPLIR",
       "address": "A REMPLIR",
-      "why": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "why": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "priceLevel": "",
       "website": "",
       "map": ""
@@ -374,7 +559,10 @@
       "category": "culture",
       "district": "A REMPLIR",
       "address": "A REMPLIR",
-      "why": { "fr": "A REMPLIR", "en": "TO FILL" },
+      "why": {
+        "fr": "A REMPLIR",
+        "en": "TO FILL"
+      },
       "priceLevel": "",
       "website": "",
       "map": ""
