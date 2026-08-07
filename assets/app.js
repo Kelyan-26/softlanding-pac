@@ -140,6 +140,22 @@
     'jour.after':   { fr: 'Après le programme', en: 'After the programme' },
     'jour.see':     { fr: 'Voir le programme', en: 'See the schedule' },
     'pan.more':      { fr: 'Ouvrir', en: 'Open' },
+    'pan.forYou':    { fr: 'Ce que ça change pour vous', en: 'What it changes for you' },
+    'pan.ask':       { fr: 'Ce que vous pouvez leur demander', en: 'What you can ask them for' },
+    'pan.notThis':   { fr: 'Ce qu’ils ne font pas', en: 'What they do not do' },
+    'pan.markers':   { fr: 'Repères', en: 'Key facts' },
+    'pan.people':    { fr: 'Vos interlocuteurs', en: 'Who to talk to' },
+    'pan.sessions':  { fr: 'Dans le programme', en: 'In the programme' },
+    'pan.org':       { fr: 'Sa structure', en: 'Their organisation' },
+    'pan.speaks':    { fr: 'Intervient dans', en: 'Speaks at' },
+    'pan.terms':     { fr: 'Mots de cette session', en: 'Terms from this session' },
+    'pan.speakers':  { fr: 'Qui intervient', en: 'Who is speaking' },
+    'pan.venue':     { fr: 'Le lieu', en: 'The venue' },
+    'pan.noContact': { fr: 'Ni email ni téléphone dans les documents du programme. Passez par l’équipe de l’Accélérateur M, ou par la fiche de la structure ci-dessus.',
+                       en: 'Neither email nor phone in the programme documents. Go through the Accélérateur M team, or via the organisation’s entry above.' },
+    'pan.founderOf': { fr: 'Fondateur·rice de', en: 'Founder of' },
+    'pan.sameCountry': { fr: 'Même pays dans la promotion', en: 'Same country in the cohort' },
+    'pan.orgs':      { fr: 'Structures citées', en: 'Organisations mentioned' },
     'glo.trap':      { fr: 'Le piège', en: 'The catch' },
     'glo.search':    { fr: 'Chercher un mot…', en: 'Search a word…' },
     'glo.entreprise':    { fr: 'Entreprise', en: 'Company' },
@@ -1495,6 +1511,70 @@
   const liste = (items) => (items.length
     ? `<ul class="pan__l">${items.map((x) => `<li>${x}</li>`).join('')}</ul>` : '');
 
+  /* ── Liens croisés entre panneaux ────────────────────────────────────
+     Un panneau qui répète sa carte ne sert à rien. Ce que ces helpers
+     ajoutent ne s'invente pas : ils relient des entrées qui existent déjà
+     — la personne à sa structure, la structure à ses sessions, la session
+     à ses intervenants et aux mots du glossaire qu'elle emploie. */
+
+  const puce = (section, i, texte) =>
+    `<button type="button" class="chipbtn" data-panel="${section}.${i}">${esc(texte)}</button>`;
+
+  const puces = (items) => (items.length ? `<div class="tools">${items.join('')}</div>` : '');
+
+  /* « Nom — Rôle, Structure » : on ne garde que le nom. */
+  const nomIntervenant = (s) => t(s).split('—')[0].trim();
+
+  const indexActeur = (nom) => list(state.data.acteurs)
+    .findIndex((a) => t(a.name).toLowerCase() === String(nom || '').toLowerCase());
+
+  const contactsDe = (org) => list(state.data.contacts)
+    .map((c, i) => ({ c, i }))
+    .filter(({ c }) => t(c.org).toLowerCase() === String(org || '').toLowerCase());
+
+  const indexContact = (nom) => list(state.data.contacts)
+    .findIndex((c) => t(c.name).toLowerCase() === String(nom || '').toLowerCase());
+
+  /* Sessions où l'aiguille apparaît parmi les intervenants — une personne
+     par son nom, une structure par la mention qui suit son rôle. */
+  const sessionsOu = (aiguille) => {
+    const a = String(aiguille || '').toLowerCase();
+    if (!a) return [];
+    return list(state.data.programme).map((s, i) => ({ s, i }))
+      .filter(({ s }) => list(s.speakers).some((sp) => t(sp).toLowerCase().includes(a)));
+  };
+
+  /* Termes du glossaire réellement employés dans un texte. Simple présence,
+     rien de deviné : si le mot n'y est pas, aucune puce n'apparaît. */
+  const termesDe = (texte) => {
+    const p = String(texte || '').toLowerCase();
+    return list(state.data.glossaire).map((g, i) => ({ g, i }))
+      .filter(({ g }) => t(g.terme).length > 3 && p.includes(t(g.terme).toLowerCase()))
+      .slice(0, 8);
+  };
+
+  /* Même principe pour les structures citées dans une session. */
+  const structuresDe = (texte) => {
+    const p = String(texte || '').toLowerCase();
+    return list(state.data.acteurs).map((a, i) => ({ a, i }))
+      .filter(({ a }) => {
+        /* « CISAM — Cité de l'Innovation… » n'apparaît jamais en entier dans
+           une description : on cherche aussi le nom court. */
+        const court = t(a.name).split('—')[0].trim().toLowerCase();
+        return court.length > 3 && p.includes(court);
+      })
+      .slice(0, 6);
+  };
+
+  /* Les autres fondateurs du même pays. C'est le seul rapprochement qu'on
+     puisse faire sans rien interpréter : le pays est déjà une étiquette. */
+  const memePays = (contact, moi) => {
+    const pays = list(contact.tags).map(t).filter((x) => !/promotion|consortium|équipe|intervenant/i.test(x));
+    if (!pays.length) return [];
+    return list(state.data.contacts).map((c, i) => ({ c, i }))
+      .filter(({ c, i }) => i !== moi && list(c.tags).some((x) => pays.includes(t(x))));
+  };
+
   function panneauGlossaire(i) {
     const g = list(state.data.glossaire)[i];
     if (!g) return '';
@@ -1524,13 +1604,30 @@
       c.email ? lien(`mailto:${c.email}`, ui('action.email'), 'mail') : '',
       c.phone ? lien(`tel:${String(c.phone).replace(/[^\d+]/g, '')}`, ui('action.call'), 'phone') : '',
     ].filter(Boolean).join('');
+    const demander = list(a.aDemander).filter(filled)
+      .map((x, k) => field(`acteurs.${i}.aDemander.${k}`, x));
+    const reperes = list(a.reperes).filter(filled)
+      .map((x, k) => field(`acteurs.${i}.reperes.${k}`, x));
+
+    const gens = contactsDe(a.name).map(({ c, i: k }) => puce('contacts', k, t(c.name)));
+    const sessions = sessionsOu(a.name).map(({ s, i: k }) => puce('programme', k, t(s.title)));
+
     return { titre: field(`acteurs.${i}.name`, a.name),
              surtitre: ui(`grp.${a.groupe || 'partenaire'}`),
              corps:
       bloc(ui('pan.about'), `<p class="pan__p">${field(`acteurs.${i}.role`, a.role)}</p>
           <p class="pan__p">${field(`acteurs.${i}.description`, a.description)}</p>`)
+      + (filled(a.pourVous) ? `<section class="pan__b pan__keep"><p class="eyebrow">${esc(ui('pan.forYou'))}</p>
+          <p class="pan__p">${field(`acteurs.${i}.pourVous`, a.pourVous)}</p></section>` : '')
+      + bloc(ui('pan.ask'), liste(demander))
+      + (filled(a.nePasAttendre) ? `<section class="pan__b pan__warn"><p class="eyebrow">${esc(ui('pan.notThis'))}</p>
+          <p class="pan__p">${field(`acteurs.${i}.nePasAttendre`, a.nePasAttendre)}</p></section>` : '')
+      + bloc(ui('pan.markers'), liste(reperes))
+      + bloc(ui('pan.people'), puces(gens))
+      + bloc(ui('pan.sessions'), puces(sessions))
       + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '')
-      + (list(a.tags).length ? `<div class="tags">${list(a.tags).map((tg) => `<span class="tag">${esc(t(tg))}</span>`).join('')}</div>` : '') };
+      + (list(a.tags).length ? `<div class="tags">${list(a.tags).map((tg) => `<span class="tag">${esc(t(tg))}</span>`).join('')}</div>` : '')
+      + (a.releve ? `<p class="pan__src">${esc(ui('pan.sourced'))} ${esc(dateLongue(a.releve))}.</p>` : '') };
   }
 
   function panneauContact(i) {
@@ -1545,13 +1642,36 @@
     const infos = [];
     if (filled(c.org)) infos.push(field(`contacts.${i}.org`, c.org));
     if (list(c.languages).length) infos.push(list(c.languages).map((l) => esc(String(l).toUpperCase())).join(' / '));
+    /* La structure de la personne, quand elle a sa propre fiche : on montre
+       ce qu'elle fait, plutôt que de laisser un nom d'organisation mort. */
+    const k = indexActeur(c.org);
+    const org = k >= 0 ? list(state.data.acteurs)[k] : null;
+    const blocOrg = org
+      ? `<p class="pan__p">${esc(t(org.role))}</p>${puces([puce('acteurs', k, t(org.name))])}`
+      : '';
+
+    /* Un fondateur : son organisation n'est pas une structure du programme,
+       c'est son entreprise. On le dit, et le site de l'entreprise suffit. */
+    const fondateur = !org && filled(c.org) && list(c.tags).some((x) => /promotion/i.test(t(x)));
+    const blocEntreprise = fondateur
+      ? `<p class="pan__p">${esc(ui('pan.founderOf'))} <strong>${esc(t(c.org))}</strong></p>` : '';
+
+    const sessions = sessionsOu(t(c.name)).map(({ s, i: n }) => puce('programme', n, t(s.title)));
+    const muet = !c.email && !c.phone && !c.linkedin;
+    const voisins = memePays(c, i).map(({ c: v, i: n }) => puce('contacts', n, `${t(v.name)} · ${t(v.org)}`));
+
     return { titre: field(`contacts.${i}.name`, c.name),
              surtitre: t(c.role) || ui('nav.contacts'),
              corps:
       bloc(ui('pan.about'), `<p class="pan__p">${field(`contacts.${i}.role`, c.role)}</p>`
           + (filled(c.note) ? `<p class="pan__p">${field(`contacts.${i}.note`, c.note)}</p>` : ''))
+      + bloc(ui('pan.org'), blocOrg || blocEntreprise)
+      + bloc(ui('pan.speaks'), puces(sessions))
+      + bloc(ui('pan.sameCountry'), puces(voisins))
       + bloc(ui('pan.practical'), liste(infos))
       + bloc(ui('pan.contact'), actions ? `<div class="card__acts">${actions}</div>` : '')
+      + (muet ? `<section class="pan__b pan__warn"><p class="eyebrow">${esc(ui('pan.contact'))}</p>
+          <p class="pan__p">${esc(ui('pan.noContact'))}</p></section>` : '')
       + (list(c.tags).length ? `<div class="tags">${list(c.tags).map((tg) => `<span class="tag tag--accent">${esc(t(tg))}</span>`).join('')}</div>` : '') };
   }
 
@@ -1602,15 +1722,42 @@
     const infos = [];
     if (filled(l.name)) infos.push(field(`programme.${i}.location.name`, l.name));
     if (filled(l.address)) infos.push(field(`programme.${i}.location.address`, l.address));
-    if (list(x.speakers).length) infos.push(list(x.speakers).map((y) => esc(t(y))).join(', '));
     const res = list(x.resources).map((r) => lien(r.url, t(r.label) || ui('label.resources'), 'link'))
       .filter(Boolean).join('');
+
+    /* Chaque intervenant renvoie à sa fiche du carnet quand elle existe, et
+       à celle de sa structure sinon. Le rôle reste affiché : c'est lui qui
+       dit pourquoi cette personne parle. */
+    const gens = list(x.speakers).map((sp) => {
+      const nom = nomIntervenant(sp);
+      const k = indexContact(nom);
+      const reste = t(sp).split('—').slice(1).join('—').trim();
+      const cible = k >= 0 ? puce('contacts', k, nom) : `<span class="chipbtn chipbtn--mort">${esc(nom)}</span>`;
+      return `<li>${cible}${reste ? ` <span class="pan__role">${esc(reste)}</span>` : ''}</li>`;
+    });
+
+    /* Le lieu, quand il correspond à une fiche d'Hôtels ou de Marseille. */
+    const cherche = String(t(l.name) || '').toLowerCase();
+    let lieu = '';
+    for (const s of ['marseille', 'hotels']) {
+      const k = list(state.data[s]).findIndex((y) => cherche && t(y.name).toLowerCase() === cherche);
+      if (k >= 0) { lieu = puces([puce(s, k, t(l.name))]); break; }
+    }
+
+    const texte = `${t(x.title)} ${t(x.description)} ${list(x.speakers).map(t).join(' ')}`;
+    const mots = termesDe(texte).map(({ g, i: k }) => puce('glossaire', k, t(g.terme)));
+    const orgs = structuresDe(texte).map(({ a, i: k }) => puce('acteurs', k, t(a.name)));
+
     return { titre: field(`programme.${i}.title`, x.title),
              surtitre: `${dateLongue(x.date)} · ${t(x.start)}–${t(x.end)}`,
              corps:
       bloc(ui('pan.session'), filled(x.description) ? `<p class="pan__p">${field(`programme.${i}.description`, x.description)}</p>` : '')
+      + bloc(ui('pan.speakers'), gens.length ? `<ul class="pan__l">${gens.join('')}</ul>` : '')
+      + bloc(ui('pan.venue'), lieu)
       + bloc(ui('pan.practical'), liste(infos))
-      + bloc(ui('label.resources'), res ? `<div class="card__acts">${res}</div>` : '') };
+      + bloc(ui('label.resources'), res ? `<div class="card__acts">${res}</div>` : '')
+      + bloc(ui('pan.orgs'), puces(orgs))
+      + bloc(ui('pan.terms'), puces(mots)) };
   }
 
   const PANNEAUX = {
@@ -1793,8 +1940,11 @@
         return;
       }
 
+      /* Une puce n'est un filtre que si elle porte un filtre. Sans ce test,
+         toute .chipbtn était avalée ici — c'est ce qui rendait muets les
+         renvois « Voir aussi » du glossaire depuis leur création. */
       const cat = e.target.closest('.chipbtn');
-      if (cat) {
+      if (cat && ('gcat' in cat.dataset || 'rcat' in cat.dataset || 'cat' in cat.dataset)) {
         if ('gcat' in cat.dataset) state.filters.glossaireCat = cat.dataset.gcat;
         else if ('rcat' in cat.dataset) state.filters.restaurantsCat = cat.dataset.rcat;
         else state.filters.marseilleCat = cat.dataset.cat;

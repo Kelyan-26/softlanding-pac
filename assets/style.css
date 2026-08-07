@@ -457,6 +457,19 @@ button { cursor: pointer; }
 .chipbtn:hover { color: var(--ink); background: var(--sand); }
 .chipbtn[aria-pressed="true"] { color: #fff; background: var(--ink-block); }
 
+/* Dans un panneau, une puce est un renvoi vers une autre fiche. Elle doit
+   se voir SANS survol : sinon personne ne devine qu'on peut cliquer. */
+.pan .chipbtn { color: var(--ink-2); background: var(--sand); }
+.pan .chipbtn:hover { color: var(--ink); background: color-mix(in oklab, var(--orange) 16%, var(--sand)); }
+
+/* L'intervenant qui n'a pas de fiche : même forme, mais mort au clic. */
+.chipbtn--mort,
+.pan .chipbtn--mort { color: var(--ink-3); background: none; cursor: default; }
+
+.pan__role { display: block; margin-top: 3px; font-size: var(--fs-xs); color: var(--ink-4); }
+.pan__l li:has(.chipbtn) { padding-left: 0; }
+.pan__l li:has(.chipbtn)::before { display: none; }
+
 /* ══════════════════════════════ Programme ══════════════════════ */
 
 .now { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding: var(--s4) var(--s5); margin-bottom: var(--s8); background: var(--sand); }
