@@ -87,6 +87,7 @@
 
     'st.a-valider':  { fr: 'À valider', en: 'To be validated' },
     'st.partenaire': { fr: 'Partenaire', en: 'Partner' },
+    'st.ferme':      { fr: 'Fermé', en: 'Closed' },
     'st.hint': { fr: 'Présélection trouvée par recherche web en août 2026. Rien n’est partenaire du programme tant que ce n’est pas confirmé.', en: 'Shortlist found by web search in August 2026. Nothing is a programme partner until confirmed.' },
     'anc.from':  { fr: 'Distances mesurées depuis', en: 'Distances measured from' },
     'anc.warn':  { fr: 'Ancrage provisoire — cette sélection sera à refaire', en: 'Provisional anchor — this selection will need redoing' },
