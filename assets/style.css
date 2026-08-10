@@ -580,6 +580,88 @@ button { cursor: pointer; }
 .boite__tools { display: none; gap: var(--s2); flex-wrap: wrap; }
 body.editing .boite__tools { display: flex; }
 
+/* ═══════════════ Les 48 premières heures, besoins, hors-ligne ═══ */
+
+/* Un seul bloc par page a le droit à l'aplat orange. Ici c'est lui : à
+   l'atterrissage, rien n'est plus urgent que les trois premières étapes. */
+.h48 { padding: var(--s6); background: var(--orange-wash); }
+.h48__lede { max-width: var(--measure); margin-bottom: var(--s5); color: var(--ink-2); }
+.h48__l { list-style: none; display: grid; gap: var(--s5); margin: 0 0 var(--s5); padding: 0; }
+.h48__i { display: grid; grid-template-columns: auto 1fr; gap: var(--s4); align-items: start; }
+.h48__b { width: 22px; height: 2px; margin-top: .72em; background: var(--orange-deep); }
+.h48__t { font-family: var(--f-display); font-weight: 650; letter-spacing: var(--tr-title); }
+.h48__q { font-size: var(--fs-sm); color: var(--orange-deep); }
+.h48__p { max-width: var(--measure); margin-top: var(--s2); font-size: var(--fs-sm); color: var(--ink-2); }
+
+.need { display: block; padding: var(--s5); background: var(--sand); color: inherit; text-decoration: none; }
+a.need:hover { background: color-mix(in oklab, var(--orange) 10%, var(--sand)); }
+.need__p { font-family: var(--f-display); font-weight: 650; letter-spacing: var(--tr-title); }
+.need__r { margin-top: var(--s2); font-size: var(--fs-sm); color: var(--ink-2); }
+
+.offl { margin-top: var(--s7); padding: var(--s5); border-top: 2px solid var(--ink); }
+.offl__k { color: var(--ink); }
+.offl__b { max-width: var(--measure); margin-top: var(--s2); font-size: var(--fs-sm); color: var(--ink-2); }
+
+/* Le repli des sessions passées. */
+.fold { margin-top: var(--s7); border-top: 1px solid var(--hair); }
+.fold__s {
+  display: flex; gap: var(--s3); align-items: center; padding: var(--s4) 0;
+  font-family: var(--f-display); font-size: var(--fs-h3); font-weight: 700;
+  letter-spacing: var(--tr-title); cursor: pointer; list-style: none;
+}
+.fold__s::-webkit-details-marker { display: none; }
+.fold__s::after { content: "+"; margin-left: auto; font-weight: 400; color: var(--ink-3); }
+.fold[open] .fold__s::after { content: "–"; }
+.fold__b { padding-top: var(--s3); }
+.section__head--plain { margin-top: var(--s6); }
+.slot__rep { margin-top: var(--s2); font-size: var(--fs-xs); color: var(--ink-4); }
+.slot__rep code { font-size: .95em; word-break: break-all; }
+
+/* ══════════════════════════════ Carte ══════════════════════════ */
+
+.mapwrap { position: relative; margin-top: var(--s5); background: var(--sand); }
+.map { height: clamp(380px, 62vh, 660px); width: 100%; }
+
+/* Le portail : tant qu'on n'a pas cliqué, aucune tuile n'est demandée. */
+.map__gate {
+  position: absolute; inset: 0; z-index: 500;
+  display: grid; place-content: center; justify-items: center; gap: var(--s4);
+  padding: var(--s6); text-align: center; background: var(--sand);
+}
+.map__avert { max-width: 52ch; font-size: var(--fs-sm); color: var(--ink-2); }
+.map__tools {
+  position: absolute; top: var(--s3); right: var(--s3); z-index: 500;
+  display: flex; gap: var(--s1); padding: var(--s1);
+  background: var(--paper); box-shadow: 0 1px 6px rgb(0 0 0 / .18);
+}
+.map__tools .chipbtn { background: none; }
+.map__tools .chipbtn[aria-pressed="true"] { color: #fff; background: var(--ink-block); }
+
+/* Les repères : un point plein, un libellé qui ne masque pas la photo. */
+.pin { position: absolute; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 3px; white-space: nowrap; }
+.pin__d {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--orange); box-shadow: 0 0 0 3px #fff, 0 1px 4px rgb(0 0 0 / .5);
+}
+.pin__l {
+  order: -1; padding: 2px 7px;
+  font-family: var(--f-display); font-size: 11.5px; font-weight: 650; color: var(--ink);
+  background: rgb(255 255 255 / .93); box-shadow: 0 1px 4px rgb(0 0 0 / .35);
+}
+.pin--hotels .pin__d { background: var(--navy-ink); }
+
+/* Trop dézoomé : les libellés se recouvrent, on ne garde que les points.
+   Le survol et le focus les rappellent un par un. */
+.map--muet .pin__l { opacity: 0; transition: opacity .12s var(--ease); }
+.map--muet .leaflet-marker-icon:hover .pin__l,
+.map--muet .leaflet-marker-icon:focus-visible .pin__l { opacity: 1; }
+.leaflet-marker-icon:hover { z-index: 900 !important; }
+.leaflet-marker-icon { background: none; border: 0; }
+.leaflet-container { font-family: var(--f-text); background: var(--sand); }
+.leaflet-control-attribution { font-size: 10px; }
+
+.tools__c { margin-left: auto; font-size: var(--fs-sm); color: var(--ink-4); }
+
 /* ══════════════════════════════ Recherche ══════════════════════ */
 
 .findbtn { display: flex; align-items: center; gap: var(--s3); width: 100%; padding: var(--s2) var(--s3); font-size: var(--fs-sm); color: var(--ink-4); background: var(--sand); border: 0; border-radius: var(--r); transition: background .16s var(--ease), color .16s var(--ease); }
@@ -669,11 +751,41 @@ body.editing .shell { padding-bottom: var(--s9); }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
+/* ══════════════════════════════ Impression ═════════════════════
+   Un fondateur qui atterrit sans forfait data voudra du papier : la chaîne
+   d'installation, le carnet, le glossaire. On imprime la section affichée,
+   pas le site entier — quarante pages ne servent personne. */
+
 @media print {
-  .rail, .topbar, .tools, .foot, .editbar { display: none !important; }
+  @page { margin: 14mm 12mm; }
+
+  .rail, .topbar, .foot, .editbar, .scrim, .find, .gate,
+  .tools, .boite__tools, .rowtools, .listadd, .card__acts,
+  .mapwrap, .offl, .jour, .prog__ics, #ics { display: none !important; }
+
   .shell { margin-left: 0; }
-  .view[hidden] { display: block !important; }
-  .card, .slot, .step, .etape, .mot, .boite { break-inside: avoid; }
+  .main { padding: 0; }
+  .view[hidden] { display: none !important; }   /* la section à l'écran, et elle seule */
+
+  body { background: #fff; color: #000; font-size: 10.5pt; }
+  .card, .slot, .step, .etape, .mot, .boite, .fond, .need, .h48__i, .sos {
+    break-inside: avoid; background: #fff !important;
+  }
+  .section, .day { break-inside: auto; }
+  h1, h2, h3 { break-after: avoid; }
+
+  /* Les aplats deviennent des filets : l'encre coûte, la structure non. */
+  .h48, .etape__stop, .warn, .pan__keep, .pan__warn, .card, .boite, .need {
+    border: 1px solid #bbb; box-shadow: none !important;
+  }
+
+  /* Un lien imprimé sans son adresse ne sert à rien. */
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8.5pt; color: #444; word-break: break-all; }
+  a[href^="#"]::after, a[href^="mailto"]::after, a[href^="tel"]::after { content: ""; }
+
+  /* Ce qui est replié à l'écran doit sortir déplié sur le papier. */
+  .fold__b { display: block !important; }
+  details:not([open]) > .fold__b { display: block !important; }
 }
 
 .main { view-transition-name: view; }

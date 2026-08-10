@@ -155,6 +155,44 @@
     'pan.founderOf': { fr: 'Fondateur·rice de', en: 'Founder of' },
     'pan.sameCountry': { fr: 'Même pays dans la promotion', en: 'Same country in the cohort' },
     'pan.orgs':      { fr: 'Structures citées', en: 'Organisations mentioned' },
+
+    'nav.carte':     { fr: 'Carte', en: 'Map' },
+    'sub.carte':     { fr: 'Les hôtels et les adresses du site, posés sur la ville. Cliquez un repère pour ouvrir sa fiche.',
+                       en: 'The site’s hotels and addresses, placed on the city. Click a pin to open its entry.' },
+    'map.hotels':    { fr: 'Hôtels', en: 'Hotels' },
+    'map.charge':    { fr: 'Afficher la carte', en: 'Show the map' },
+    'map.avert':     { fr: 'La vue satellite charge des images depuis un serveur extérieur (Esri). C’est le seul moment où ce site sort vers l’extérieur : elle ne s’affiche que si vous le demandez, et le reste du site fonctionne sans elle, y compris hors ligne.',
+                       en: 'The satellite view loads imagery from an outside server (Esri). It is the only moment this site reaches outward: it appears only if you ask for it, and the rest of the site works without it, offline included.' },
+    'map.plan':      { fr: 'Plan', en: 'Street' },
+    'map.sat':       { fr: 'Satellite', en: 'Satellite' },
+    'map.recentrer': { fr: 'Tout voir', en: 'Fit all' },
+    'map.aucun':     { fr: 'Aucun lieu ne correspond.', en: 'No place matches.' },
+    'map.horsligne': { fr: 'Carte indisponible hors ligne — les fiches, elles, restent lisibles.',
+                       en: 'Map unavailable offline — the entries themselves remain readable.' },
+
+    'replay.title':  { fr: 'Revoir la session', en: 'Watch again' },
+    'replay.pending':{ fr: 'Enregistrement disponible, pas encore hébergé en ligne. Fichier :',
+                       en: 'Recording available, not yet hosted online. File:' },
+    'replay.none':   { fr: 'Aucun enregistrement pour cette session.', en: 'No recording for this session.' },
+
+    'j1.title':      { fr: 'Vos 48 premières heures', en: 'Your first 48 hours' },
+    'j1.lede':       { fr: 'Ce qui se règle tout de suite, dans l’ordre. Le reste attend.',
+                       en: 'What to sort straight away, in order. The rest can wait.' },
+    'j1.more':       { fr: 'La chaîne complète', en: 'The full chain' },
+
+    'need.title':    { fr: 'Qui appeler, pour quoi', en: 'Who to call, and what for' },
+    'need.lede':     { fr: 'On ne cherche pas un nom, on cherche une solution. Partez du problème.',
+                       en: 'You don’t look for a name, you look for a way out. Start from the problem.' },
+
+    'off.title':     { fr: 'Ce site fonctionne sans réseau', en: 'This site works without a network' },
+    'off.body':      { fr: 'Une fois ouvert, il reste consultable hors ligne : programme, glossaire, chaîne d’installation, carnet. Utile à l’atterrissage, avant d’avoir une carte SIM française.',
+                       en: 'Once opened, it stays readable offline: programme, glossary, settling-in chain, address book. Useful on landing, before you have a French SIM.' },
+    'off.ready':     { fr: 'Prêt pour le hors-ligne', en: 'Ready for offline' },
+
+    'prog.past':     { fr: 'Sessions déjà passées', en: 'Past sessions' },
+    'prog.pastShow': { fr: 'Afficher', en: 'Show' },
+    'prog.pastHide': { fr: 'Masquer', en: 'Hide' },
+    'prog.upcoming': { fr: 'À venir', en: 'Upcoming' },
     'glo.trap':      { fr: 'Le piège', en: 'The catch' },
     'glo.search':    { fr: 'Chercher un mot…', en: 'Search a word…' },
     'glo.entreprise':    { fr: 'Entreprise', en: 'Company' },
@@ -228,6 +266,7 @@
     hotels: '<path d="M3 19.4V9.6"/><path d="M3 13.2h13.6a4.4 4.4 0 0 1 4.4 4.4v1.8"/><circle cx="7.2" cy="9.9" r="2.1"/><path d="M3 19.4h18"/>',
     contacts: '<rect x="5" y="3" width="14.5" height="18" rx="2.5"/><path d="M2.6 8h2.4M2.6 12h2.4M2.6 16h2.4"/><circle cx="12.2" cy="10.2" r="2.3"/><path d="M8.6 16.6c0-2 1.6-3.2 3.6-3.2s3.6 1.2 3.6 3.2"/>',
     marseille: '<path d="M12 21.2s6.6-6.1 6.6-10.6a6.6 6.6 0 1 0-13.2 0C5.4 15.1 12 21.2 12 21.2Z"/><circle cx="12" cy="10.5" r="2.4"/>',
+    carte: '<path d="M9.2 4.2 3.4 6.6v13.2l5.8-2.4 5.6 2.4 5.8-2.4V4.2l-5.8 2.4Z"/><path d="M9.2 4.2v13.2M14.8 6.6v13.2"/>',
     pin: '<path d="M12 21.2s6.6-6.1 6.6-10.6a6.6 6.6 0 1 0-13.2 0C5.4 15.1 12 21.2 12 21.2Z"/><circle cx="12" cy="10.5" r="2.4"/>',
     user: '<circle cx="12" cy="8" r="3.4"/><path d="M5.4 20.2c0-3.4 3-5.6 6.6-5.6s6.6 2.2 6.6 5.6"/>',
     walk: '<circle cx="13" cy="4.4" r="1.9"/><path d="M11 21.4l2-6.2-2.4-2.6.8-4.4 3.4 2 2.6 1.4"/><path d="M10.6 8.2 7.8 10l-1 3.6"/><path d="m13.4 15.4 2.4 2.6.9 3.4"/>',
@@ -247,6 +286,7 @@
     alert: '<path d="M12 3.6 21.4 20H2.6Z"/><path d="M12 9.6v4.4M12 17.2h.01"/>',
     search: '<circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/>',
     download: '<path d="M12 3.6v11.4"/><path d="m7.4 10.4 4.6 4.6 4.6-4.6"/><path d="M4.4 19.4h15.2"/>',
+    play: '<circle cx="12" cy="12" r="8.6"/><path d="M10.2 8.6 15.4 12l-5.2 3.4Z"/>',
     trash: '<path d="M4 6.5h16"/><path d="M9 6.5V4.2h6v2.3"/><path d="M6.4 6.5 7.3 20h9.4l.9-13.5"/>',
   };
 
@@ -255,7 +295,7 @@
     : '');
 
   const SECTIONS = ['accueil', 'programme', 'installation', 'glossaire', 'visa',
-                    'business-plan', 'entreprises', 'acteurs',
+                    'business-plan', 'entreprises', 'acteurs', 'carte',
                     'hotels', 'contacts', 'marseille'];
 
   /* Les listes qu'on peut allonger ou raccourcir en mode édition. */
@@ -608,7 +648,7 @@
       banniere = `<div class="now"><span class="eyebrow now__k">${esc(ui('now.done'))}</span></div>`;
     }
 
-    const jours = m.jours.map((j) => {
+    const rendreJours = (liste) => liste.map((j) => {
       const lignes = j.lignes.map((r) => {
         const { item, b, index } = r;
         const live = b.de <= maintenant && maintenant <= b.a;
@@ -630,6 +670,16 @@
           .map((res) => lien(res.url, t(res.label) || ui('label.resources'), 'link'))
           .filter(Boolean).join('');
 
+        /* Le replay : un lien s'il est hébergé, sinon le nom du fichier qui
+           existe déjà sur la machine de Kelyan. Dire « il existe mais il
+           n'est pas en ligne » vaut mieux que ne rien dire. */
+        const rep = item.replay || {};
+        const replay = filled(rep.url)
+          ? `<div class="slot__a">${lien(t(rep.url), ui('replay.title'), 'play')}</div>`
+          : filled(rep.fichier)
+            ? `<p class="slot__rep">${esc(ui('replay.pending'))} <code>${esc(t(rep.fichier))}</code></p>`
+            : '';
+
         return `<article class="${cls} slot--ouvrable" data-panel="programme.${index}" tabindex="0" role="button">
           <div class="slot__when">
             <span class="slot__h num">${field(`programme.${index}.start`, item.start)}</span>
@@ -640,6 +690,7 @@
             ${filled(item.description) ? `<p class="slot__d">${field(`programme.${index}.description`, item.description)}</p>` : ''}
             ${infos.length ? `<div class="slot__m">${infos.join('')}</div>` : ''}
             ${ressources ? `<div class="slot__a">${ressources}</div>` : ''}
+            ${replay}
             ${boutonsLigne('programme', index)}
           </div>
         </article>`;
@@ -656,10 +707,32 @@
            <span class="find__d">${esc(ui('label.icsHint'))}</span></div>`
       : '';
 
+    /* La page s'ouvrait sur huit webinaires terminés, puis sur les journées
+       à venir. Quelqu'un qui arrive en septembre voyait d'abord ce qui était
+       fini. On inverse : l'à-venir d'abord, le passé replié — sans le jeter,
+       il porte les replays. */
+    const finiJour = (j) => j.lignes.every((r) => r.b.a < maintenant);
+    const passes = m.jours.filter(finiJour);
+    const aVenir = m.jours.filter((j) => !finiJour(j));
+
+    const blocPasse = passes.length ? `
+      <details class="fold"${state.editing ? ' open' : ''}>
+        <summary class="fold__s">
+          <span>${esc(ui('prog.past'))}</span>
+          <span class="day__c num">${passes.reduce((n, j) => n + j.lignes.length, 0)}</span>
+        </summary>
+        <div class="fold__b">${rendreJours(passes)}</div>
+      </details>` : '';
+
+    const blocAvenir = aVenir.length
+      ? `<div class="section__head section__head--plain"><h2>${esc(ui('prog.upcoming'))}</h2></div>${rendreJours(aVenir)}`
+      : '';
+
     return banniere
       + (tz ? `<p class="day__c" style="margin-bottom:var(--s5)">${esc(ui('now.tz'))}</p>` : '')
       + agenda
-      + jours
+      + blocAvenir
+      + blocPasse
       + boutonAjout('programme');
   }
 
@@ -821,6 +894,43 @@
     </section>`;
   }
 
+  /* Les deux premières étapes de la chaîne d'installation, sorties de leur
+     page. Un fondateur qui atterrit ne cherche pas « la chaîne complète »,
+     il cherche quoi faire ce soir. Rien de neuf n'est écrit ici : c'est un
+     raccourci vers ce qui existe déjà, pour que ça se voie. */
+  function rendrePremieresHeures() {
+    const etapes = list((state.data.installation || {}).etapes).slice(0, 3);
+    if (!etapes.length) return '';
+    /* Pas de compteur ici : les titres des étapes portent déjà le leur
+       (« 1 · Une carte SIM »), et deux numérotations qui se superposent
+       donnaient « 2 — 1 · Une carte SIM ». L'ordre de la liste suffit. */
+    const lignes = etapes.map((e, i) => `
+      <li class="h48__i">
+        <span class="h48__b" aria-hidden="true"></span>
+        <div>
+          <p class="h48__t">${field(`installation.etapes.${i}.titre`, e.titre)}</p>
+          ${filled(e.quand) ? `<p class="h48__q">${field(`installation.etapes.${i}.quand`, e.quand)}</p>` : ''}
+          ${filled(e.pourquoi) ? `<p class="h48__p">${field(`installation.etapes.${i}.pourquoi`, e.pourquoi)}</p>` : ''}
+        </div>
+      </li>`).join('');
+
+    return `<section class="section h48">
+      <div class="section__head"><h2>${esc(ui('j1.title'))}</h2></div>
+      <p class="h48__lede">${esc(ui('j1.lede'))}</p>
+      <ol class="h48__l">${lignes}</ol>
+      <a class="btn" href="#installation">${esc(ui('j1.more'))}${svg('arrow', 15)}</a>
+    </section>`;
+  }
+
+  /* Le site marche hors ligne depuis le début et personne ne le sait. C'est
+     précisément l'argument qui compte à l'atterrissage, sans carte SIM. */
+  function rendreHorsLigne() {
+    return `<aside class="offl">
+      <p class="eyebrow offl__k">${esc(ui('off.title'))}</p>
+      <p class="offl__b">${esc(ui('off.body'))}</p>
+    </aside>`;
+  }
+
   function rendreAccueil() {
     const site = state.data.site || {};
     const home = state.data.home || {};
@@ -859,10 +969,12 @@
           </div>${reperes}</div>` : (reperes ? `<div class="stats">${reperes}</div>` : '')}
       </div>
 
+      ${rendrePremieresHeures()}
       ${tuiles ? `<section class="section"><div class="section__head">
           <h2>${esc(state.lang === 'en' ? 'Go straight to' : 'Aller droit au but')}</h2></div>
         <div class="grid grid--2">${tuiles}</div></section>` : ''}
-      ${rendreProgression()}`;
+      ${rendreProgression()}
+      ${rendreHorsLigne()}`;
   }
 
   function rendreVisa() {
@@ -1033,7 +1145,27 @@
         </article>`;
       }).join('');
 
+    /* Un annuaire alphabétique suppose qu'on connaisse déjà le nom. Ici on
+       part du problème : « mon titre de séjour bloque » mène à la bonne
+       porte. Les cibles sont des sections ou des fiches qui existent déjà. */
+    const besoins = list(state.data.besoins).filter((b) => filled(b.probleme)).map((b, i) => {
+      const cible = t(b.lien) || '';
+      const balise = cible && !state.editing ? 'a' : 'div';
+      const attr = cible && !state.editing ? ` href="${esc(cible)}"` : '';
+      return `<${balise} class="need"${attr}>
+        <p class="need__p">${field(`besoins.${i}.probleme`, b.probleme)}</p>
+        <p class="need__r">${field(`besoins.${i}.reponse`, b.reponse)}</p>
+      </${balise}>`;
+    }).join('');
+
+    const blocBesoins = besoins ? `<section class="section">
+        <div class="section__head"><h2>${esc(ui('need.title'))}</h2></div>
+        <p class="h48__lede">${esc(ui('need.lede'))}</p>
+        <div class="grid grid--2">${besoins}</div>
+      </section>` : '';
+
     return entete(ui('nav.contacts'), esc(ui('sub.contacts')))
+      + blocBesoins
       + `<div class="tools"><input class="search" type="search" data-filter="contacts"
             value="${esc(state.filters.contacts || '')}" placeholder="${esc(ui('search.contacts'))}"></div>`
       + (cartes ? `<div class="grid grid--2">${cartes}</div>` : vide(q ? ui('empty.search') : ''))
@@ -1293,10 +1425,136 @@
       ${state.editing ? `<button type="button" class="btn listadd" data-addsub="entreprises.${i}.blocs">${svg('plus', 14)}${esc(ui('ent.addBlock'))}</button>` : ''}`;
   }
 
+  /* ═══════════════════════ La carte ═══════════════════════
+     Elle ne charge rien tant qu'on ne le demande pas. Le reste du site ne
+     sort jamais vers l'extérieur — polices, images, tout est hébergé ici —
+     et les tuiles satellite sont la seule exception. Elle est donc explicite :
+     un bouton, un avertissement, et un site qui reste entier sans elle. */
+
+  const TUILES = {
+    sat: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+           attr: 'Esri, Maxar, Earthstar Geographics', max: 19 },
+    plan: { url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            attr: '© OpenStreetMap', max: 19 },
+  };
+
+  /* Les repères de la carte, tirés des deux sections déjà remplies. */
+  function lieuxCartographies() {
+    const out = [];
+    list(state.data.hotels).forEach((x, i) => {
+      if (x.lat && x.lng && x.statut !== 'ferme') out.push({ x, i, section: 'hotels', famille: 'hotels' });
+    });
+    list(state.data.marseille).forEach((x, i) => {
+      if (x.lat && x.lng && x.statut !== 'ferme') out.push({ x, i, section: 'marseille', famille: String(x.category || 'autre') });
+    });
+    return out;
+  }
+
+  function rendreCarte() {
+    const tout = lieuxCartographies();
+    const cat = state.filters.carteCat || '';
+    const familles = [...new Set(tout.map((l) => l.famille))];
+
+    const filtres = familles.map((f) => `<button type="button" class="chipbtn" data-ccat="${esc(f)}"
+        aria-pressed="${cat === f}">${esc(f === 'hotels' ? ui('map.hotels') : libelleCat(f))}</button>`).join('');
+
+    const compte = tout.filter((l) => !cat || l.famille === cat).length;
+
+    return entete(ui('nav.carte'), esc(ui('sub.carte')))
+      + bandeauAncrage()
+      + `<div class="tools">
+          <button type="button" class="chipbtn" data-ccat="" aria-pressed="${cat === ''}">${esc(ui('label.all'))}</button>
+          ${filtres}
+          <span class="tools__c num">${compte}</span>
+        </div>`
+      + `<div class="mapwrap">
+          <div class="map" id="map" role="application" aria-label="${esc(ui('nav.carte'))}"></div>
+          <div class="map__gate" id="map-gate">
+            <p class="map__avert">${esc(ui('map.avert'))}</p>
+            <button type="button" class="btn btn--primary btn--lg" id="map-go">${esc(ui('map.charge'))}</button>
+          </div>
+          <div class="map__tools" id="map-tools" hidden>
+            <button type="button" class="chipbtn" data-tuile="sat" aria-pressed="true">${esc(ui('map.sat'))}</button>
+            <button type="button" class="chipbtn" data-tuile="plan" aria-pressed="false">${esc(ui('map.plan'))}</button>
+            <button type="button" class="chipbtn" id="map-fit">${esc(ui('map.recentrer'))}</button>
+          </div>
+        </div>`;
+  }
+
+  /* L'instance vit hors du rendu : recréer la carte à chaque re-rendu
+     ferait clignoter les tuiles et perdrait le zoom de l'utilisateur. */
+  const carte = { instance: null, couche: null, reperes: [], fond: 'sat' };
+
+  function poserReperes() {
+    if (!carte.instance) return;
+    carte.reperes.forEach((m) => m.remove());
+    carte.reperes = [];
+    const cat = state.filters.carteCat || '';
+    const retenus = lieuxCartographies().filter((l) => !cat || l.famille === cat);
+
+    retenus.forEach(({ x, i, section, famille }) => {
+      const icone = L.divIcon({
+        className: '', iconSize: [0, 0],
+        html: `<span class="pin pin--${esc(famille)}"><span class="pin__d"></span>
+                 <span class="pin__l">${esc(t(x.name))}</span></span>`,
+      });
+      const m = L.marker([x.lat, x.lng], { icon: icone, title: t(x.name) }).addTo(carte.instance);
+      m.on('click', () => ouvrirPanneau(`${section}.${i}`));
+      carte.reperes.push(m);
+    });
+
+    if (retenus.length) {
+      carte.instance.fitBounds(L.latLngBounds(retenus.map((l) => [l.x.lat, l.x.lng])), { padding: [56, 56], maxZoom: 17 });
+      const boite = $('#map');
+      if (boite) boite.classList.toggle('map--muet', carte.instance.getZoom() < 16);
+    }
+  }
+
+  function allumerCarte() {
+    const boite = $('#map');
+    if (!boite || carte.instance) return;
+    if (typeof L === 'undefined') { boite.innerHTML = `<p class="vide">${esc(ui('map.horsligne'))}</p>`; return; }
+
+    carte.instance = L.map(boite, { scrollWheelZoom: false, attributionControl: true })
+                      .setView([43.3053, 5.3665], 15);
+    /* Seize repères dans un mouchoir de poche : à faible zoom les libellés
+       se recouvrent et la carte devient illisible. On ne les montre qu'une
+       fois assez près ; en dessous, le survol suffit. */
+    const jaugerLibelles = () => boite.classList.toggle('map--muet', carte.instance.getZoom() < 16);
+    carte.instance.on('zoomend', jaugerLibelles);
+    changerFond('sat');
+    poserReperes();
+    jaugerLibelles();
+    $('#map-gate').hidden = true;
+    $('#map-tools').hidden = false;
+    /* Leaflet mesure son conteneur à la construction : s'il était caché,
+       il faut le lui redemander une fois visible. */
+    setTimeout(() => carte.instance.invalidateSize(), 60);
+  }
+
+  function changerFond(nom) {
+    if (!carte.instance) return;
+    const t2 = TUILES[nom] || TUILES.sat;
+    if (carte.couche) carte.couche.remove();
+    carte.couche = L.tileLayer(t2.url, { maxZoom: t2.max, attribution: t2.attr }).addTo(carte.instance);
+    carte.fond = nom;
+    document.querySelectorAll('[data-tuile]').forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.tuile === nom)));
+  }
+
   function rendreEntreprises() {
     if (state.detail !== null && state.detail !== undefined) return ficheEntreprise(state.detail);
 
-    const cartes = list(state.data.entreprises).map((e, i) => {
+    /* Le pays est écrit « Tunisie · Tunis » : on filtre sur le pays seul,
+       sinon chaque ville ferait sa propre catégorie. */
+    const pays = (e) => String(t(e.pays) || '').split('·')[0].trim();
+    const choisi = state.filters.entPays || '';
+    const paysDispo = [...new Set(list(state.data.entreprises).map(pays).filter(Boolean))].sort();
+
+    const cartes = list(state.data.entreprises)
+      .map((e, i) => ({ e, i }))
+      .filter(({ e }) => !choisi || pays(e) === choisi)
+      .map(({ e, i }) => {
       const logo = typeof e.logo === 'string' && e.logo.startsWith('data:image/')
         ? `<img src="${esc(e.logo)}" alt="${esc(t(e.nom))}">`
         : `<span class="boite__vide">${esc(ui('ent.noLogo'))}</span>`;
@@ -1316,8 +1574,15 @@
       </article>`;
     }).join('');
 
+    const filtresPays = paysDispo.length > 1 ? `<div class="tools">
+        <button type="button" class="chipbtn" data-epays="" aria-pressed="${choisi === ''}">${esc(ui('label.all'))}</button>
+        ${paysDispo.map((p) => `<button type="button" class="chipbtn" data-epays="${esc(p)}"
+            aria-pressed="${choisi === p}">${esc(p)}</button>`).join('')}
+      </div>` : '';
+
     return entete(ui('nav.entreprises'), esc(ui('sub.entreprises')))
-      + (cartes ? `<div class="boites">${cartes}</div>` : vide())
+      + filtresPays
+      + (cartes ? `<div class="boites">${cartes}</div>` : vide(ui('empty.search')))
       + boutonAjout('entreprises');
   }
 
@@ -1333,6 +1598,7 @@
     'installation': rendreInstallation,
     'glossaire': rendreGlossaire,
     'entreprises': rendreEntreprises,
+    'carte': rendreCarte,
   };
 
 
@@ -1731,6 +1997,12 @@
       + bloc(ui('pan.speakers'), gens.length ? `<ul class="pan__l">${gens.join('')}</ul>` : '')
       + bloc(ui('pan.venue'), lieu)
       + bloc(ui('pan.practical'), liste(infos))
+      + bloc(ui('replay.title'), (() => {
+          const r = x.replay || {};
+          if (filled(r.url)) return `<div class="card__acts">${lien(t(r.url), ui('replay.title'), 'play')}</div>`;
+          if (filled(r.fichier)) return `<p class="pan__p">${esc(ui('replay.pending'))} <code>${esc(t(r.fichier))}</code></p>`;
+          return '';
+        })())
       + bloc(ui('label.resources'), res ? `<div class="card__acts">${res}</div>` : '')
       + bloc(ui('pan.orgs'), puces(orgs))
       + bloc(ui('pan.terms'), puces(mots)) };
@@ -1783,6 +2055,13 @@
   }
 
   function afficherSection() {
+    /* Le conteneur de la carte est réécrit à chaque rendu : l'instance
+       Leaflet qui pointait dessus devient orpheline. On la démonte, sinon
+       elle laisse des écouteurs et des tuiles derrière elle. */
+    if (carte.instance) {
+      carte.instance.remove();
+      carte.instance = null; carte.couche = null; carte.reperes = [];
+    }
     SECTIONS.forEach((id) => {
       const vue = document.getElementById(`view-${id}`);
       if (!vue) return;
@@ -1919,6 +2198,27 @@
       /* Une puce n'est un filtre que si elle porte un filtre. Sans ce test,
          toute .chipbtn était avalée ici — c'est ce qui rendait muets les
          renvois « Voir aussi » du glossaire depuis leur création. */
+      const epays = e.target.closest('[data-epays]');
+      if (epays) { state.filters.entPays = epays.dataset.epays; afficherSection(); return; }
+
+      if (e.target.closest('#map-go')) { allumerCarte(); return; }
+      const fond = e.target.closest('[data-tuile]');
+      if (fond) { changerFond(fond.dataset.tuile); return; }
+      if (e.target.closest('#map-fit')) { poserReperes(); return; }
+
+      /* Le filtre de la carte ne re-rend pas la section : recréer le
+         conteneur détruirait la carte et le zoom en cours. */
+      const ccat = e.target.closest('[data-ccat]');
+      if (ccat) {
+        state.filters.carteCat = ccat.dataset.ccat;
+        document.querySelectorAll('[data-ccat]').forEach((b) =>
+          b.setAttribute('aria-pressed', String(b.dataset.ccat === state.filters.carteCat)));
+        const n = lieuxCartographies().filter((l) => !state.filters.carteCat || l.famille === state.filters.carteCat).length;
+        const c = document.querySelector('.tools__c'); if (c) c.textContent = n;
+        poserReperes();
+        return;
+      }
+
       const cat = e.target.closest('.chipbtn');
       if (cat && ('gcat' in cat.dataset || 'rcat' in cat.dataset || 'cat' in cat.dataset)) {
         if ('gcat' in cat.dataset) state.filters.glossaireCat = cat.dataset.gcat;

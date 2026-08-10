@@ -15,10 +15,15 @@
    dont le contenu est corrigé au fil de l'eau, c'est inacceptable — l'écart de
    quelques centaines de millisecondes au chargement ne pèse rien à côté. */
 
-const VERSION = 'slpac-v2';
+const VERSION = 'slpac-v3';
 const COQUILLE = [
   './',
   'index.html',
+  /* Leaflet est hébergé ici, comme les polices : le site ne dépend d'aucun
+     CDN. Les tuiles satellite, elles, viennent bien de l'extérieur — mais
+     seulement si l'utilisateur ouvre la carte et l'accepte. */
+  'assets/vendor/leaflet.js',
+  'assets/vendor/leaflet.css',
   /* Sans lui le site s'ouvre mais reste vide : à la première visite, la page
      l'a déjà chargé avant que ce worker prenne la main. On l'amorce donc ici. */
   'content.enc.json',
