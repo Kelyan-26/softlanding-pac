@@ -389,10 +389,13 @@
     return /^(https?:\/\/|mailto:|tel:)/i.test(s) ? esc(s) : '';
   }
 
+  /* Le libellé passe par t() : certains sont de simples chaînes, d'autres des
+     objets {fr, en} — les intitulés de liens officiels notamment, dont la
+     page cible est en français mais dont le libellé doit se lire en anglais. */
   function lien(url, texte, icone) {
     const safe = href(url);
     return safe
-      ? `<a class="btn" href="${safe}" target="_blank" rel="noopener noreferrer">${icone ? svg(icone, 14) : ''}${esc(texte)}</a>`
+      ? `<a class="btn" href="${safe}" target="_blank" rel="noopener noreferrer">${icone ? svg(icone, 14) : ''}${esc(t(texte))}</a>`
       : '';
   }
 
