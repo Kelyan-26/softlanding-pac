@@ -114,6 +114,8 @@
     'visa.who':      { fr: 'Pour qui', en: 'Who it is for' },
     'visa.step':     { fr: 'Cette étape en détail', en: 'This step in detail' },
     'bp.detail':     { fr: 'Ce que couvre cette thématique', en: 'What this theme covers' },
+    'bp.cover':      { fr: 'Les points à traiter', en: 'The points to cover' },
+    'bp.traps':      { fr: 'Les erreurs qui coûtent cher', en: 'The costly mistakes' },
 
     'pan.close':     { fr: 'Fermer', en: 'Close' },
     'pan.detail':    { fr: 'En détail', en: 'In detail' },
@@ -2192,11 +2194,21 @@
     const sessions = list(state.data.programme).map((x, k) => ({ x, k }))
       .filter(({ x }) => cles.some((c) => `${t(x.title)} ${t(x.description)}`.toLowerCase().includes(c)))
       .slice(0, 4).map(({ x, k }) => puce('programme', k, t(x.title)));
+    const liens = list(s.liens).map((x) => lien(x.url, x.label, 'link')).filter(Boolean).join('');
+    /* Les paragraphes du détail sont séparés par des sauts de ligne dans la
+       donnée : on les rend tels quels, sinon tout se colle en un pavé. */
+    const paras = (v) => t(v).split(/\n{2,}/).filter(Boolean)
+      .map((p) => `<p class="pan__p">${esc(p)}</p>`).join('');
+
     return { titre: field(`businessPlan.sections.${i}.title`, s.title),
              surtitre: ui('nav.business-plan'),
              corps:
-      bloc(ui('bp.detail'), filled(s.body) ? `<p class="pan__p">${field(`businessPlan.sections.${i}.body`, s.body)}</p>` : '')
-      + bloc(ui('inst.docs'), liste(items))
+      bloc(ui('bp.detail'), filled(s.detail) ? paras(s.detail)
+             : (filled(s.body) ? `<p class="pan__p">${field(`businessPlan.sections.${i}.body`, s.body)}</p>` : ''))
+      + bloc(ui('bp.cover'), liste(items))
+      + (filled(s.pieges) ? `<section class="pan__b pan__warn"><p class="eyebrow">${esc(ui('bp.traps'))}</p>
+          <p class="pan__p">${field(`businessPlan.sections.${i}.pieges`, s.pieges)}</p></section>` : '')
+      + bloc(ui('label.resources'), liens ? `<div class="card__acts">${liens}</div>` : '')
       + bloc(ui('pan.sessions'), puces(sessions))
       + bloc(ui('pan.terms'), puces(mots)) };
   }
