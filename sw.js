@@ -15,7 +15,7 @@
    dont le contenu est corrigé au fil de l'eau, c'est inacceptable — l'écart de
    quelques centaines de millisecondes au chargement ne pèse rien à côté. */
 
-const VERSION = 'slpac-v4';
+const VERSION = 'slpac-v5';
 const COQUILLE = [
   './',
   'index.html',
@@ -33,14 +33,10 @@ const COQUILLE = [
   'assets/logo.png',
   'assets/logo-clair.png',
   'assets/mark.png',
-  'assets/fonts/inter-400-800-latin.woff2',
-  'assets/fonts/inter-400-800-latin-ext.woff2',
-  'assets/fonts/roboto-400-latin.woff2',
-  'assets/fonts/roboto-400-latin-ext.woff2',
-  'assets/fonts/roboto-500-latin.woff2',
-  'assets/fonts/roboto-500-latin-ext.woff2',
-  'assets/fonts/roboto-700-latin.woff2',
-  'assets/fonts/roboto-700-latin-ext.woff2',
+  'assets/fonts/space-grotesk-latin.woff2',
+  'assets/fonts/space-grotesk-latin-ext.woff2',
+  'assets/fonts/jakarta-latin.woff2',
+  'assets/fonts/jakarta-latin-ext.woff2',
 ];
 
 self.addEventListener('install', (e) => {

@@ -2,7 +2,8 @@
 
 /* Soft Landing — Provence Africa Connect
    Couleurs du logo : orange #ED752C, encre quasi noire.
-   Typographie : Inter (titres) et Roboto (texte), hébergées localement.
+   Typographie : Space Grotesk (titres) et Plus Jakarta Sans (texte),
+   hébergées localement, en fichiers variables.
 
    Trois partis pris, demandés le 2026-08-06 :
    - THÈME CLAIR UNIQUEMENT. Plus de bascule, plus de variables jumelles.
@@ -47,8 +48,8 @@
   --danger-wash: #FBEBE7;
 
   /* ── Typographie ────────────────────────────────────────────── */
-  --f-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --f-text: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --f-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --f-text: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
   --fs-hero: clamp(2.5rem, 1.1rem + 4.2vw, 4rem);
   --fs-h1: clamp(1.9rem, 1.2rem + 2.2vw, 2.9rem);
