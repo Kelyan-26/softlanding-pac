@@ -2,7 +2,7 @@
 
 /* Soft Landing — Provence Africa Connect
    Couleurs du logo : orange #ED752C, encre quasi noire.
-   Typographie : Space Grotesk (titres) et Plus Jakarta Sans (texte),
+   Typographie : Figtree (titres) et Plus Jakarta Sans (texte),
    hébergées localement, en fichiers variables.
 
    Trois partis pris, demandés le 2026-08-06 :
@@ -48,7 +48,7 @@
   --danger-wash: #FBEBE7;
 
   /* ── Typographie ────────────────────────────────────────────── */
-  --f-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --f-display: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --f-text: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
   --fs-hero: clamp(2.5rem, 1.1rem + 4.2vw, 4rem);
@@ -285,8 +285,7 @@ button { cursor: pointer; }
   display: flex; gap: 0;
   max-width: var(--page); margin: 0 auto;
   padding: 0 var(--s6);
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-wrap: wrap;
   border-top: 1px solid rgb(255 255 255 / .12);
 }
 .nav::-webkit-scrollbar { display: none; }
@@ -1211,11 +1210,8 @@ body.editing .shell { padding-bottom: var(--s9); }
 @supports (animation-timeline: scroll(self inline)) {
   .nav { --fin: 0; }
 }
-.bar::after {
-  content: ""; position: absolute; right: 0; bottom: 0; width: 56px; height: 44px;
-  pointer-events: none;
-  background: linear-gradient(to right, rgb(51 61 133 / 0), var(--navy-ink));
-}
+/* Plus de dégradé de bord : il n'y a plus rien à masquer, les onglets
+   passent à la ligne au lieu de sortir de l'écran. */
 
 /* La colonne des numéros faisait 44 px : le chiffre agrandi y était à
    l'étroit et gardait l'aplat de l'ancienne pastille. On élargit et on
@@ -1224,3 +1220,23 @@ body.editing .shell { padding-bottom: var(--s9); }
 .etape:first-child .etape__num { color: var(--navy-wash); background: none; }
 .etape__num { place-items: start; }
 @media (max-width: 900px) { .etape { grid-template-columns: 48px 1fr; } }
+
+/* ════════════════ Plus de traits noirs ══════════════════════════════
+   Kelyan : « ça fait 2006 ». Il a raison — un filet noir épais sous un
+   titre est un souvenir des feuilles de style de l'époque. Ce qui sépare
+   ici, c'est le blanc, un aplat, ou au pire un cheveu gris clair. */
+
+.day__head { border-bottom: 1px solid var(--hair); }
+.section__head { border-bottom: 0; padding-bottom: var(--s2); }
+.offl { border-top: 0; padding-left: 0; padding-right: 0; }
+.offl__k { color: var(--navy-deep); }
+
+/* Le champ de mot de passe gardait un trait noir de 2 px sous lui. */
+.field { border-bottom-width: 1px; border-bottom-color: var(--ink-4); }
+.field:focus { border-bottom-color: var(--orange); border-bottom-width: 2px; }
+
+/* Et la ligne du haut des blocs de statistiques. */
+.stats { border-top: 1px solid var(--hair); }
+/* Le champ de recherche des sections portait lui aussi un trait d'encre. */
+.search { border-bottom-color: var(--hair); }
+.search:focus { border-bottom-color: var(--orange); }

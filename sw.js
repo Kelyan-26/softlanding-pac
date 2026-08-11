@@ -15,7 +15,7 @@
    dont le contenu est corrigé au fil de l'eau, c'est inacceptable — l'écart de
    quelques centaines de millisecondes au chargement ne pèse rien à côté. */
 
-const VERSION = 'slpac-v5';
+const VERSION = 'slpac-v6';
 const COQUILLE = [
   './',
   'index.html',
@@ -33,8 +33,8 @@ const COQUILLE = [
   'assets/logo.png',
   'assets/logo-clair.png',
   'assets/mark.png',
-  'assets/fonts/space-grotesk-latin.woff2',
-  'assets/fonts/space-grotesk-latin-ext.woff2',
+  'assets/fonts/figtree-latin.woff2',
+  'assets/fonts/figtree-latin-ext.woff2',
   'assets/fonts/jakarta-latin.woff2',
   'assets/fonts/jakarta-latin-ext.woff2',
 ];

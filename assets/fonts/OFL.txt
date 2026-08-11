@@ -1,4 +1,11 @@
-Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
+Polices embarquées dans ce site, toutes deux sous SIL Open Font License 1.1 :
+
+  Figtree            — Copyright (c) Erik Kennedy
+  Plus Jakarta Sans  — Copyright (c) Tokotype
+
+Elles sont hébergées localement et ne font aucun appel réseau.
+
+----------------------------------------------------------------------
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
