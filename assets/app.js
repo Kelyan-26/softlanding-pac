@@ -22,6 +22,8 @@
     'gate.wrong':       { fr: 'Mot de passe incorrect.', en: 'Wrong password.' },
     'gate.missing':     { fr: 'Contenu introuvable. Lancez « node build.js » pour générer content.enc.json.', en: 'Content not found. Run “node build.js” to generate content.enc.json.' },
     'gate.corrupt':     { fr: 'Le fichier de contenu est illisible.', en: 'The content file is unreadable.' },
+    'gate.render':      { fr: 'Mot de passe accepté, mais l’affichage a échoué — c’est un défaut du site :',
+                          en: 'Password accepted, but rendering failed — this is a fault in the site:' },
 
     'app.lock':         { fr: 'Verrouiller', en: 'Lock' },
     'app.edit':         { fr: 'Mode édition', en: 'Edit mode' },
@@ -198,6 +200,16 @@
                        en: 'Once opened, it stays readable offline: programme, glossary, settling-in chain, address book. Useful on landing, before you have a French SIM.' },
     'off.ready':     { fr: 'Prêt pour le hors-ligne', en: 'Ready for offline' },
 
+    'site.name':     { fr: 'Soft Landing Provence Africa Connect', en: 'Soft Landing Provence Africa Connect' },
+    'kpi.startups':  { fr: 'startups accompagnées', en: 'startups supported' },
+    'kpi.sessions':  { fr: 'sessions au programme', en: 'sessions in the programme' },
+    'kpi.acteurs':   { fr: 'structures mobilisées', en: 'organisations involved' },
+    'kpi.termes':    { fr: 'termes expliqués', en: 'terms explained' },
+    'foot.who':      { fr: 'Opéré par l’Accélérateur M, Marseille Innovation et ANIMA, financé par la Métropole Aix-Marseille-Provence.',
+                       en: 'Operated by Accélérateur M, Marseille Innovation and ANIMA, funded by the Aix-Marseille-Provence Metropolis.' },
+    'foot.update':   { fr: 'Mis à jour le', en: 'Last updated' },
+    'foot.private':  { fr: 'Espace privé', en: 'Private space' },
+    'foot.offline':  { fr: 'Consultable sans réseau une fois ouvert.', en: 'Readable without a network once opened.' },
     'prog.past':     { fr: 'Sessions déjà passées', en: 'Past sessions' },
     'prog.pastShow': { fr: 'Afficher', en: 'Show' },
     'prog.pastHide': { fr: 'Masquer', en: 'Hide' },
@@ -472,6 +484,11 @@
     const bouton = $('#gate-form button[type="submit"]');
     if (!silencieux) { bouton.disabled = true; bouton.textContent = ui('gate.working'); }
     erreurPorte('');
+    /* Le déchiffrement et le rendu sont séparés. Tant qu'ils partageaient le
+       même try, la moindre erreur d'affichage s'annonçait « mot de passe
+       incorrect » — le pire message possible : il accuse l'utilisateur d'une
+       faute qui n'est pas la sienne, et il masque le vrai défaut. */
+    let ouvert = false;
     try {
       const enveloppe = await chargerEnveloppe();
       const donnees = await dechiffrer(mdp, enveloppe);
@@ -493,11 +510,7 @@
       } else {
         state.data = donnees;
       }
-      /* On n'anime que si le mot de passe vient d'être saisi : une reprise de
-         session silencieuse ne doit pas rejouer la transition à chaque
-         rechargement. */
-      demarrer(!silencieux);
-      return true;
+      ouvert = true;
     } catch (e) {
       if (!silencieux) {
         if (e && e.message === 'missing') erreurPorte(ui('gate.missing'));
@@ -509,6 +522,19 @@
     } finally {
       bouton.disabled = false;
       bouton.textContent = ui('gate.submit');
+    }
+
+    /* Le mot de passe est bon : ce qui échoue ici est un défaut du site, et
+       il doit le dire tel quel plutôt que de se déguiser. On n'anime que si
+       le mot de passe vient d'être saisi. */
+    if (!ouvert) return false;
+    try {
+      demarrer(!silencieux);
+      return true;
+    } catch (e) {
+      console.error('Rendu impossible après déverrouillage :', e);
+      if (!silencieux) erreurPorte(`${ui('gate.render')} ${e && e.message ? e.message : ''}`);
+      return false;
     }
   }
 
@@ -967,24 +993,65 @@
 
     const dates = [m.startDate, m.endDate].filter(filled).map((d) => dateLongue(t(d)));
 
-    return rendreJour() + `<div class="hero">
-        <h1>${field('site.title', site.title)}</h1>
-        <p class="hero__lede">${field('site.tagline', site.tagline)}</p>
-        ${filled(home.intro) ? `<p class="hero__intro">${field('home.intro', home.intro)}</p>` : ''}
-        <div class="hero__cta">
-          <a class="btn btn--primary" href="#programme">${svg('programme', 15)}${esc(ui('nav.programme'))}</a>
-          <a class="btn" href="#contacts">${svg('contacts', 15)}${esc(ui('nav.contacts'))}</a>
+    /* Les chiffres qui disent le programme en un coup d'œil. Ils ne sont pas
+       saisis : ils se comptent sur le contenu, donc ils ne peuvent pas mentir
+       ni se périmer. Motif repris de M alumni : peu de chiffres, très grands. */
+    const jours = (() => {
+      const d0 = new Date(`${t(m.startDate) || '2026-09-14'}T00:00:00`);
+      const debut = new Date(`${(list(state.data.programme).find((s) => t(s.type) === 'immersion') || {}).date || '2026-09-14'}T00:00:00`);
+      const n = Math.ceil((debut - new Date()) / 86400000);
+      return Number.isFinite(n) ? n : null;
+    })();
+
+    const CHIFFRES = [
+      { v: list(state.data.entreprises).length, k: ui('kpi.startups') },
+      { v: list(state.data.programme).length, k: ui('kpi.sessions') },
+      { v: list(state.data.acteurs).length, k: ui('kpi.acteurs') },
+      { v: list(state.data.glossaire).length, k: ui('kpi.termes') },
+    ].filter((x) => x.v > 0).map((x) => `
+      <div class="kpi">
+        <p class="kpi__v num">${x.v}</p>
+        <p class="kpi__k">${esc(x.k)}</p>
+      </div>`).join('');
+
+    /* Pavage inégal : la tuile d'accroche occupe deux colonnes, les autres
+       une. Une grille uniforme ne hiérarchise rien. */
+    const bento = list(home.highlights).map((h, i) => {
+      const cible = typeof h.link === 'string' && h.link.startsWith('#') ? esc(h.link) : '';
+      const balise = cible && !state.editing ? 'a' : 'div';
+      const attr = cible && !state.editing ? ` href="${cible}"` : '';
+      return `<${balise} class="tile${i === 0 ? ' tile--large' : ''}"${attr}>
+        <p class="tile__t">${field(`home.highlights.${i}.label`, h.label)}</p>
+        <p class="tile__d">${field(`home.highlights.${i}.text`, h.text)}</p>
+        ${cible ? `<span class="tile__go">${esc(ui('label.explore'))}${svg('arrow', 15)}</span>` : ''}
+      </${balise}>`;
+    }).join('');
+
+    return `<div class="hero hero--grand">
+        <div class="hero__txt">
+          <p class="eyebrow">${esc(t(site.subtitle) || ui('site.name'))}</p>
+          <h1>${field('site.title', site.title)}</h1>
+          <p class="hero__lede">${field('site.tagline', site.tagline)}</p>
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="#installation">${svg('installation', 15)}${esc(ui('nav.installation'))}</a>
+            <a class="btn" href="#programme">${svg('programme', 15)}${esc(ui('nav.programme'))}</a>
+          </div>
         </div>
-        ${dates.length ? `<div class="stats"><div class="stat">
-            <p class="stat__k">${esc(state.lang === 'en' ? 'Dates' : 'Dates')}</p>
-            <p class="stat__v num">${markTodo(esc(dates.join(' → ')))}</p>
-          </div>${reperes}</div>` : (reperes ? `<div class="stats">${reperes}</div>` : '')}
+        <div class="hero__side">${rendreJour()}</div>
       </div>
 
+      ${CHIFFRES ? `<div class="kpis">${CHIFFRES}</div>` : ''}
+
+      ${filled(home.intro) ? `<p class="hero__intro">${field('home.intro', home.intro)}</p>` : ''}
+      ${dates.length || reperes ? `<div class="stats">${dates.length ? `<div class="stat">
+          <p class="stat__k">${esc(state.lang === 'en' ? 'Dates' : 'Dates')}</p>
+          <p class="stat__v num">${markTodo(esc(dates.join(' → ')))}</p>
+        </div>` : ''}${reperes}</div>` : ''}
+
       ${rendrePremieresHeures()}
-      ${tuiles ? `<section class="section"><div class="section__head">
+      ${bento ? `<section class="section"><div class="section__head">
           <h2>${esc(state.lang === 'en' ? 'Go straight to' : 'Aller droit au but')}</h2></div>
-        <div class="grid grid--2">${tuiles}</div></section>` : ''}
+        <div class="bento">${bento}</div></section>` : ''}
       ${rendreProgression()}
       ${rendreHorsLigne()}`;
   }
@@ -1057,7 +1124,8 @@
 
       return `<article class="card card--ouvrable" data-panel="acteurs.${i}" tabindex="0" role="button">
         <div class="card__top">
-            <p class="card__title">${field(`acteurs.${i}.name`, a.name)} ${badgeStatut(a.statut)}</p>
+            ${badgeStatut(a.statut) ? `<div class="card__badges">${badgeStatut(a.statut)}</div>` : ''}
+            <p class="card__title">${field(`acteurs.${i}.name`, a.name)}</p>
             ${filled(a.role) ? `<p class="card__role">${field(`acteurs.${i}.role`, a.role)}</p>` : ''}
         </div>
         ${filled(a.description) ? `<p class="card__text">${field(`acteurs.${i}.description`, a.description)}</p>` : ''}
@@ -1108,9 +1176,11 @@
       const actions = [lien(h.website, ui('action.website'), 'link'), lien(h.map, ui('action.map'), 'pin')]
         .filter(Boolean).join('');
 
-      return `<article class="card card--ouvrable" data-panel="hotels.${i}" tabindex="0" role="button">
+      return `<article class="card card--ouvrable card--h${h.statut === 'ferme' ? ' card--ferme' : ''}"
+              data-panel="hotels.${i}" tabindex="0" role="button">
         <div class="card__top">
-            <p class="card__title">${field(`hotels.${i}.name`, h.name)} ${badgeStatut(h.statut)}</p>
+            ${badgeStatut(h.statut) ? `<div class="card__badges">${badgeStatut(h.statut)}</div>` : ''}
+            <p class="card__title">${field(`hotels.${i}.name`, h.name)}</p>
             ${filled(h.address) ? `<p class="card__role">${field(`hotels.${i}.address`, h.address)}</p>` : ''}
         </div>
         ${infos.length ? `<div class="card__meta">${infos.join('')}</div>` : ''}
@@ -1324,9 +1394,11 @@
       const actions = [lien(p.website, ui('action.website'), 'link'), lien(p.map, ui('action.map'), 'pin')]
         .filter(Boolean).join('');
 
-      return `<article class="card card--ouvrable" data-panel="marseille.${i}" tabindex="0" role="button">
+      return `<article class="card card--ouvrable card--${esc(String(p.category || 'autre'))}${p.statut === 'ferme' ? ' card--ferme' : ''}"
+              data-panel="marseille.${i}" tabindex="0" role="button">
         <div class="card__top">
-            <p class="card__title">${field(`marseille.${i}.name`, p.name)} ${badgeStatut(p.statut)}</p>
+            ${badgeStatut(p.statut) ? `<div class="card__badges">${badgeStatut(p.statut)}</div>` : ''}
+            <p class="card__title">${field(`marseille.${i}.name`, p.name)}</p>
             ${filled(p.address) ? `<p class="card__role">${field(`marseille.${i}.address`, p.address)}</p>` : ''}
         </div>
         ${filled(p.why) ? `<p class="card__text">${field(`marseille.${i}.why`, p.why)}</p>` : ''}
@@ -2171,12 +2243,31 @@
   /* ═══════════════════════ Rendu et navigation ═══════════════════════ */
 
   function afficherNav() {
+    /* Douze onglets à plat ne se lisent pas. Trois familles, séparées par un
+       filet : ce qui se passe, ce qu'on doit faire, et le territoire. */
+    const OUVRE_GROUPE = new Set(['installation', 'entreprises']);
     $('#nav').innerHTML = SECTIONS.map((id) => `
       <button type="button" class="nav__item" data-section="${id}"
+              ${OUVRE_GROUPE.has(id) ? 'data-groupe="1"' : ''}
               ${state.section === id ? 'aria-current="page"' : ''}>
         <span class="nav__icon">${svg(id)}</span>
         <span>${esc(ui(`nav.${id}`))}</span>
       </button>`).join('');
+
+    /* Le pied de page : la bande défilante ne clôturait rien. */
+    const m = state.data.meta || {};
+    const pied = $('#pied');
+    if (pied) {
+      pied.innerHTML = `
+        <div class="pied__c"><p>${esc(ui('site.name'))}</p>
+          <p>${esc(ui('foot.who'))}</p></div>
+        <div class="pied__c"><p>${esc(ui('foot.update'))}</p>
+          <p>${filled(m.updatedAt) ? esc(dateLongue(t(m.updatedAt))) : '—'}</p></div>
+        <div class="pied__c"><p>${esc(ui('foot.private'))}</p>
+          <p>${esc(ui('app.confidential'))}</p></div>
+        <div class="pied__c"><p>${esc(ui('off.ready'))}</p>
+          <p>${esc(ui('foot.offline'))}</p></div>`;
+    }
   }
 
   function afficherSection() {
@@ -2218,7 +2309,10 @@
 
   function afficherChrome() {
     const m = state.data.meta || {};
-    $('#promo').textContent = t(m.promotion) || '';
+    /* Le nom de la promotion vivait au pied de la colonne de gauche, qui
+       n'existe plus : il passe dans le bandeau, à côté du titre de section. */
+    const promo = $('#promo');
+    if (promo) promo.textContent = t(m.promotion) || '';
     $('#foot-updated').textContent = filled(m.updatedAt) ? `${ui('app.updated')} ${dateLongue(t(m.updatedAt))}` : '';
     afficherBande();
     $$('[data-i18n]').forEach((n) => { n.textContent = ui(n.dataset.i18n); });
@@ -2300,7 +2394,20 @@
     }, TICK_MS);
   }
 
+  /* Les en-têtes de section collants doivent se poser SOUS le bandeau. Sa
+     hauteur change avec la langue et la largeur : on la mesure au lieu de
+     la deviner. */
+  function mesurerBandeau() {
+    const bar = $('#bar');
+    if (!bar) return;
+    document.documentElement.style.setProperty('--bar-h', `${Math.round(bar.offsetHeight)}px`);
+  }
+
   function brancher() {
+    mesurerBandeau();
+    addEventListener('resize', mesurerBandeau);
+    if (window.ResizeObserver && $('#bar')) new ResizeObserver(mesurerBandeau).observe($('#bar'));
+
     $('#gate-form').addEventListener('submit', (e) => {
       e.preventDefault();
       ouvrir($('#gate-password').value);

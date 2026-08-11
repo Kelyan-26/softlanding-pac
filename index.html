@@ -41,45 +41,42 @@
 <!-- ───────────────────────── Application ───────────────────────── -->
 <div id="app" class="app" hidden>
 
-  <aside class="rail">
-    <div class="rail__brand">
-      <img class="logo" src="assets/logo.png"
-           alt="Soft Landing Provence Africa Connect" width="900" height="281">
-    </div>
+  <!-- Bandeau : la barre passe en haut, la colonne de gauche disparaît.
+       Marque à gauche, outils à droite, onglets sur une seconde ligne. -->
+  <header class="bar" id="bar">
+    <div class="bar__in">
+      <button type="button" class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
 
-    <button type="button" class="findbtn" id="find-open">
-      <span class="findbtn__i"></span>
-      <span data-i18n="find.open">Rechercher</span>
-      <kbd class="findbtn__k">⌘K</kbd>
-    </button>
+      <a class="bar__brand" href="#accueil">
+        <img class="logo" src="assets/logo-clair.png"
+             alt="Soft Landing Provence Africa Connect" width="900" height="281">
+      </a>
 
-    <nav class="nav" id="nav" aria-label="Navigation principale"></nav>
+      <p class="bar__t" id="topbar-title">Soft Landing</p>
+      <p class="bar__promo" id="promo"></p>
 
-    <div class="rail__foot">
-      <button type="button" class="btn btn--block" id="edit-toggle" data-i18n="app.edit">Mode édition</button>
-      <div class="rail__row">
+      <div class="bar__acts">
+        <button type="button" class="findbtn" id="find-open">
+          <span class="findbtn__i"></span>
+          <span data-i18n="find.open">Rechercher</span>
+          <kbd class="findbtn__k">⌘K</kbd>
+        </button>
         <div class="gate__langs">
           <button type="button" class="langbtn" data-lang="fr">FR</button>
           <button type="button" class="langbtn" data-lang="en">EN</button>
         </div>
+        <button type="button" class="linkbtn" id="edit-toggle" data-i18n="app.edit">Mode édition</button>
         <button type="button" class="linkbtn" id="lock" data-i18n="app.lock">Verrouiller</button>
       </div>
-      <p class="rail__meta" id="promo"></p>
     </div>
-  </aside>
+
+    <nav class="nav" id="nav" aria-label="Navigation principale"></nav>
+    <div class="bar__prog" id="lecture" aria-hidden="true"></div>
+  </header>
 
   <div class="shell">
-    <header class="topbar">
-      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <p class="topbar__t" id="topbar-title">Soft Landing</p>
-      <div class="gate__langs">
-        <button type="button" class="langbtn" data-lang="fr">FR</button>
-        <button type="button" class="langbtn" data-lang="en">EN</button>
-      </div>
-    </header>
-
     <main class="main" id="main">
       <section class="view" id="view-accueil" hidden></section>
       <section class="view" id="view-programme" hidden></section>
@@ -97,6 +94,7 @@
 
     <footer class="foot">
       <div class="ticker" id="ticker" aria-hidden="true"><div class="ticker__t" id="ticker-track"></div></div>
+      <div class="pied" id="pied"></div>
       <p class="sr" id="foot-updated"></p>
     </footer>
   </div>

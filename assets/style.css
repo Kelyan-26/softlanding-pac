@@ -24,6 +24,12 @@
   --sand-2: #EAECF0;
   --ink-block: #12151B;        /* les blocs sombres, rares et volontaires */
 
+  /* Le bleu marine du logo officiel. Il dormait dans la charte sans jamais
+     servir : il devient la seconde couleur — bandeau, hôtels, états faits. */
+  --navy-ink: #333D85;
+  --navy-deep: #232B60;
+  --navy-wash: #EEF0F9;
+
   /* ── Encre ──────────────────────────────────────────────────── */
   --ink: #0E1116;              /* titres et texte courant */
   --ink-2: #363C46;            /* secondaire */
@@ -68,7 +74,7 @@
   --s9: 72px;  --s10: 104px;
 
   --r: 4px;                    /* le seul rayon du site */
-  --rail: 264px;
+  --page: 1280px;              /* la laisse du contenu, barre comprise */
   --measure: 66ch;
 
   --ease: cubic-bezier(.32, .72, 0, 1);
@@ -234,57 +240,90 @@ button { cursor: pointer; }
 .langbtn:hover { color: var(--ink); }
 .langbtn[aria-pressed="true"] { color: #fff; background: var(--ink-block); }
 
-/* ══════════════════════════════ Charpente ══════════════════════ */
+/* ══════════════════════════════ Charpente ══════════════════════
+   La navigation passe en haut. La colonne de gauche mangeait 260 px sur
+   toute la hauteur pour douze liens ; en bandeau, elle libère la largeur
+   au contenu et suit la page. Motif repris de M alumni : bandeau sombre
+   collant, marque à gauche, outils à droite, onglets soulignés dessous. */
 
-.rail {
-  position: fixed;
-  inset: 0 auto 0 0;
-  width: var(--rail);
-  padding: var(--s6) var(--s4) var(--s5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s5);
-  background: var(--paper);
-  border-right: 1px solid var(--hair);
-  z-index: 40;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+.bar {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--navy-ink);
+  color: #fff;
 }
-
-.rail__brand { padding: 0 var(--s2); }
+.bar__in {
+  display: flex; align-items: center; gap: var(--s4);
+  max-width: var(--page); margin: 0 auto;
+  padding: var(--s3) var(--s6);
+}
+.bar__brand { display: flex; align-items: center; flex: none; }
+.bar__brand .logo { width: 168px; }
 .logo { display: block; height: auto; max-width: 100%; }
-.rail__brand .logo { width: 190px; }
 
-.nav { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+/* Le titre de section n'apparaît qu'une fois la marque repliée, en mobile. */
+.bar__t { display: none; font-family: var(--f-display); font-weight: 650; letter-spacing: var(--tr-title); }
 
-/* Pas de cadre : l'état actif se dit par un aplat plein. */
+.bar__acts { display: flex; align-items: center; gap: var(--s4); margin-left: auto; }
+.bar .linkbtn { color: rgb(255 255 255 / .72); }
+.bar .linkbtn:hover { color: #fff; }
+.bar .langbtn { color: rgb(255 255 255 / .6); }
+.bar .langbtn:hover { color: #fff; }
+.bar .langbtn[aria-pressed="true"] { color: var(--navy-ink); background: #fff; }
+
+.bar .findbtn {
+  width: auto; min-width: 230px;
+  color: rgb(255 255 255 / .7);
+  background: rgb(255 255 255 / .1);
+}
+.bar .findbtn:hover { color: #fff; background: rgb(255 255 255 / .18); }
+.bar .findbtn__k { color: rgb(255 255 255 / .5); }
+
+/* Les onglets. Groupés par sens, séparés par un filet : douze entrées à
+   plat ne se lisent pas, trois familles si. */
+.nav {
+  display: flex; gap: 0;
+  max-width: var(--page); margin: 0 auto;
+  padding: 0 var(--s6);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-top: 1px solid rgb(255 255 255 / .12);
+}
+.nav::-webkit-scrollbar { display: none; }
+
 .nav__item {
-  display: flex;
-  align-items: center;
-  gap: var(--s3);
-  width: 100%;
-  padding: var(--s2) var(--s3);
+  display: flex; align-items: center; gap: var(--s2);
+  flex: none;
+  padding: var(--s3) var(--s4);
   font-family: var(--f-display);
-  font-size: var(--fs-body);
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: 550;
   letter-spacing: -.011em;
-  text-align: left;
-  color: var(--ink-2);
+  white-space: nowrap;
+  color: rgb(255 255 255 / .68);
   background: none;
   border: 0;
-  border-radius: var(--r);
-  transition: background .16s var(--ease), color .16s var(--ease);
+  border-bottom: 2px solid transparent;
+  transition: color .16s var(--ease), border-color .16s var(--ease);
 }
-.nav__item:hover { background: var(--sand); color: var(--ink); }
-.nav__item[aria-current="page"] { color: #fff; background: var(--ink-block); font-weight: 600; }
+.nav__item:hover { color: #fff; }
+.nav__item[aria-current="page"] { color: #fff; border-bottom-color: var(--orange); font-weight: 650; }
 .nav__item[aria-current="page"] .nav__icon { color: var(--orange); }
 
-.nav__icon { display: grid; place-items: center; width: 18px; height: 18px; flex: none; color: var(--ink-4); }
-.nav__icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* Le filet qui ouvre une nouvelle famille d'onglets. */
+.nav__item[data-groupe="1"] { margin-left: var(--s4); box-shadow: inset 1px 0 0 rgb(255 255 255 / .16); padding-left: calc(var(--s4) + var(--s3)); }
 
-.rail__foot { display: grid; gap: var(--s3); padding: var(--s4) var(--s2) 0; border-top: 1px solid var(--hair); }
-.rail__row { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
-.rail__meta { font-size: var(--fs-xs); color: var(--ink-4); }
+.nav__icon { display: grid; place-items: center; width: 17px; height: 17px; flex: none; color: rgb(255 255 255 / .5); }
+.nav__icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Barre de lecture : deux pixels, pilotés par le défilement, sans JS. */
+.bar__prog { height: 2px; background: var(--orange); transform-origin: 0 50%; transform: scaleX(0); }
+@supports (animation-timeline: scroll()) {
+  .bar__prog {
+    animation: lecture linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes lecture { to { transform: scaleX(1); } }
 
 .linkbtn {
   justify-self: start;
@@ -297,14 +336,30 @@ button { cursor: pointer; }
   border: 0;
   text-decoration: underline;
   text-underline-offset: 3px;
+  white-space: nowrap;
 }
 .linkbtn:hover { color: var(--orange-deep); }
 
-.shell { margin-left: var(--rail); min-height: 100dvh; display: flex; flex-direction: column; }
-.topbar { display: none; }
-.main { flex: 1; width: 100%; max-width: 1120px; padding: var(--s9) var(--s8) var(--s10); }
-.foot { margin: 0 var(--s8); padding: var(--s6) 0 var(--s8); font-size: var(--fs-xs); color: var(--ink-4); border-top: 1px solid var(--hair); }
+.shell { min-height: 100dvh; display: flex; flex-direction: column; }
+.main { flex: 1; width: 100%; max-width: var(--page); margin: 0 auto; padding: var(--s8) var(--s6) var(--s10); }
+
+/* Le pied de page : la bande défilante ne suffisait pas à clore la page. */
+.foot { max-width: var(--page); width: 100%; margin: 0 auto; padding: var(--s6) var(--s6) var(--s8); font-size: var(--fs-xs); color: var(--ink-4); }
 .foot__dot { margin: 0 var(--s2); }
+.pied { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--hair); }
+.pied__c p:first-child { font-family: var(--f-display); font-weight: 650; color: var(--ink-2); letter-spacing: var(--tr-title); }
+.pied__c p + p { margin-top: var(--s2); }
+
+@media (max-width: 900px) {
+  .bar__in { padding: var(--s3) var(--s4); gap: var(--s3); }
+  .bar__brand .logo { width: 132px; }
+  .bar .findbtn { min-width: 0; }
+  .bar .findbtn span:not(.findbtn__i), .bar .findbtn__k { display: none; }
+  .bar .linkbtn { display: none; }
+  .nav { padding: 0 var(--s4); }
+  .main { padding: var(--s6) var(--s4) var(--s9); }
+  .foot { padding: var(--s5) var(--s4) var(--s7); }
+}
 
 /* ══════════════════════════════ Vues ═══════════════════════════ */
 
@@ -729,7 +784,7 @@ body.editing .listadd { display: inline-flex; }
 
 .editbar {
   position: fixed;
-  left: var(--rail); right: 0; bottom: 0;
+  left: 0; right: 0; bottom: 0;
   z-index: 60;
   display: flex;
   flex-wrap: wrap;
@@ -753,24 +808,20 @@ body.editing .shell { padding-bottom: var(--s9); }
 .scrim { position: fixed; inset: 0; z-index: 35; background: rgba(14, 17, 22, .45); }
 
 @media (max-width: 1024px) {
-  .rail { translate: -100% 0; transition: translate .3s var(--ease); }
-  .app.open .rail { translate: 0 0; }
-  .shell { margin-left: 0; }
+  /* La colonne de gauche n'existe plus : le tiroir et son voile non plus.
+     Les onglets défilent horizontalement dans le bandeau. */
+  .burger { display: none; }
+  .bar__t { display: block; flex: 1; }
+  .bar__brand .logo { width: 120px; }
 
-  .topbar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--paper); border-bottom: 1px solid var(--hair); }
-  .topbar__t { flex: 1; font-family: var(--f-display); font-size: var(--fs-body); font-weight: 650; letter-spacing: var(--tr-title); }
-  .burger { display: grid; gap: 4px; padding: var(--s1); background: none; border: 0; }
-  .burger span { display: block; width: 18px; height: 2px; background: var(--ink); }
-
-  .main { padding: var(--s6) var(--s4) var(--s9); }
-  .foot { margin: 0 var(--s4); padding: var(--s5) 0 var(--s6); }
   .hero h1 { max-width: none; }
   .slot { grid-template-columns: 1fr; gap: var(--s2); }
   .slot__when { display: flex; gap: var(--s2); text-align: left; }
-  .etape { grid-template-columns: 32px 1fr; gap: var(--s3); }
-  .etape__num { width: 26px; height: 26px; font-size: var(--fs-xs); }
+  .etape { grid-template-columns: 44px 1fr; gap: var(--s3); }
+  .etape__num { font-size: 2rem; }
   .editbar { left: 0; padding: var(--s3) var(--s4); }
   .findbtn__k { display: none; }
+  .section__head, .day__head { position: static; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -785,7 +836,7 @@ body.editing .shell { padding-bottom: var(--s9); }
 @media print {
   @page { margin: 14mm 12mm; }
 
-  .rail, .topbar, .foot, .editbar, .scrim, .find, .gate,
+  .bar, .foot, .editbar, .scrim, .find, .gate,
   .tools, .boite__tools, .rowtools, .listadd, .card__acts,
   .mapwrap, .offl, .jour, .prog__ics, #ics { display: none !important; }
 
@@ -921,15 +972,15 @@ body.editing .shell { padding-bottom: var(--s9); }
   to { opacity: 0; transform: scale(1.03); filter: blur(3px); }
 }
 
-.app--entre .rail { animation: entre-rail .5s var(--ease-out) both; }
+.app--entre .bar { animation: entre-bar .5s var(--ease-out) both; }
 .app--entre .main { animation: entre-main .55s .08s var(--ease-out) both; }
 .app--entre .foot { animation: entre-main .55s .16s var(--ease-out) both; }
 
-@keyframes entre-rail { from { opacity: 0; transform: translateX(-14px); } }
+@keyframes entre-bar { from { opacity: 0; transform: translateY(-12px); } }
 @keyframes entre-main { from { opacity: 0; transform: translateY(14px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .gate--part, .app--entre .rail, .app--entre .main, .app--entre .foot { animation: none; }
+  .gate--part, .app--entre .bar, .app--entre .main, .app--entre .foot { animation: none; }
 }
 
 /* ══════════════════════════════ Ma progression ═════════════════ */
@@ -991,3 +1042,184 @@ body.editing .shell { padding-bottom: var(--s9); }
   .coche__q { margin-left: 0; width: 100%; }
   .coche label { flex-wrap: wrap; }
 }
+
+/* ════════════════════ Refonte visuelle du 11 août 2026 ══════════════════
+   Douze demandes de Kelyan. L'idée directrice : le site avait un seul
+   registre — tout en aplats sable, tout en orange, tout à la même taille.
+   On rend la hiérarchie visible sans ajouter le moindre contour. */
+
+/* ① L'ORANGE NE FAIT PLUS QUE L'ACTION.
+   Il servait d'accent de marque, de couleur d'adresse, de surtitre, de
+   libellé de rubrique et de lien : rien ne ressortait puisque tout
+   ressortait. Il reste sur ce qui se clique et sur ce qui alerte. */
+.card__role { color: var(--ink-3); font-weight: 500; }
+.eyebrow { color: var(--ink-4); }
+.head .eyebrow, .pan .eyebrow { color: var(--ink-4); }
+.hero__lede { color: var(--ink-2); }
+.etape__q { color: var(--ink-3); }
+.fond__r { color: var(--ink-3); }
+/* Ce qui garde l'orange : l'action, l'alerte, l'état en cours. */
+/* Ce qui garde l'orange n'a besoin d'aucune règle : on ne touche pas à
+   .btn--primary, .badge ni .tag--todo. Une règle « color: inherit » posée
+   ici avait vidé le blanc du bouton principal — un défaut de ma main. */
+.pan__keep .eyebrow, .etape__stop .eyebrow { color: var(--orange-deep); }
+
+/* ② LE BLEU MARINE ENTRE EN JEU. La charte le portait sans l'utiliser. */
+.section__head h2 { border-left: 3px solid var(--navy-ink); padding-left: var(--s3); }
+.etape__num { background: var(--navy-ink); }
+.coche--ok .coche__t { color: var(--navy-deep); }
+.pied__c p:first-child { color: var(--navy-deep); }
+
+/* ③ L'ÉCHELLE TYPOGRAPHIQUE SE CREUSE.
+   H2 et H3 étaient à un cheveu du corps de texte : sur une page à huit
+   étapes et cinq sous-blocs, la hiérarchie s'aplatissait. */
+:root {
+  --fs-h1: clamp(2.2rem, 1.3rem + 3vw, 3.6rem);
+  --fs-h2: clamp(1.45rem, 1.15rem + 1.1vw, 2rem);
+  --fs-h3: 1.15rem;
+}
+.section__head h2 { line-height: 1.15; }
+.slot__t, .card__title { font-size: var(--fs-h3); }
+
+/* ④ LES NUMÉROS D'ÉTAPE DEVIENNENT UN OBJET GRAPHIQUE.
+   Ils faisaient 32 px dans un carré sombre. En très grand et en creux,
+   ils rythment la page au lieu de la ponctuer. */
+.etape__n { align-self: start; }
+.etape__num {
+  display: block; width: auto; height: auto;
+  font-size: clamp(2.4rem, 1.4rem + 3vw, 4rem);
+  font-weight: 800; line-height: .82;
+  letter-spacing: var(--tr-hero);
+  color: var(--navy-wash);
+  background: none;
+  -webkit-text-stroke: 1px var(--navy-ink);
+}
+
+/* ⑤ CHIFFRES TABULAIRES : prix, notes, horaires, distances s'alignent. */
+.num, .stat__v, .card__meta, .etape__f p, .slot__h, .slot__e,
+.pan__p, .h48__q { font-variant-numeric: tabular-nums; }
+
+/* ⑥ UN LISERÉ DE CATÉGORIE PLUTÔT QUE DOUZE APLATS IDENTIQUES.
+   Trois pixels à gauche, aucune bordure ajoutée : la lecture est
+   instantanée et la règle « pas de contours » tient. */
+.card, .boite { border-left: 3px solid transparent; }
+.card--h { border-left-color: var(--navy-ink); }
+.card--dejeuner-pro { border-left-color: var(--orange); }
+.card--rapide { border-left-color: #C9A227; }
+.card--coworking { border-left-color: #2E7D6B; }
+.card--sortir { border-left-color: #8E5BA6; }
+.card--ferme { border-left-color: var(--ink-4); opacity: .72; }
+
+/* ⑦ LE BADGE NE CASSE PLUS LE TITRE.
+   Il s'insérait dans la ligne du titre et le coupait au milieu d'un mot. */
+.card__title .tag { display: none; }
+.card__badges { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s2); }
+
+/* ⑧ SURVOL ET FOCUS FRANCS. Le survol ne changeait presque rien. */
+.card--ouvrable, .boite, .mot, .slot--ouvrable {
+  transition: background .16s var(--ease), transform .16s var(--ease), border-color .16s var(--ease);
+}
+.card--ouvrable:hover, .mot:hover, .slot--ouvrable:hover { transform: translateY(-2px); background: var(--sand-2); }
+.boite:hover { transform: translateY(-2px); }
+:where(a, button, [tabindex]):focus-visible,
+.card--ouvrable:focus-visible, .mot:focus-visible,
+.etape--ouvrable:focus-visible, .step--ouvrable:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 3px;
+}
+
+/* ⑨ APPARITIONS AU DÉFILEMENT, en CSS natif, sans une ligne de JS.
+   Coupées net si l'utilisateur a demandé moins d'animation. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .card, .boite, .etape, .step, .mot, .need, .h48, .stat, .tile, .sos {
+      animation: monte linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 32%;
+    }
+  }
+}
+@keyframes monte { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ⑩ EN-TÊTE DE SECTION COLLANT sur les pages longues. */
+.section__head, .day__head {
+  position: sticky; top: calc(var(--bar-h, 104px) + 2px); z-index: 20;
+  background: var(--paper);
+  padding-top: var(--s3); padding-bottom: var(--s3);
+}
+
+/* ⑪ LA PAGE D'ACCUEIL EN PAVAGE INÉGAL — voir .bento plus bas. */
+
+/* ⑫ LA BANDE DÉFILANTE S'ARRÊTE AU SURVOL : on peut lire un nom. */
+.ticker:hover .ticker__t { animation-play-state: paused; }
+
+/* ════════════════════ La page d'accueil, dynamisée ══════════════════════
+   Motif M alumni : une accroche large, le compte à rebours à côté, puis une
+   rangée de très gros chiffres, puis un pavage inégal. Les chiffres se
+   comptent sur le contenu — ils ne peuvent ni mentir ni se périmer. */
+
+.hero--grand {
+  display: grid; grid-template-columns: 1.35fr 1fr; gap: var(--s7);
+  align-items: end;
+  padding: var(--s6) 0 var(--s8);
+}
+.hero--grand h1 { font-size: var(--fs-hero); letter-spacing: var(--tr-hero); line-height: var(--lh-tight); margin-top: var(--s3); }
+.hero__txt .hero__lede { max-width: 34ch; margin-top: var(--s4); font-size: var(--fs-lede); color: var(--ink-2); }
+.hero__cta { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s5); }
+.hero__side { min-width: 0; }
+.hero__intro { max-width: var(--measure); margin-bottom: var(--s7); color: var(--ink-2); }
+
+.kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px; margin-bottom: var(--s8);
+  background: var(--hair);
+}
+.kpi { padding: var(--s5) var(--s4); background: var(--paper); }
+.kpi__v {
+  font-family: var(--f-display); font-weight: 800; line-height: .9;
+  font-size: clamp(2.4rem, 1.6rem + 2.6vw, 3.6rem);
+  letter-spacing: var(--tr-hero);
+  color: var(--navy-ink);
+}
+.kpi__k { margin-top: var(--s2); font-size: var(--fs-sm); color: var(--ink-3); }
+
+/* Le pavage : la première tuile prend deux colonnes et respire. */
+.bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s4); }
+.bento .tile { grid-column: span 2; }
+.bento .tile--large { grid-column: span 4; padding: var(--s6); }
+.bento .tile--large .tile__t { font-size: var(--fs-h2); }
+
+@media (max-width: 900px) {
+  .hero--grand { grid-template-columns: 1fr; gap: var(--s5); padding-bottom: var(--s6); }
+  .bento { grid-template-columns: 1fr; }
+  .bento .tile, .bento .tile--large { grid-column: auto; }
+}
+.bar__promo { font-size: var(--fs-xs); color: rgb(255 255 255 / .55); white-space: nowrap; }
+@media (max-width: 1100px) { .bar__promo { display: none; } }
+
+/* Le burger ouvrait le tiroir de la colonne de gauche. Elle n'existe plus :
+   il ne sert qu'en dessous de 1024 px, et encore, la nav défile déjà. */
+.burger { display: none; }
+.bar__brand .logo { max-height: 40px; width: auto; }
+
+/* Les onglets débordent à droite : rien ne le disait. Un dégradé signale
+   qu'il reste de la route, et disparaît quand on a fini de défiler. */
+.bar { position: sticky; top: 0; z-index: 60; }
+.navwrap { position: relative; }
+.nav { scroll-behavior: smooth; }
+.nav::after { content: ""; }
+@supports (animation-timeline: scroll(self inline)) {
+  .nav { --fin: 0; }
+}
+.bar::after {
+  content: ""; position: absolute; right: 0; bottom: 0; width: 56px; height: 44px;
+  pointer-events: none;
+  background: linear-gradient(to right, rgb(51 61 133 / 0), var(--navy-ink));
+}
+
+/* La colonne des numéros faisait 44 px : le chiffre agrandi y était à
+   l'étroit et gardait l'aplat de l'ancienne pastille. On élargit et on
+   nettoie l'héritage. */
+.etape { grid-template-columns: clamp(56px, 6vw, 88px) 1fr; }
+.etape:first-child .etape__num { color: var(--navy-wash); background: none; }
+.etape__num { place-items: start; }
+@media (max-width: 900px) { .etape { grid-template-columns: 48px 1fr; } }
