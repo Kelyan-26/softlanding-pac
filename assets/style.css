@@ -580,6 +580,32 @@ button { cursor: pointer; }
 .boite__tools { display: none; gap: var(--s2); flex-wrap: wrap; }
 body.editing .boite__tools { display: flex; }
 
+/* ═══════════════ Étapes d'installation — les nouveaux blocs ═════ */
+
+/* La marche à suivre, numérotée. C'est le cœur de la page : ce qu'on fait,
+   dans l'ordre, sans avoir à deviner. */
+.etape__o { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s3); }
+.etape__o li { padding-left: var(--s2); color: var(--ink-2); }
+.etape__o li::marker { font-family: var(--f-display); font-weight: 700; color: var(--orange-deep); }
+
+/* Ce qui diffère quand on arrive d'Afrique : signalé, jamais noyé. */
+.etape__af { padding: var(--s4); margin-top: var(--s4); background: var(--orange-wash); }
+.etape__af .eyebrow { color: var(--orange-deep); }
+.etape__no { padding: var(--s4); margin-top: var(--s4); background: var(--warn-wash); }
+.etape__no .eyebrow { color: var(--warn); }
+
+.etape__facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--s4); margin-top: var(--s4); }
+.etape__f { padding: var(--s4); background: var(--sand); }
+.etape__f p:last-child { margin-top: var(--s1); font-size: var(--fs-sm); color: var(--ink-2); }
+
+.etape--ouvrable, .step--ouvrable { cursor: pointer; transition: background .16s var(--ease); }
+.etape--ouvrable:hover, .step--ouvrable:hover { background: var(--sand); }
+.etape--ouvrable:focus-visible, .step--ouvrable:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+.pan__o { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s3); }
+.pan__o li { font-size: var(--fs-sm); color: var(--ink-2); }
+.pan__o li::marker { font-family: var(--f-display); font-weight: 700; color: var(--orange-deep); }
+
 /* ═══════════════ Les 48 premières heures, besoins, hors-ligne ═══ */
 
 /* Un seul bloc par page a le droit à l'aplat orange. Ici c'est lui : à

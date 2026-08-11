@@ -103,6 +103,15 @@
     'inst.docs':     { fr: 'À prévoir', en: 'What to bring' },
     'inst.warning':  { fr: 'À lire avant', en: 'Read this first' },
     'inst.urgent':   { fr: 'Numéros d’urgence', en: 'Emergency numbers' },
+    'inst.how':      { fr: 'Ce que vous faites, dans l’ordre', en: 'What you do, in order' },
+    'inst.africa':   { fr: 'Si vous arrivez d’Afrique', en: 'If you are arriving from Africa' },
+    'inst.avoid':    { fr: 'À ne pas faire', en: 'What not to do' },
+    'inst.cost':     { fr: 'Ce que ça coûte', en: 'What it costs' },
+    'inst.time':     { fr: 'Combien de temps', en: 'How long' },
+    'inst.open':     { fr: 'Cette étape en détail', en: 'This step in detail' },
+    'visa.who':      { fr: 'Pour qui', en: 'Who it is for' },
+    'visa.step':     { fr: 'Cette étape en détail', en: 'This step in detail' },
+    'bp.detail':     { fr: 'Ce que couvre cette thématique', en: 'What this theme covers' },
 
     'pan.close':     { fr: 'Fermer', en: 'Close' },
     'pan.detail':    { fr: 'En détail', en: 'In detail' },
@@ -980,21 +989,21 @@
   function rendreVisa() {
     const v = state.data.visa || {};
     const voies = list(v.tracks).map((tr, i) => `
-      <article class="card">
+      <article class="card card--ouvrable" data-panel="visa.${i}" tabindex="0" role="button">
         <p class="card__title">${field(`visa.tracks.${i}.name`, tr.name)}</p>
         <p class="card__text">${field(`visa.tracks.${i}.who`, tr.who)}</p>
       </article>`).join('');
 
     const etapes = list(v.steps).map((s, i) => {
-      const docs = list(s.documents).filter(filled);
-      const liens = list(s.links).map((l) => lien(l.url, t(l.label), 'link')).filter(Boolean).join('');
-      return `<article class="step">
+      const docs = list(s.docs).filter(filled);
+      const l2 = s.lien && s.lien.url ? lien(s.lien.url, s.lien.label, 'link') : '';
+      return `<article class="step step--ouvrable" data-panel="visaetape.${i}" tabindex="0" role="button">
         <h3 class="step__t">${field(`visa.steps.${i}.title`, s.title)}</h3>
         ${filled(s.body) ? `<p class="step__b">${field(`visa.steps.${i}.body`, s.body)}</p>` : ''}
-        ${docs.length ? `<div><p class="eyebrow">${esc(ui('label.documents'))}</p>
-            <ul class="step__list">${docs.map((d, k) => `<li>${field(`visa.steps.${i}.documents.${k}`, d)}</li>`).join('')}</ul></div>` : ''}
-        ${filled(s.duration) ? `<p class="card__meta">${esc(ui('label.duration'))} : ${field(`visa.steps.${i}.duration`, s.duration)}</p>` : ''}
-        ${liens ? `<div class="card__acts">${liens}</div>` : ''}
+        ${docs.length ? `<div><p class="eyebrow">${esc(ui('inst.docs'))}</p>
+            <ul class="step__list">${docs.map((dd, k) => `<li>${field(`visa.steps.${i}.docs.${k}`, dd)}</li>`).join('')}</ul></div>` : ''}
+        ${filled(s.delai) ? `<p class="card__meta">${esc(ui('inst.time'))} : ${field(`visa.steps.${i}.delai`, s.delai)}</p>` : ''}
+        ${l2 ? `<div class="card__acts">${l2}</div>` : ''}
       </article>`;
     }).join('');
 
@@ -1015,7 +1024,7 @@
     const bp = state.data.businessPlan || {};
     const blocs = list(bp.sections).map((s, i) => {
       const checks = list(s.checklist).filter(filled);
-      return `<article class="step">
+      return `<article class="step step--ouvrable" data-panel="businessplan.${i}" tabindex="0" role="button">
         <h3 class="step__t">${field(`businessPlan.sections.${i}.title`, s.title)}</h3>
         ${filled(s.body) ? `<p class="step__b">${field(`businessPlan.sections.${i}.body`, s.body)}</p>` : ''}
         ${checks.length ? `<ul class="checks">${checks.map((c, k) => `<li>${field(`businessPlan.sections.${i}.checklist.${k}`, c)}</li>`).join('')}</ul>` : ''}
@@ -1190,18 +1199,37 @@
       const pieces = list(e.documents).filter(filled);
       const liens = list(e.liens).map((l) => lien(l.url, l.label, 'link')).filter(Boolean).join('');
 
-      return `<article class="etape">
+      const gestes = list(e.comment).filter(filled);
+      const chiffres = [
+        filled(e.cout) ? `<div class="etape__f"><p class="eyebrow">${esc(ui('inst.cost'))}</p>
+            <p>${field(`installation.etapes.${i}.cout`, e.cout)}</p></div>` : '',
+        filled(e.delai) ? `<div class="etape__f"><p class="eyebrow">${esc(ui('inst.time'))}</p>
+            <p>${field(`installation.etapes.${i}.delai`, e.delai)}</p></div>` : '',
+      ].filter(Boolean).join('');
+
+      return `<article class="etape etape--ouvrable" data-panel="installation.${i}" tabindex="0" role="button">
         <div class="etape__n"><span class="etape__num num">${i}</span></div>
         <div class="etape__c">
           <h3 class="etape__t">${field(`installation.etapes.${i}.titre`, e.titre)}</h3>
           ${filled(e.quand) ? `<p class="etape__q">${svg('programme', 13)}${field(`installation.etapes.${i}.quand`, e.quand)}</p>` : ''}
 
           ${bloc('inst.why', 0, filled(e.pourquoi) ? `<p class="etape__p">${field(`installation.etapes.${i}.pourquoi`, e.pourquoi)}</p>` : '')}
+
+          ${gestes.length ? `<div class="etape__b"><p class="eyebrow">${esc(ui('inst.how'))}</p>
+              <ol class="etape__o">${gestes.map((x, k) => `<li>${field(`installation.etapes.${i}.comment.${k}`, x)}</li>`).join('')}</ol></div>` : ''}
+
           ${bloc('inst.unlocks', 0, filled(e.debloque) ? `<p class="etape__p">${field(`installation.etapes.${i}.debloque`, e.debloque)}</p>` : '')}
           ${filled(e.obstacle) ? `<div class="etape__stop"><p class="eyebrow">${esc(ui('inst.blocker'))}</p>
               <p>${field(`installation.etapes.${i}.obstacle`, e.obstacle)}</p></div>` : ''}
           ${sorties.length ? `<div class="etape__b"><p class="eyebrow">${esc(ui('inst.ways'))}</p>
               <ul class="checks">${sorties.map((x, k) => `<li>${field(`installation.etapes.${i}.solutions.${k}`, x)}</li>`).join('')}</ul></div>` : ''}
+
+          ${filled(e.depuisAfrique) ? `<div class="etape__af"><p class="eyebrow">${esc(ui('inst.africa'))}</p>
+              <p>${field(`installation.etapes.${i}.depuisAfrique`, e.depuisAfrique)}</p></div>` : ''}
+          ${filled(e.aEviter) ? `<div class="etape__no"><p class="eyebrow">${esc(ui('inst.avoid'))}</p>
+              <p>${field(`installation.etapes.${i}.aEviter`, e.aEviter)}</p></div>` : ''}
+
+          ${chiffres ? `<div class="etape__facts">${chiffres}</div>` : ''}
           ${pieces.length ? `<div class="etape__b"><p class="eyebrow">${esc(ui('inst.docs'))}</p>
               <ul class="step__list">${pieces.map((x, k) => `<li>${field(`installation.etapes.${i}.documents.${k}`, x)}</li>`).join('')}</ul></div>` : ''}
           ${liens ? `<div class="card__acts">${liens}</div>` : ''}
@@ -2008,8 +2036,102 @@
       + bloc(ui('pan.terms'), puces(mots)) };
   }
 
+  /* Une étape d'installation ouvre son propre panneau. La carte de la page
+     donne la marche à suivre ; le panneau donne ce qui ne tenait pas dedans
+     sans l'alourdir : les pièces, les liens officiels, les mots du glossaire
+     qu'elle emploie, et l'étape qui suit. */
+  function panneauEtape(i) {
+    const e = list((state.data.installation || {}).etapes)[i];
+    if (!e) return '';
+    const gestes = list(e.comment).filter(filled).map((x, k) => field(`installation.etapes.${i}.comment.${k}`, x));
+    const sorties = list(e.solutions).filter(filled).map((x, k) => field(`installation.etapes.${i}.solutions.${k}`, x));
+    const pieces = list(e.documents).filter(filled).map((x, k) => field(`installation.etapes.${i}.documents.${k}`, x));
+    const liens = list(e.liens).map((l) => lien(l.url, l.label, 'link')).filter(Boolean).join('');
+    const infos = [];
+    if (filled(e.cout)) infos.push(`${esc(ui('inst.cost'))} : ${field(`installation.etapes.${i}.cout`, e.cout)}`);
+    if (filled(e.delai)) infos.push(`${esc(ui('inst.time'))} : ${field(`installation.etapes.${i}.delai`, e.delai)}`);
+
+    const suivante = list((state.data.installation || {}).etapes)[i + 1];
+    const apres = suivante ? puces([puce('installation', i + 1, t(suivante.titre))]) : '';
+    const mots = termesDe(`${t(e.pourquoi)} ${t(e.obstacle)} ${list(e.solutions).map(t).join(' ')} ${list(e.documents).map(t).join(' ')}`)
+      .map(({ g, i: k }) => puce('glossaire', k, t(g.terme)));
+
+    return { titre: field(`installation.etapes.${i}.titre`, e.titre),
+             surtitre: t(e.quand) || ui('nav.installation'),
+             corps:
+      bloc(ui('inst.why'), filled(e.pourquoi) ? `<p class="pan__p">${field(`installation.etapes.${i}.pourquoi`, e.pourquoi)}</p>` : '')
+      + bloc(ui('inst.how'), gestes.length ? `<ol class="pan__o">${gestes.map((g) => `<li>${g}</li>`).join('')}</ol>` : '')
+      + (filled(e.obstacle) ? `<section class="pan__b pan__warn"><p class="eyebrow">${esc(ui('inst.blocker'))}</p>
+          <p class="pan__p">${field(`installation.etapes.${i}.obstacle`, e.obstacle)}</p></section>` : '')
+      + bloc(ui('inst.ways'), liste(sorties))
+      + (filled(e.depuisAfrique) ? `<section class="pan__b pan__keep"><p class="eyebrow">${esc(ui('inst.africa'))}</p>
+          <p class="pan__p">${field(`installation.etapes.${i}.depuisAfrique`, e.depuisAfrique)}</p></section>` : '')
+      + (filled(e.aEviter) ? `<section class="pan__b pan__warn"><p class="eyebrow">${esc(ui('inst.avoid'))}</p>
+          <p class="pan__p">${field(`installation.etapes.${i}.aEviter`, e.aEviter)}</p></section>` : '')
+      + bloc(ui('pan.practical'), liste(infos))
+      + bloc(ui('inst.docs'), liste(pieces))
+      + bloc(ui('label.resources'), liens ? `<div class="card__acts">${liens}</div>` : '')
+      + bloc(ui('pan.terms'), puces(mots))
+      + bloc(ui('inst.unlocks'), (filled(e.debloque) ? `<p class="pan__p">${field(`installation.etapes.${i}.debloque`, e.debloque)}</p>` : '') + apres) };
+  }
+
+  function panneauVoieVisa(i) {
+    const v = list((state.data.visa || {}).tracks)[i];
+    if (!v) return '';
+    const etapes = list((state.data.visa || {}).steps)
+      .map((s, k) => puce('visaetape', k, t(s.title)));
+    return { titre: field(`visa.tracks.${i}.name`, v.name),
+             surtitre: ui('nav.visa'),
+             corps:
+      bloc(ui('visa.who'), filled(v.who) ? `<p class="pan__p">${field(`visa.tracks.${i}.who`, v.who)}</p>` : '')
+      + bloc(ui('label.resources'), filled(v.lien) ? `<div class="card__acts">${lien(t(v.lien), ui('action.website'), 'link')}</div>` : '')
+      + bloc(ui('pan.sessions'), puces(etapes)) };
+  }
+
+  function panneauEtapeVisa(i) {
+    const s = list((state.data.visa || {}).steps)[i];
+    if (!s) return '';
+    const docs = list(s.docs).filter(filled).map((x, k) => field(`visa.steps.${i}.docs.${k}`, x));
+    const suivante = list((state.data.visa || {}).steps)[i + 1];
+    const mots = termesDe(`${t(s.title)} ${t(s.body)} ${list(s.docs).map(t).join(' ')}`)
+      .map(({ g, i: k }) => puce('glossaire', k, t(g.terme)));
+    return { titre: field(`visa.steps.${i}.title`, s.title),
+             surtitre: ui('nav.visa'),
+             corps:
+      bloc(ui('visa.step'), filled(s.body) ? `<p class="pan__p">${field(`visa.steps.${i}.body`, s.body)}</p>` : '')
+      + bloc(ui('inst.docs'), liste(docs))
+      + bloc(ui('inst.time'), filled(s.delai) ? `<p class="pan__p">${field(`visa.steps.${i}.delai`, s.delai)}</p>` : '')
+      + bloc(ui('label.resources'), s.lien && s.lien.url ? `<div class="card__acts">${lien(s.lien.url, s.lien.label, 'link')}</div>` : '')
+      + bloc(ui('pan.terms'), puces(mots))
+      + bloc(ui('pan.seeAlso'), suivante ? puces([puce('visaetape', i + 1, t(suivante.title))]) : '') };
+  }
+
+  function panneauBusinessPlan(i) {
+    const s = list((state.data.businessPlan || {}).sections)[i];
+    if (!s) return '';
+    const items = list(s.checklist).filter(filled).map((x, k) => field(`businessPlan.sections.${i}.checklist.${k}`, x));
+    const mots = termesDe(`${t(s.title)} ${t(s.body)}`).map(({ g, i: k }) => puce('glossaire', k, t(g.terme)));
+    /* Les sessions du programme qui portent sur ce thème : simple présence des
+       mots du titre dans le titre ou la description d'une session. */
+    const cles = t(s.title).toLowerCase().split(/[\s,'’]+/).filter((w) => w.length > 5);
+    const sessions = list(state.data.programme).map((x, k) => ({ x, k }))
+      .filter(({ x }) => cles.some((c) => `${t(x.title)} ${t(x.description)}`.toLowerCase().includes(c)))
+      .slice(0, 4).map(({ x, k }) => puce('programme', k, t(x.title)));
+    return { titre: field(`businessPlan.sections.${i}.title`, s.title),
+             surtitre: ui('nav.business-plan'),
+             corps:
+      bloc(ui('bp.detail'), filled(s.body) ? `<p class="pan__p">${field(`businessPlan.sections.${i}.body`, s.body)}</p>` : '')
+      + bloc(ui('inst.docs'), liste(items))
+      + bloc(ui('pan.sessions'), puces(sessions))
+      + bloc(ui('pan.terms'), puces(mots)) };
+  }
+
   const PANNEAUX = {
     glossaire: panneauGlossaire,
+    installation: panneauEtape,
+    visa: panneauVoieVisa,
+    visaetape: panneauEtapeVisa,
+    businessplan: panneauBusinessPlan,
     acteurs: panneauActeur,
     contacts: panneauContact,
     hotels: (i) => panneauLieu('hotels', i),
