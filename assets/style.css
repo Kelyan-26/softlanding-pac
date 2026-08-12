@@ -1240,3 +1240,15 @@ body.editing .shell { padding-bottom: var(--s9); }
 /* Le champ de recherche des sections portait lui aussi un trait d'encre. */
 .search { border-bottom-color: var(--hair); }
 .search:focus { border-bottom-color: var(--orange); }
+
+/* Le sous-titre rejoint le titre de l'accueil : « Soft Landing » puis
+   « Provence Africa Connect » en dessous, plus petit. Le surtitre gris
+   disparaît de cette page — il ne répétait plus rien d'utile. */
+.hero__sub {
+  display: block;
+  margin-top: var(--s2);
+  font-size: clamp(1.3rem, .7rem + 1.7vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: var(--tr-title);
+  color: var(--orange-deep);
+}

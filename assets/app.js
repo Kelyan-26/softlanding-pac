@@ -193,7 +193,7 @@
                        en: 'What to sort straight away, in order. The rest can wait.' },
     'j1.more':       { fr: 'La chaîne complète', en: 'The full chain' },
 
-    'need.title':    { fr: 'Qui appeler, pour quoi', en: 'Who to call, and what for' },
+    'need.title':    { fr: 'Qui contacter, pour quoi', en: 'Who to contact, and what for' },
     'need.lede':     { fr: 'On ne cherche pas un nom, on cherche une solution. Partez du problème.',
                        en: 'You don’t look for a name, you look for a way out. Start from the problem.' },
 
@@ -814,7 +814,7 @@
 
   function entete(titre, chapo) {
     return `<header class="head">
-      <p class="eyebrow">${esc(t(state.data.site && state.data.site.subtitle) || 'Provence Africa Connect')}</p>
+      <p class="eyebrow">${esc(t(state.data.site && state.data.site.title) || 'Soft Landing')}</p>
       <h1>${esc(titre)}</h1>
       ${chapo ? `<p class="head__lede">${chapo}</p>` : ''}
     </header>`;
@@ -1031,8 +1031,8 @@
 
     return `<div class="hero hero--grand">
         <div class="hero__txt">
-          <p class="eyebrow">${esc(t(site.subtitle) || ui('site.name'))}</p>
-          <h1>${field('site.title', site.title)}</h1>
+          <h1>${field('site.title', site.title)}
+            <span class="hero__sub">${field('site.subtitle', site.subtitle)}</span></h1>
           <p class="hero__lede">${field('site.tagline', site.tagline)}</p>
           <div class="hero__cta">
             <a class="btn btn--primary" href="#installation">${svg('installation', 15)}${esc(ui('nav.installation'))}</a>
