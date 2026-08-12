@@ -242,6 +242,16 @@
     'kpi.sessions':  { fr: 'sessions au programme', en: 'sessions in the programme' },
     'kpi.acteurs':   { fr: 'structures mobilisées', en: 'organisations involved' },
     'kpi.termes':    { fr: 'termes expliqués', en: 'terms explained' },
+    'kpi.etapes':    { fr: 'étapes', en: 'steps' },
+    'kpi.gestes':    { fr: 'gestes détaillés', en: 'detailed actions' },
+    'kpi.themes':    { fr: 'thématiques', en: 'themes' },
+    'kpi.adresses':  { fr: 'adresses', en: 'addresses' },
+    'kpi.voies':     { fr: 'voies possibles', en: 'possible routes' },
+    'kpi.pays':      { fr: 'pays représentés', en: 'countries represented' },
+    'kpi.hotels':    { fr: 'hôtels de la présélection', en: 'hotels shortlisted' },
+    'kpi.fiches':    { fr: 'fiches', en: 'entries' },
+    'kpi.besoins':   { fr: 'points d’entrée par besoin', en: 'entry points by need' },
+    'kpi.reperes':   { fr: 'repères sur la carte', en: 'pins on the map' },
     'foot.who':      { fr: 'Opéré par l’Accélérateur M, Marseille Innovation et ANIMA, financé par la Métropole Aix-Marseille-Provence.',
                        en: 'Operated by Accélérateur M, Marseille Innovation and ANIMA, funded by the Aix-Marseille-Provence Metropolis.' },
     'foot.update':   { fr: 'Mis à jour le', en: 'Last updated' },
@@ -367,6 +377,76 @@
       <rect x="130" y="58" width="34" height="100" fill="var(--navy-ink)"/>
       <rect x="180" y="30" width="34" height="128" fill="var(--orange)"/>
       <path d="M40 96 96 66l50-24 56-20" stroke="var(--navy-ink)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 8"/>
+    </svg>`,
+
+    agenda: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="34" y="38" width="172" height="124" fill="var(--navy-wash)"/>
+      <path d="M34 70h172" stroke="var(--navy-ink)" stroke-width="3"/>
+      <path d="M74 26v26M166 26v26" stroke="var(--navy-ink)" stroke-width="5" stroke-linecap="round"/>
+      <rect x="58" y="88" width="26" height="22" fill="var(--navy-ink)"/>
+      <rect x="98" y="88" width="26" height="22" fill="var(--navy-ink)" opacity=".35"/>
+      <rect x="138" y="88" width="26" height="22" fill="var(--navy-ink)" opacity=".35"/>
+      <rect x="58" y="124" width="26" height="22" fill="var(--navy-ink)" opacity=".35"/>
+      <circle cx="150" cy="135" r="30" fill="var(--orange)"/>
+      <path d="M150 120v16l11 7" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+
+    passeport: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="52" y="20" width="120" height="150" fill="var(--navy-ink)"/>
+      <rect x="66" y="34" width="92" height="122" fill="var(--navy-wash)"/>
+      <circle cx="112" cy="74" r="22" fill="none" stroke="var(--navy-ink)" stroke-width="2.5"/>
+      <path d="M90 74h44M112 52c8 9 8 35 0 44-8-9-8-35 0-44Z" stroke="var(--navy-ink)" stroke-width="2.5"/>
+      <path d="M84 112h56M84 128h36" stroke="var(--navy-ink)" stroke-width="3" stroke-linecap="round"/>
+      <g transform="rotate(-14 176 118)">
+        <rect x="140" y="94" width="76" height="48" fill="none" stroke="var(--orange)" stroke-width="4"/>
+        <path d="M154 118h48" stroke="var(--orange)" stroke-width="4" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+
+    entreprises: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="26" y="30" width="58" height="58" fill="var(--navy-wash)"/>
+      <rect x="94" y="30" width="58" height="58" fill="var(--navy-ink)"/>
+      <rect x="162" y="30" width="58" height="58" fill="var(--navy-wash)"/>
+      <rect x="26" y="98" width="58" height="58" fill="var(--navy-ink)"/>
+      <rect x="94" y="98" width="58" height="58" fill="var(--orange)"/>
+      <rect x="162" y="98" width="58" height="58" fill="var(--navy-wash)"/>
+      <circle cx="123" cy="59" r="13" fill="#fff"/>
+      <circle cx="55" cy="127" r="13" fill="#fff"/>
+      <path d="M114 127h18M123 118v18" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    </svg>`,
+
+    hotel: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <path d="M20 158V88" stroke="var(--navy-ink)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M20 116h150a40 40 0 0 1 40 40v2" stroke="var(--navy-ink)" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M20 158h196" stroke="var(--navy-ink)" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="58" cy="92" r="20" fill="var(--orange)"/>
+      <rect x="88" y="76" width="88" height="30" fill="var(--navy-wash)"/>
+    </svg>`,
+
+    carnet: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="52" y="24" width="150" height="140" fill="var(--navy-wash)"/>
+      <path d="M52 24v140" stroke="var(--navy-ink)" stroke-width="6"/>
+      <path d="M34 52h30M34 88h30M34 124h30" stroke="var(--navy-ink)" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="112" cy="74" r="20" fill="var(--orange)"/>
+      <path d="M84 122c6-16 50-16 56 0" stroke="var(--orange)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M156 62h30M156 86h30M156 110h18" stroke="var(--navy-ink)" stroke-width="3" stroke-linecap="round"/>
+    </svg>`,
+
+    carte: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <path d="M28 44 90 24v112l-62 20V44Z" fill="var(--navy-wash)"/>
+      <path d="M90 24l60 20v112L90 136V24Z" fill="var(--navy-ink)" opacity=".16"/>
+      <path d="M150 44l62-20v112l-62 20V44Z" fill="var(--navy-wash)"/>
+      <path d="M28 44 90 24l60 20 62-20v112l-62 20-60-20-62 20V44Z" stroke="var(--navy-ink)" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M120 116s26-25 26-44a26 26 0 1 0-52 0c0 19 26 44 26 44Z" fill="var(--orange)"/>
+      <circle cx="120" cy="71" r="10" fill="#fff"/>
+    </svg>`,
+
+    suivi: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="44" y="24" width="152" height="140" fill="var(--navy-wash)"/>
+      <path d="M84 58h84M84 92h84M84 126h50" stroke="var(--navy-ink)" stroke-width="3" stroke-linecap="round"/>
+      <path d="m60 54 6 7 12-14" stroke="var(--orange)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m60 88 6 7 12-14" stroke="var(--orange)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m59 121 15 15M74 121l-15 15" stroke="var(--danger)" stroke-width="4.5" stroke-linecap="round"/>
     </svg>`,
   };
 
@@ -906,14 +986,28 @@
 
   /* ═══════════════════════ Sections ═══════════════════════ */
 
-  function entete(titre, chapo, dessin) {
-    return `<header class="head${dessin ? ' head--illus' : ''}">
-      <div class="head__t">
-        <p class="eyebrow">${esc(t(state.data.site && state.data.site.title) || 'Soft Landing')}</p>
-        <h1>${esc(titre)}</h1>
-        ${chapo ? `<p class="head__lede">${chapo}</p>` : ''}
+  /* Chaque page ouvre sur la même scène que l'accueil, en version basse :
+     fond profond, halos, grain, illustration, et les chiffres propres à la
+     page. Sans ça, l'accueil éblouissait et les onze autres retombaient à
+     plat dès le deuxième clic. */
+  function entete(titre, chapo, dessin, chiffres) {
+    const marques = list(chiffres).filter(Boolean).map((c) => `
+      <span class="bande__c"><b class="num">${esc(String(c.v))}</b> ${esc(c.k)}</span>`).join('');
+
+    return `<header class="scene scene--page">
+      <div class="scene__halos" aria-hidden="true">
+        <span class="halo halo--1"></span><span class="halo halo--2"></span>
       </div>
-      ${dessin ? `<div class="head__i" aria-hidden="true">${illus(dessin)}</div>` : ''}
+      <div class="scene__grain" aria-hidden="true"></div>
+      <div class="scene__in scene__in--page">
+        <div class="scene__txt">
+          <p class="eyebrow">${esc(t(state.data.site && state.data.site.title) || 'Soft Landing')}</p>
+          <h1>${esc(titre)}</h1>
+          ${chapo ? `<p class="head__lede">${chapo}</p>` : ''}
+          ${marques ? `<div class="bande">${marques}</div>` : ''}
+        </div>
+        ${dessin ? `<div class="head__i" aria-hidden="true">${illus(dessin)}</div>` : ''}
+      </div>
     </header>`;
   }
 
@@ -1292,7 +1386,9 @@
         <p class="step__b">${field(`visa.faq.${i}.a`, f.a)}</p>
       </article>`).join('');
 
-    return entete(ui('nav.visa'), filled(v.intro) ? field('visa.intro', v.intro) : '')
+    return entete(ui('nav.visa'), filled(v.intro) ? field('visa.intro', v.intro) : '', 'passeport',
+        [{ v: list(v.tracks).length, k: ui('kpi.voies') },
+         { v: list(v.steps).length, k: ui('kpi.etapes') }])
       + (voies ? `<section class="section"><div class="section__head"><h2>${esc(ui('label.tracks'))}</h2></div><div class="grid grid--2">${voies}</div></section>` : '')
       + (etapes ? `<section class="section"><div class="section__head"><h2>${esc(ui('label.steps'))}</h2></div>${etapes}</section>` : '')
       + (faq ? `<section class="section"><div class="section__head"><h2>${esc(ui('label.faq'))}</h2></div>${faq}</section>` : '')
@@ -1312,7 +1408,8 @@
 
     const ressources = list(bp.resources).map((r) => lien(r.url, t(r.label), 'link')).filter(Boolean).join('');
 
-    return entete(ui('nav.business-plan'), filled(bp.intro) ? field('businessPlan.intro', bp.intro) : '', 'croissance')
+    return entete(ui('nav.business-plan'), filled(bp.intro) ? field('businessPlan.intro', bp.intro) : '', 'croissance',
+        [{ v: list(bp.sections).length, k: ui('kpi.themes') }])
       + (blocs || vide())
       + (ressources ? `<section class="section"><div class="section__head"><h2>${esc(ui('label.resources'))}</h2></div><div class="card__acts">${ressources}</div></section>` : '');
   }
@@ -1363,7 +1460,8 @@
       ? rubrique('consortium') + rubrique('partenaire')
       : vide(q ? ui('empty.search') : '');
 
-    return entete(ui('nav.acteurs'), esc(ui('sub.acteurs')), 'reseau')
+    return entete(ui('nav.acteurs'), esc(ui('sub.acteurs')), 'reseau',
+        [{ v: tout.length, k: ui('kpi.acteurs') }])
       + `<div class="tools"><input class="search" type="search" data-filter="acteurs"
             value="${esc(state.filters.acteurs || '')}" placeholder="${esc(ui('search.acteurs'))}"></div>`
       + corps
@@ -1400,7 +1498,8 @@
       </article>`;
     }).join('');
 
-    return entete(ui('nav.hotels'), esc(ui('sub.hotels')))
+    return entete(ui('nav.hotels'), esc(ui('sub.hotels')), 'hotel',
+        [{ v: list(state.data.hotels).length, k: ui('kpi.hotels') }])
       + bandeauAncrage()
       + `<p class="note">${esc(ui('st.hint'))}</p>`
       + (cartes ? `<div class="grid grid--2">${cartes}</div>` : vide())
@@ -1455,7 +1554,9 @@
         <div class="grid grid--2">${besoins}</div>
       </section>` : '';
 
-    return entete(ui('nav.contacts'), esc(ui('sub.contacts')))
+    return entete(ui('nav.contacts'), esc(ui('sub.contacts')), 'carnet',
+        [{ v: list(state.data.contacts).length, k: ui('kpi.fiches') },
+         { v: list(state.data.besoins).length, k: ui('kpi.besoins') }])
       + blocBesoins
       + `<div class="tools"><input class="search" type="search" data-filter="contacts"
             value="${esc(state.filters.contacts || '')}" placeholder="${esc(ui('search.contacts'))}"></div>`
@@ -1529,7 +1630,9 @@
           </div>`).join('')}</div>
       </section>` : '';
 
-    return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')), 'chaine')
+    return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')), 'chaine',
+        [{ v: list(inst.etapes).length, k: ui('kpi.etapes') },
+         { v: list(inst.etapes).reduce((n, e) => n + list(e.comment).length, 0), k: ui('kpi.gestes') }])
       + alerte
       + rendreProgression()
       + `<div class="etapes">${etapes}</div>`
@@ -1562,7 +1665,8 @@
     const filtres = categories.map((c) =>
       `<button type="button" class="chipbtn" data-gcat="${esc(c)}" aria-pressed="${cat === c}">${esc(ui(`glo.${c}`))}</button>`).join('');
 
-    return entete(ui('nav.glossaire'), esc(ui('sub.glossaire')), 'savoir')
+    return entete(ui('nav.glossaire'), esc(ui('sub.glossaire')), 'savoir',
+        [{ v: tout.length, k: ui('kpi.termes') }])
       + `<div class="tools">
           <input class="search" type="search" data-filter="glossaire"
                  value="${esc(state.filters.glossaire || '')}" placeholder="${esc(ui('glo.search'))}">
@@ -1634,7 +1738,8 @@
       `<button type="button" class="chipbtn" data-cat="${esc(f)}" aria-pressed="${cat === f}">${esc(libelleCat(f))}</button>`).join('');
 
     const intro = state.data.marseilleIntro;
-    return entete(ui('nav.marseille'), filled(intro) ? field('marseilleIntro', intro) : esc(ui('sub.marseille')), 'ville')
+    return entete(ui('nav.marseille'), filled(intro) ? field('marseilleIntro', intro) : esc(ui('sub.marseille')), 'ville',
+        [{ v: lieux.length, k: ui('kpi.adresses') }])
       + bandeauAncrage()
       + `<p class="note">${esc(ui('st.hint'))}</p>`
       + `<div class="tools">
@@ -1772,7 +1877,8 @@
 
     const compte = tout.filter((l) => !cat || l.famille === cat).length;
 
-    return entete(ui('nav.carte'), esc(ui('sub.carte')))
+    return entete(ui('nav.carte'), esc(ui('sub.carte')), 'carte',
+        [{ v: tout.length, k: ui('kpi.reperes') }])
       + bandeauAncrage()
       + `<div class="tools">
           <button type="button" class="chipbtn" data-ccat="" aria-pressed="${cat === ''}">${esc(ui('label.all'))}</button>
@@ -1856,7 +1962,7 @@
 
   function rendreSuivi() {
     if (!suivi.ouvert) {
-      return entete(ui('suivi.title'), esc(ui('suivi.lede')))
+      return entete(ui('suivi.title'), esc(ui('suivi.lede')), 'suivi')
         + `<div class="warn"><span class="warn__i">${svg('alert', 17)}</span>
              <div><p class="eyebrow">${esc(ui('suivi.warnK'))}</p>
              <p class="warn__t">${esc(ui('suivi.warn'))}</p></div></div>
@@ -1887,7 +1993,8 @@
     const compte = ETATS.map((et) => `<span class="suivi__c"><b class="num">${
       Object.values(bloc.presences || {}).filter((v) => v === et).length}</b> ${esc(ui('etat.' + et))}</span>`).join('');
 
-    return entete(ui('suivi.title'), esc(ui('suivi.lede')))
+    return entete(ui('suivi.title'), esc(ui('suivi.lede')), 'suivi',
+        [{ v: ents.length, k: ui('kpi.startups') }, { v: sessions.length, k: ui('kpi.sessions') }])
       + `<div class="tools">
            <select class="select" id="suivi-session" aria-label="${esc(ui('suivi.session'))}">${choix}</select>
            <button type="button" class="btn" id="suivi-csv">${svg('download', 14)}${esc(ui('suivi.csv'))}</button>
@@ -1961,7 +2068,9 @@
 
     const corps = rubrique('accelerateur-m', 'ent.grpM') + rubrique('consortium', 'ent.grpC');
 
-    return entete(ui('nav.entreprises'), esc(ui('sub.entreprises')))
+    return entete(ui('nav.entreprises'), esc(ui('sub.entreprises')), 'entreprises',
+        [{ v: list(state.data.entreprises).length, k: ui('kpi.startups') },
+         { v: paysDispo.length, k: ui('kpi.pays') }])
       + filtresPays
       + (corps || vide(ui('empty.search')))
       + boutonAjout('entreprises');
@@ -1969,7 +2078,8 @@
 
   const RENDUS = {
     'accueil': rendreAccueil,
-    'programme': () => entete(ui('nav.programme'), esc(ui('sub.programme'))) + rendreProgramme(),
+    'programme': () => entete(ui('nav.programme'), esc(ui('sub.programme')), 'agenda',
+        [{ v: list(state.data.programme).length, k: ui('kpi.sessions') }]) + rendreProgramme(),
     'visa': rendreVisa,
     'business-plan': rendreBusinessPlan,
     'acteurs': rendreActeurs,

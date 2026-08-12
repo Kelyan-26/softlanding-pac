@@ -1490,3 +1490,60 @@ body.editing .shell { padding-bottom: var(--s9); }
   }
   .scene h1 { font-size: clamp(2.4rem, 1.6rem + 6vw, 3.2rem); }
 }
+
+/* ════════════ La scène, version page intérieure ═════════════════════
+   L'accueil éblouissait et les onze autres onglets retombaient à plat dès
+   le deuxième clic. Même registre partout : fond profond, halos, grain,
+   illustration et les chiffres de la page — mais en bande basse, pour ne
+   pas repousser le contenu sous la ligne de flottaison. */
+
+.scene--page {
+  margin-bottom: var(--s8);
+  padding-top: var(--s7);
+  padding-bottom: var(--s7);
+}
+.scene--page .scene__in--page {
+  grid-template-columns: 1fr auto;
+  gap: var(--s7);
+  align-items: center;
+}
+.scene--page h1 {
+  color: #fff;
+  font-size: clamp(2rem, 1.2rem + 2.6vw, 3.2rem);
+  line-height: 1.02;
+  margin-top: var(--s2);
+}
+.scene--page .eyebrow { color: rgb(255 255 255 / .5); }
+.scene--page .head__lede { max-width: var(--measure); margin-top: var(--s4); color: rgb(255 255 255 / .78); }
+.scene--page .head__lede .ed { color: #fff; }
+.scene--page .halo--1 { width: 34vw; height: 34vw; opacity: .8; }
+.scene--page .halo--2 { width: 26vw; height: 26vw; }
+
+/* Les chiffres de la page, en ligne sous le chapô. */
+.bande { display: flex; flex-wrap: wrap; gap: var(--s6); margin-top: var(--s5); }
+.bande__c { font-size: var(--fs-sm); color: rgb(255 255 255 / .6); }
+.bande__c b {
+  display: block;
+  font-family: var(--f-display); font-weight: 800;
+  font-size: clamp(1.8rem, 1.2rem + 1.6vw, 2.6rem); line-height: 1;
+  letter-spacing: var(--tr-hero);
+  color: #fff;
+}
+
+/* L'illustration passe en clair sur le fond profond : le marine du dessin
+   devient blanc translucide, l'orange reste l'orange. */
+.scene--page .head__i svg { width: clamp(150px, 20vw, 240px); }
+.scene--page .head__i {
+  --navy-ink: rgb(255 255 255 / .82);
+  --navy-wash: rgb(255 255 255 / .14);
+}
+
+/* Le bandeau d'avertissement d'ancrage, posé sur la scène plutôt qu'après. */
+.scene--page + .warn { margin-top: calc(var(--s8) * -1 + var(--s5)); }
+
+@media (max-width: 900px) {
+  .scene--page { padding: var(--s6) var(--s4); margin-bottom: var(--s6); }
+  .scene--page .scene__in--page { grid-template-columns: 1fr; gap: var(--s4); }
+  .scene--page .head__i { display: none; }
+  .bande { gap: var(--s5); }
+}
