@@ -115,6 +115,33 @@
     'visa.step':     { fr: 'Cette étape en détail', en: 'This step in detail' },
     'bp.detail':     { fr: 'Ce que couvre cette thématique', en: 'What this theme covers' },
     'bp.cover':      { fr: 'Les points à traiter', en: 'The points to cover' },
+
+    'suivi.title':   { fr: 'Suivi de promotion', en: 'Cohort tracking' },
+    'suivi.lede':    { fr: 'Espace réservé à l’équipe du programme. Les participants n’y ont pas accès et ne voient rien de ce qui est saisi ici.',
+                       en: 'Reserved for the programme team. Participants have no access and see nothing entered here.' },
+    'suivi.warnK':   { fr: 'Où vivent ces données', en: 'Where this data lives' },
+    'suivi.warn':    { fr: 'Le registre est chiffré avec une phrase de passe distincte de celle du site, et il reste sur cet appareil. Il n’entre jamais dans le fichier de contenu partagé avec la promotion. Pour le transmettre à un collègue, exportez-le : c’est le seul chemin.',
+                       en: 'The register is encrypted with a passphrase distinct from the site’s, and stays on this device. It never enters the content file shared with the cohort. To pass it to a colleague, export it: that is the only route.' },
+    'suivi.pwd':     { fr: 'Phrase de passe du suivi', en: 'Tracking passphrase' },
+    'suivi.enter':   { fr: 'Ouvrir le suivi', en: 'Open tracking' },
+    'suivi.first':   { fr: 'Première ouverture : la phrase que vous saisissez devient celle du registre. Notez-la, elle ne se récupère pas.',
+                       en: 'First time: the passphrase you enter becomes the register’s. Write it down, it cannot be recovered.' },
+    'suivi.wrong':   { fr: 'Phrase de passe incorrecte, ou registre créé avec une autre.',
+                       en: 'Wrong passphrase, or the register was created with another one.' },
+    'suivi.session': { fr: 'Session', en: 'Session' },
+    'suivi.notes':   { fr: 'Notes de séance', en: 'Session notes' },
+    'suivi.notesHint': { fr: 'Retards, départs anticipés, points à reprendre, engagements pris…',
+                         en: 'Late arrivals, early departures, follow-ups, commitments made…' },
+    'suivi.csv':     { fr: 'Export CSV', en: 'CSV export' },
+    'suivi.export':  { fr: 'Sauvegarde chiffrée', en: 'Encrypted backup' },
+    'suivi.import':  { fr: 'Importer', en: 'Import' },
+    'suivi.lock':    { fr: 'Fermer le suivi', en: 'Close tracking' },
+    'suivi.saved':   { fr: 'Enregistré sur cet appareil le', en: 'Saved on this device on' },
+    'suivi.none':    { fr: 'Aucune entreprise dans le contenu.', en: 'No company in the content.' },
+    'suivi.imported':{ fr: 'Registre importé.', en: 'Register imported.' },
+    'etat.present':  { fr: 'Présent', en: 'Present' },
+    'etat.absent':   { fr: 'Absent', en: 'Absent' },
+    'etat.excuse':   { fr: 'Excusé', en: 'Excused' },
     'bp.traps':      { fr: 'Les erreurs qui coûtent cher', en: 'The costly mistakes' },
 
     'pan.close':     { fr: 'Fermer', en: 'Close' },
@@ -827,6 +854,105 @@
      partagé : personne d'autre n'a à voir où en est quelqu'un. Stockée à part
      du brouillon d'édition, pour qu'un « tout annuler » ne l'efface pas. */
   const CLE_PROGRESSION = 'slpac.progress';
+
+  /* ═══════════════════════ Espace de suivi (équipe) ═══════════════════════
+
+     Demandé par le tuteur : noter qui était présent, absent ou excusé à
+     chaque session, avec des notes libres.
+
+     DEUX RÈGLES ONT DICTÉ LA CONCEPTION.
+
+     1. Ces données ne doivent JAMAIS entrer dans content.enc.json. Ce fichier
+        est déchiffré par le mot de passe partagé à toute la promotion : y
+        mettre les absences reviendrait à publier à chaque fondateur le
+        registre d'assiduité de ses concurrents. Le suivi vit donc à part,
+        chiffré avec une phrase de passe DISTINCTE, et ne quitte l'appareil
+        que si on l'exporte volontairement.
+
+     2. La porte n'est pas secrète, le contenu l'est. L'espace s'ouvre par
+        #suivi, sans entrée dans la navigation. Cacher l'adresse ne protège
+        rien — un curieux lit le JavaScript en trois minutes. Ce qui protège,
+        c'est la phrase de passe et le chiffrement derrière.
+
+     Contrepartie assumée, la même que pour le brouillon d'édition : le suivi
+     est local à l'appareil. Pour le partager avec l'équipe, on l'exporte en
+     fichier chiffré et l'autre l'importe. */
+
+  const CLE_SUIVI = 'slpac.suivi';
+  const ETATS = ['present', 'absent', 'excuse'];
+
+  const suivi = { ouvert: false, mdp: '', data: null, session: 0 };
+
+  function suiviVide() {
+    return { v: 1, majLe: new Date().toISOString(), sessions: {} };
+  }
+
+  async function ouvrirSuivi(mdp) {
+    const brut = localStorage.getItem(CLE_SUIVI);
+    if (!brut) {
+      /* Premier usage : la phrase saisie devient celle du registre. */
+      suivi.data = suiviVide();
+      suivi.mdp = mdp;
+      suivi.ouvert = true;
+      await sauverSuivi();
+      return true;
+    }
+    try {
+      suivi.data = await dechiffrer(mdp, JSON.parse(brut));
+      suivi.mdp = mdp;
+      suivi.ouvert = true;
+      return true;
+    } catch { return false; }
+  }
+
+  async function sauverSuivi() {
+    if (!suivi.ouvert) return;
+    suivi.data.majLe = new Date().toISOString();
+    const env = await chiffrer(suivi.mdp, suivi.data);
+    localStorage.setItem(CLE_SUIVI, JSON.stringify(env));
+  }
+
+  const entreprisesSuivies = () => list(state.data.entreprises).map((e) => t(e.nom)).filter(Boolean);
+
+  function etatDe(sessionIdx, entreprise) {
+    const s = suivi.data.sessions[sessionIdx] || {};
+    return (s.presences || {})[entreprise] || '';
+  }
+
+  async function noter(sessionIdx, entreprise, etat) {
+    const s = suivi.data.sessions[sessionIdx] || (suivi.data.sessions[sessionIdx] = { presences: {}, notes: '' });
+    if (!s.presences) s.presences = {};
+    if (s.presences[entreprise] === etat) delete s.presences[entreprise];
+    else s.presences[entreprise] = etat;
+    await sauverSuivi();
+  }
+
+  /* Rafraîchit les trois compteurs sans toucher au tableau. */
+  function majCompteursSuivi() {
+    if (!suivi.ouvert) return;
+    const bloc = suivi.data.sessions[suivi.session] || {};
+    const valeurs = Object.values(bloc.presences || {});
+    document.querySelectorAll('.suivi__c').forEach((n, k) => {
+      const b = n.querySelector('b');
+      if (b) b.textContent = valeurs.filter((v) => v === ETATS[k]).length;
+    });
+  }
+
+  /* Un export CSV pour le tableur de l'équipe : une ligne par session et par
+     entreprise, avec la date. C'est ce qui se recolle le plus facilement
+     dans un suivi existant. */
+  function suiviVersCSV() {
+    const lignes = [['date', 'session', 'entreprise', 'etat']];
+    list(state.data.programme).forEach((s, i) => {
+      const bloc = suivi.data.sessions[i];
+      if (!bloc) return;
+      Object.entries(bloc.presences || {}).forEach(([ent, etat]) => {
+        lignes.push([t(s.date), t(s.title), ent, etat]);
+      });
+    });
+    /* Guillemets doublés : un nom de session contient des virgules. */
+    return lignes.map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  }
 
   function progression() {
     try { return JSON.parse(localStorage.getItem(CLE_PROGRESSION) || '{}'); }
@@ -1647,6 +1773,60 @@
       b.setAttribute('aria-pressed', String(b.dataset.tuile === nom)));
   }
 
+  function rendreSuivi() {
+    if (!suivi.ouvert) {
+      return entete(ui('suivi.title'), esc(ui('suivi.lede')))
+        + `<div class="warn"><span class="warn__i">${svg('alert', 17)}</span>
+             <div><p class="eyebrow">${esc(ui('suivi.warnK'))}</p>
+             <p class="warn__t">${esc(ui('suivi.warn'))}</p></div></div>
+           <form class="suivi__gate" id="suivi-form" autocomplete="off">
+             <label class="eyebrow" for="suivi-pwd">${esc(ui('suivi.pwd'))}</label>
+             <input class="field" id="suivi-pwd" type="password" autocomplete="off" required>
+             <button class="btn btn--primary btn--lg" type="submit">${esc(ui('suivi.enter'))}</button>
+             <p class="alert" id="suivi-err" role="alert" hidden></p>
+             <p class="gate__hint">${esc(ui('suivi.first'))}</p>
+           </form>`;
+    }
+
+    const sessions = list(state.data.programme);
+    const ents = entreprisesSuivies();
+    const i = Math.min(suivi.session, Math.max(sessions.length - 1, 0));
+    const s = sessions[i] || {};
+    const bloc = suivi.data.sessions[i] || { presences: {}, notes: '' };
+
+    const choix = sessions.map((x, k) => `<option value="${k}"${k === i ? ' selected' : ''}>${esc(dateLongue(t(x.date)))} — ${esc(t(x.title))}</option>`).join('');
+
+    const lignes = ents.map((e) => {
+      const actuel = etatDe(i, e);
+      const boutons = ETATS.map((et) => `<button type="button" class="etat etat--${et}${actuel === et ? ' etat--on' : ''}"
+          data-noter="${esc(e)}" data-etat="${et}">${esc(ui('etat.' + et))}</button>`).join('');
+      return `<tr><th scope="row">${esc(e)}</th><td><div class="etats">${boutons}</div></td></tr>`;
+    }).join('');
+
+    const compte = ETATS.map((et) => `<span class="suivi__c"><b class="num">${
+      Object.values(bloc.presences || {}).filter((v) => v === et).length}</b> ${esc(ui('etat.' + et))}</span>`).join('');
+
+    return entete(ui('suivi.title'), esc(ui('suivi.lede')))
+      + `<div class="tools">
+           <select class="select" id="suivi-session" aria-label="${esc(ui('suivi.session'))}">${choix}</select>
+           <button type="button" class="btn" id="suivi-csv">${svg('download', 14)}${esc(ui('suivi.csv'))}</button>
+           <button type="button" class="btn" id="suivi-export">${svg('download', 14)}${esc(ui('suivi.export'))}</button>
+           <button type="button" class="btn" id="suivi-import">${esc(ui('suivi.import'))}</button>
+           <button type="button" class="linkbtn" id="suivi-lock">${esc(ui('suivi.lock'))}</button>
+         </div>
+         <section class="section">
+           <div class="section__head"><h2>${esc(t(s.title))}</h2><span class="day__c">${esc(dateLongue(t(s.date)))}</span></div>
+           <div class="suivi__k">${compte}</div>
+           <table class="tbl"><tbody>${lignes || `<tr><td>${esc(ui('suivi.none'))}</td></tr>`}</tbody></table>
+         </section>
+         <section class="section">
+           <div class="section__head"><h2>${esc(ui('suivi.notes'))}</h2></div>
+           <textarea class="zone" id="suivi-notes" rows="6"
+             placeholder="${esc(ui('suivi.notesHint'))}">${esc(bloc.notes || '')}</textarea>
+         </section>
+         <p class="pan__src">${esc(ui('suivi.saved'))} ${esc(new Date(suivi.data.majLe).toLocaleString(locale()))}</p>`;
+  }
+
   function rendreEntreprises() {
     if (state.detail !== null && state.detail !== undefined) return ficheEntreprise(state.detail);
 
@@ -1704,6 +1884,9 @@
     'glossaire': rendreGlossaire,
     'entreprises': rendreEntreprises,
     'carte': rendreCarte,
+    /* Hors SECTIONS, donc absente de la navigation : on n'y arrive
+       que par #suivi. La porte n'est pas secrète, le contenu l'est. */
+    'suivi': rendreSuivi,
   };
 
 
@@ -2290,14 +2473,14 @@
       carte.instance.remove();
       carte.instance = null; carte.couche = null; carte.reperes = [];
     }
-    SECTIONS.forEach((id) => {
+    [...SECTIONS, 'suivi'].forEach((id) => {
       const vue = document.getElementById(`view-${id}`);
       if (!vue) return;
       const actif = id === state.section;
       vue.hidden = !actif;
       if (actif) vue.innerHTML = RENDUS[id]();
     });
-    $('#topbar-title').textContent = ui(`nav.${state.section}`);
+    $('#topbar-title').textContent = state.section === 'suivi' ? ui('suivi.title') : ui(`nav.${state.section}`);
     if (state.panneau) afficherPanneau();
   }
 
@@ -2442,6 +2625,54 @@
       /* Une puce n'est un filtre que si elle porte un filtre. Sans ce test,
          toute .chipbtn était avalée ici — c'est ce qui rendait muets les
          renvois « Voir aussi » du glossaire depuis leur création. */
+      /* ── Espace de suivi ──────────────────────────────────────────── */
+      const noteBtn = e.target.closest('[data-noter]');
+      if (noteBtn) {
+        /* Mise à jour SUR PLACE, pas de re-rendu. Re-rendre la section
+           détacherait les boutons voisins et ferait sauter le défilement —
+           c'est exactement le défaut corrigé sur les cases de progression
+           le 7 août. */
+        noter(suivi.session, noteBtn.dataset.noter, noteBtn.dataset.etat).then(() => {
+          const rangee = noteBtn.closest('tr');
+          const retenu = etatDe(suivi.session, noteBtn.dataset.noter);
+          rangee.querySelectorAll('.etat').forEach((b) =>
+            b.classList.toggle('etat--on', b.dataset.etat === retenu));
+          majCompteursSuivi();
+        });
+        return;
+      }
+      if (e.target.closest('#suivi-csv')) {
+        telecharger('suivi-slpac.csv', '﻿' + suiviVersCSV(), 'text/csv;charset=utf-8');
+        return;
+      }
+      if (e.target.closest('#suivi-export')) {
+        chiffrer(suivi.mdp, suivi.data).then((env) =>
+          telecharger('suivi-slpac.enc.json', JSON.stringify(env, null, 2) + '\n', 'application/json'));
+        return;
+      }
+      if (e.target.closest('#suivi-import')) {
+        const f = document.createElement('input');
+        f.type = 'file'; f.accept = 'application/json,.json';
+        f.onchange = async () => {
+          const fichier = f.files && f.files[0];
+          if (!fichier) return;
+          try {
+            const env = JSON.parse(await fichier.text());
+            suivi.data = await dechiffrer(suivi.mdp, env);
+            await sauverSuivi();
+            afficherSection();
+            alert(ui('suivi.imported'));
+          } catch { alert(ui('suivi.wrong')); }
+        };
+        f.click();
+        return;
+      }
+      if (e.target.closest('#suivi-lock')) {
+        suivi.ouvert = false; suivi.mdp = ''; suivi.data = null;
+        afficherSection();
+        return;
+      }
+
       const epays = e.target.closest('[data-epays]');
       if (epays) { state.filters.entPays = epays.dataset.epays; afficherSection(); return; }
 
@@ -2602,7 +2833,27 @@
       }
     });
 
+    /* Le formulaire du suivi n'existe pas au chargement : il apparaît avec
+       la section. On écoute donc au niveau du document. */
+    document.addEventListener('submit', async (e) => {
+      if (!e.target.matches('#suivi-form')) return;
+      e.preventDefault();
+      const champ = $('#suivi-pwd');
+      const err = $('#suivi-err');
+      if (!champ.value || champ.value.length < 8) {
+        err.hidden = false; err.textContent = ui('edit.shortPwd'); return;
+      }
+      const ok = await ouvrirSuivi(champ.value);
+      if (ok) { suivi.session = 0; afficherSection(); }
+      else { err.hidden = false; err.textContent = ui('suivi.wrong'); }
+    });
+
     document.addEventListener('change', (e) => {
+      if (e.target.id === 'suivi-session') {
+        suivi.session = Number(e.target.value);
+        afficherSection();
+        return;
+      }
       const c = e.target.closest('[data-coche]');
       if (!c) return;
       cocher(c.dataset.coche, c.checked);
@@ -2623,6 +2874,17 @@
       }
 
       if (e.target.id === 'find-input') { afficherResultats(e.target.value); return; }
+
+      /* Les notes de séance : on écrit dans le registre sans re-rendre,
+         sinon le curseur saute à chaque frappe. */
+      if (e.target.id === 'suivi-notes' && suivi.ouvert) {
+        const bloc = suivi.data.sessions[suivi.session]
+          || (suivi.data.sessions[suivi.session] = { presences: {}, notes: '' });
+        bloc.notes = e.target.value;
+        clearTimeout(suivi.timer);
+        suivi.timer = setTimeout(sauverSuivi, 400);
+        return;
+      }
 
       const champ = e.target.closest('[data-filter]');
       if (!champ) return;

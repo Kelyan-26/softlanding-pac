@@ -1252,3 +1252,53 @@ body.editing .shell { padding-bottom: var(--s9); }
   letter-spacing: var(--tr-title);
   color: var(--orange-deep);
 }
+
+/* ════════════════════ Espace de suivi (équipe) ══════════════════════ */
+
+.suivi__gate { display: grid; gap: var(--s3); max-width: 420px; margin-top: var(--s6); }
+
+.select {
+  padding: var(--s2) var(--s3);
+  font-family: var(--f-display); font-size: var(--fs-sm); font-weight: 550;
+  color: var(--ink); background: var(--sand);
+  border: 0; border-radius: var(--r);
+}
+
+.suivi__k { display: flex; flex-wrap: wrap; gap: var(--s5); margin-bottom: var(--s5); }
+.suivi__c { font-size: var(--fs-sm); color: var(--ink-3); }
+.suivi__c b { font-family: var(--f-display); font-size: var(--fs-h2); font-weight: 800; color: var(--navy-ink); margin-right: var(--s2); }
+
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th { text-align: left; font-family: var(--f-display); font-weight: 650; letter-spacing: var(--tr-title); padding: var(--s3) var(--s4) var(--s3) 0; }
+.tbl td { padding: var(--s3) 0; }
+.tbl tr + tr th, .tbl tr + tr td { border-top: 1px solid var(--hair); }
+
+/* Trois états, trois couleurs franches. L'état retenu s'affiche plein ;
+   les deux autres restent en aplat neutre — pas de contour. */
+.etats { display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: flex-end; }
+.etat {
+  padding: var(--s1) var(--s3);
+  font-family: var(--f-display); font-size: var(--fs-xs); font-weight: 600;
+  color: var(--ink-3); background: var(--sand);
+  border: 0; border-radius: var(--r);
+  transition: background .14s var(--ease), color .14s var(--ease);
+}
+.etat:hover { background: var(--sand-2); color: var(--ink); }
+.etat--on.etat--present { color: #fff; background: var(--live); }
+.etat--on.etat--absent  { color: #fff; background: var(--danger); }
+.etat--on.etat--excuse  { color: #fff; background: var(--warn); }
+
+.zone {
+  width: 100%; padding: var(--s4);
+  font-family: var(--f-text); font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--sand);
+  border: 0; border-radius: var(--r); resize: vertical;
+}
+.zone:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+@media (max-width: 700px) {
+  .tbl th, .tbl td { display: block; padding: var(--s2) 0; }
+  .etats { justify-content: flex-start; }
+  .tbl tr + tr th { border-top: 1px solid var(--hair); padding-top: var(--s4); }
+  .tbl tr + tr td { border-top: 0; }
+}
