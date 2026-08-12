@@ -1547,3 +1547,126 @@ body.editing .shell { padding-bottom: var(--s9); }
   .scene--page .head__i { display: none; }
   .bande { gap: var(--s5); }
 }
+
+/* ════════════ La porte devient la première seconde ══════════════════
+   Elle était blanche. C'est pourtant l'écran que TOUT le monde voit en
+   premier, avant même de savoir ce qu'il y a derrière. On y met la même
+   scène que le site, la marque en grand, et trois promesses. */
+
+.gate {
+  place-items: stretch;
+  padding: 0;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 10% 0%, #3B4699 0%, transparent 55%),
+    radial-gradient(90% 80% at 100% 40%, #1C2352 0%, transparent 60%),
+    linear-gradient(155deg, #232B60 0%, #141838 100%);
+}
+.gate__halos { position: absolute; inset: -20%; z-index: 0; filter: blur(80px); opacity: .85; }
+.gate .scene__grain { z-index: 1; }
+
+.gate__in {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1.15fr .85fr;
+  align-items: center; gap: var(--s10);
+  width: 100%; max-width: var(--page);
+  margin: auto; padding: var(--s8) var(--s6);
+}
+
+.gate__mot .logo { width: min(420px, 90%); }
+.gate__slogan {
+  margin-top: var(--s6);
+  font-family: var(--f-display);
+  font-size: clamp(1.4rem, .9rem + 1.8vw, 2.3rem);
+  font-weight: 700; line-height: 1.16;
+  letter-spacing: var(--tr-title);
+  max-width: 18ch;
+}
+.gate__pts { list-style: none; padding: 0; margin-top: var(--s7); display: grid; gap: var(--s3); }
+.gate__pts li {
+  position: relative; padding-left: var(--s5);
+  font-size: var(--fs-sm); color: rgb(255 255 255 / .7);
+}
+.gate__pts li::before {
+  content: ""; position: absolute; left: 0; top: .62em;
+  width: 14px; height: 2px; background: var(--orange);
+}
+
+/* Le formulaire, en verre posé sur la scène. */
+.gate__card {
+  width: 100%; max-width: 420px; justify-self: end;
+  padding: var(--s7);
+  background: rgb(255 255 255 / .08);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 30px 80px -30px rgb(0 0 0 / .6);
+}
+.gate__label { color: rgb(255 255 255 / .6); }
+.gate .field { color: #fff; border-bottom-color: rgb(255 255 255 / .35); }
+.gate .field:focus { border-bottom-color: var(--orange); }
+.gate .field:-webkit-autofill,
+.gate .field:-webkit-autofill:hover,
+.gate .field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px #232B60 inset;
+  caret-color: #fff;
+}
+.gate__hint { color: rgb(255 255 255 / .5); }
+.gate .langbtn { color: rgb(255 255 255 / .55); }
+.gate .langbtn[aria-pressed="true"] { color: var(--navy-deep); background: #fff; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .gate__mot > *, .gate__card { animation: leve .8s var(--ease-out) both; }
+  .gate__slogan { animation-delay: .08s; }
+  .gate__pts { animation-delay: .16s; }
+  .gate__card { animation-delay: .24s; }
+}
+
+@media (max-width: 900px) {
+  .gate__in { grid-template-columns: 1fr; gap: var(--s7); padding: var(--s6) var(--s4); }
+  .gate__card { justify-self: stretch; max-width: none; padding: var(--s5); }
+  .gate__pts { display: none; }
+  .gate__mot .logo { width: min(300px, 80%); }
+}
+
+/* ════════════ Le fond réagit au pointeur ═══════════════════════════
+   Une parallaxe de quelques pixels : on ne la remarque pas, on la sent. */
+.halo--1 { transform: translate3d(calc(var(--px, 0) * 26px), calc(var(--py, 0) * 20px), 0); }
+.halo--2 { transform: translate3d(calc(var(--px, 0) * -22px), calc(var(--py, 0) * -16px), 0); }
+.halo--3 { transform: translate3d(calc(var(--px, 0) * 16px), calc(var(--py, 0) * -22px), 0); }
+@media (prefers-reduced-motion: no-preference) {
+  .halo { transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
+  /* La dérive lente reprend la main sur la scène de l'accueil. */
+  .scene .halo--1 { animation: derive1 26s ease-in-out infinite alternate; transition: none; }
+  .scene .halo--2 { animation: derive2 32s ease-in-out infinite alternate; transition: none; }
+  .scene .halo--3 { animation: derive3 38s ease-in-out infinite alternate; transition: none; }
+}
+
+/* ════════════ Le programme devient une frise ═══════════════════════ */
+.line::before {
+  content: ""; position: absolute; left: 30px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--orange) 0%, var(--navy-wash) 40%, var(--navy-wash) 100%);
+}
+.slot { position: relative; padding-left: var(--s6); }
+.slot::before {
+  content: ""; position: absolute; left: 25px; top: calc(var(--s5) + 6px);
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--navy-wash); box-shadow: 0 0 0 4px #fff;
+}
+.slot--next::before { background: var(--orange); box-shadow: 0 0 0 4px #fff, 0 0 0 9px rgb(237 117 44 / .22); }
+.slot--live::before { background: var(--live); box-shadow: 0 0 0 4px #fff, 0 0 0 9px rgb(15 122 61 / .22); }
+.slot--past::before { background: var(--hair); }
+@media (max-width: 900px) {
+  .line::before { left: 6px; }
+  .slot { padding-left: var(--s5); }
+  .slot::before { left: 1px; top: calc(var(--s5) + 4px); }
+}
+
+/* ════════════ Les cartes prennent la lumière au survol ═════════════ */
+.card--ouvrable, .boite, .mot, .tile { position: relative; overflow: hidden; }
+.card--ouvrable::after, .boite::after, .mot::after, .tile::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  opacity: 0; transition: opacity .25s var(--ease);
+  background: radial-gradient(420px circle at var(--sx, 50%) var(--sy, 0%), rgb(237 117 44 / .1), transparent 62%);
+}
+.card--ouvrable:hover::after, .boite:hover::after, .mot:hover::after, .tile:hover::after { opacity: 1; }

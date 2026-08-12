@@ -17,25 +17,38 @@
 
 <!-- ───────────────────────── Porte d'entrée ───────────────────────── -->
 <div id="gate" class="gate">
-  <form class="gate__card" id="gate-form" autocomplete="off">
-    <div class="gate__brand">
-      <img class="logo" src="assets/logo.png"
+  <div class="gate__halos" aria-hidden="true">
+    <span class="halo halo--1"></span><span class="halo halo--2"></span><span class="halo halo--3"></span>
+  </div>
+  <div class="scene__grain" aria-hidden="true"></div>
+
+  <div class="gate__in">
+    <div class="gate__mot">
+      <img class="logo" src="assets/logo-clair.png"
            alt="Soft Landing Provence Africa Connect" width="900" height="281">
+      <p class="gate__slogan" data-i18n="gate.slogan">Le carnet de bord de votre implantation en Provence.</p>
+      <ul class="gate__pts">
+        <li data-i18n="gate.p1">Tout ce qu'il faut savoir avant d'arriver</li>
+        <li data-i18n="gate.p2">Consultable hors ligne, une fois ouvert</li>
+        <li data-i18n="gate.p3">En français et en anglais</li>
+      </ul>
     </div>
 
-    <label class="eyebrow gate__label" for="gate-password" data-i18n="gate.label">Mot de passe de la promotion</label>
-    <input class="field" id="gate-password" type="password" autocomplete="current-password"
-           required aria-describedby="gate-error">
-    <button class="btn btn--primary btn--lg btn--block" type="submit" data-i18n="gate.submit">Entrer</button>
+    <form class="gate__card" id="gate-form" autocomplete="off">
+      <label class="eyebrow gate__label" for="gate-password" data-i18n="gate.label">Mot de passe de la promotion</label>
+      <input class="field" id="gate-password" type="password" autocomplete="current-password"
+             required aria-describedby="gate-error">
+      <button class="btn btn--accent btn--lg btn--block" type="submit" data-i18n="gate.submit">Entrer</button>
 
-    <p class="alert" id="gate-error" role="alert" hidden></p>
-    <p class="gate__hint" data-i18n="gate.hint">Espace privé réservé aux participants du programme.</p>
+      <p class="alert" id="gate-error" role="alert" hidden></p>
+      <p class="gate__hint" data-i18n="gate.hint">Espace privé réservé aux participants du programme.</p>
 
-    <div class="gate__langs">
-      <button type="button" class="langbtn" data-lang="fr">FR</button>
-      <button type="button" class="langbtn" data-lang="en">EN</button>
-    </div>
-  </form>
+      <div class="gate__langs">
+        <button type="button" class="langbtn" data-lang="fr">FR</button>
+        <button type="button" class="langbtn" data-lang="en">EN</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- ───────────────────────── Application ───────────────────────── -->

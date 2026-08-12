@@ -22,6 +22,11 @@
     'gate.wrong':       { fr: 'Mot de passe incorrect.', en: 'Wrong password.' },
     'gate.missing':     { fr: 'Contenu introuvable. Lancez « node build.js » pour générer content.enc.json.', en: 'Content not found. Run “node build.js” to generate content.enc.json.' },
     'gate.corrupt':     { fr: 'Le fichier de contenu est illisible.', en: 'The content file is unreadable.' },
+    'gate.slogan':      { fr: 'Le carnet de bord de votre implantation en Provence.',
+                          en: 'Your onboarding companion for setting up in Provence.' },
+    'gate.p1':          { fr: 'Tout ce qu’il faut savoir avant d’arriver', en: 'Everything to know before you arrive' },
+    'gate.p2':          { fr: 'Consultable hors ligne, une fois ouvert', en: 'Readable offline, once opened' },
+    'gate.p3':          { fr: 'En français et en anglais', en: 'In French and English' },
     'gate.render':      { fr: 'Mot de passe accepté, mais l’affichage a échoué — c’est un défaut du site :',
                           en: 'Password accepted, but rendering failed — this is a fault in the site:' },
 
@@ -2688,6 +2693,7 @@
     });
     $('#topbar-title').textContent = state.section === 'suivi' ? ui('suivi.title') : ui(`nav.${state.section}`);
     if (state.panneau) afficherPanneau();
+    animerChiffres();
   }
 
   /* La bande défilante remplace la ligne de pied de page : elle fait tourner
@@ -2804,8 +2810,76 @@
     document.documentElement.style.setProperty('--bar-h', `${Math.round(bar.offsetHeight)}px`);
   }
 
+  /* Les compteurs montent de zéro quand ils entrent dans l'écran. Un chiffre
+     qui s'installe se retient mieux qu'un chiffre déjà posé. Coupé net si
+     l'utilisateur a demandé moins d'animation. */
+  function animerChiffres() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.IntersectionObserver) return;
+
+    const obs = new IntersectionObserver((entrees) => {
+      entrees.forEach((e) => {
+        if (!e.isIntersecting) return;
+        obs.unobserve(e.target);
+        const cible = Number(e.target.dataset.valeur);
+        if (!Number.isFinite(cible) || cible > 999) return;
+        const debut = performance.now();
+        const duree = 900;
+        const pas = (t) => {
+          const p = Math.min((t - debut) / duree, 1);
+          /* Ralenti à l'arrivée : le dernier chiffre doit se poser, pas claquer. */
+          e.target.textContent = Math.round(cible * (1 - Math.pow(1 - p, 3)));
+          if (p < 1) requestAnimationFrame(pas);
+        };
+        requestAnimationFrame(pas);
+      });
+    }, { threshold: .4 });
+
+    $$('.kpi__v, .bande__c b').forEach((n) => {
+      const v = Number(n.textContent.trim());
+      if (!Number.isFinite(v) || v === 0) return;
+      n.dataset.valeur = v;
+      n.textContent = '0';
+      obs.observe(n);
+    });
+  }
+
+  /* Les halos suivent le pointeur, très légèrement : le fond réagit à la
+     présence sans jamais distraire. Rien sur écran tactile. */
+  function suivrePointeur() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!matchMedia('(hover: hover)').matches) return;
+    let brut = null;
+    addEventListener('pointermove', (e) => {
+      brut = e;
+      if (suivrePointeur.attente) return;
+      suivrePointeur.attente = requestAnimationFrame(() => {
+        suivrePointeur.attente = 0;
+        const x = (brut.clientX / innerWidth - .5) * 2;
+        const y = (brut.clientY / innerHeight - .5) * 2;
+        document.documentElement.style.setProperty('--px', x.toFixed(3));
+        document.documentElement.style.setProperty('--py', y.toFixed(3));
+      });
+    }, { passive: true });
+  }
+
+  /* La lueur des cartes suit le pointeur. Deux variables CSS écrites sur
+     la carte survolée — aucun re-rendu, aucun coût quand on ne survole rien. */
+  function suivreCartes() {
+    if (!matchMedia('(hover: hover)').matches) return;
+    document.addEventListener('pointermove', (e) => {
+      const c = e.target.closest('.card--ouvrable, .boite, .mot, .tile');
+      if (!c) return;
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--sx', `${e.clientX - r.left}px`);
+      c.style.setProperty('--sy', `${e.clientY - r.top}px`);
+    }, { passive: true });
+  }
+
   function brancher() {
     mesurerBandeau();
+    suivrePointeur();
+    suivreCartes();
     addEventListener('resize', mesurerBandeau);
     if (window.ResizeObserver && $('#bar')) new ResizeObserver(mesurerBandeau).observe($('#bar'));
 
