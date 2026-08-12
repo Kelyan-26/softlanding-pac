@@ -116,6 +116,7 @@
     'bp.detail':     { fr: 'Ce que couvre cette thématique', en: 'What this theme covers' },
     'bp.cover':      { fr: 'Les points à traiter', en: 'The points to cover' },
 
+    'home.what':     { fr: 'Le programme', en: 'The programme' },
     'ent.grpM':      { fr: 'Accompagnées par l’Accélérateur M', en: 'Supported by Accélérateur M' },
     'ent.grpMSub':   { fr: 'Les startups dont l’Accélérateur M assure le suivi au quotidien.',
                        en: 'The startups Accélérateur M follows day to day.' },
@@ -311,6 +312,65 @@
     'grp.partenaire': { fr: 'Les partenaires', en: 'The partners' },
     'sub.acteurs':   { fr: 'Les trois structures du consortium, puis tous les partenaires du programme.', en: 'The three consortium organisations, then all the programme partners.' },
   };
+
+  /* ═══════════════════════ Illustrations ═══════════════════════
+     Dessinées ici, en SVG, plutôt que prises dans une banque d'images.
+     Trois raisons : aucun droit à négocier sur un site qui va circuler,
+     aucun appel réseau donc le hors-ligne tient, et un poids négligeable
+     face à des photos. Elles reprennent le vocabulaire du logo — l'arc du
+     « P », l'aplat orange — pour que ça reste la même main. */
+
+  const ILLUS = {
+    arrivee: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <path d="M14 148c40-14 72-6 104-22s52-52 46-96" stroke="var(--navy-ink)" stroke-width="2.5" stroke-dasharray="7 9" stroke-linecap="round"/>
+      <path d="M96 74 218 30l-30 60-34-12-8 34-14-24-36-14Z" fill="var(--orange)"/>
+      <path d="m154 78 34-48" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="26" cy="150" r="11" fill="var(--navy-ink)"/>
+      <circle cx="26" cy="150" r="4" fill="#fff"/>
+    </svg>`,
+
+    chaine: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="20" y="26" width="122" height="132" fill="var(--navy-wash)"/>
+      <path d="M40 56h74M40 80h86M40 104h56" stroke="var(--navy-ink)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="168" cy="112" r="46" fill="var(--orange)"/>
+      <path d="m148 112 14 15 30-33" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+
+    reseau: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <path d="M60 60 120 96l60-36M60 60v58l60 34 60-34V60" stroke="var(--navy-ink)" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="60" cy="60" r="17" fill="var(--navy-ink)"/>
+      <circle cx="180" cy="60" r="17" fill="var(--navy-ink)"/>
+      <circle cx="60" cy="118" r="17" fill="var(--navy-ink)"/>
+      <circle cx="180" cy="118" r="17" fill="var(--navy-ink)"/>
+      <circle cx="120" cy="96" r="26" fill="var(--orange)"/>
+    </svg>`,
+
+    ville: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <path d="M14 158h212" stroke="var(--navy-ink)" stroke-width="3" stroke-linecap="round"/>
+      <rect x="32" y="86" width="44" height="72" fill="var(--navy-wash)"/>
+      <rect x="90" y="52" width="48" height="106" fill="var(--navy-ink)"/>
+      <rect x="152" y="102" width="42" height="56" fill="var(--navy-wash)"/>
+      <path d="M104 74h8M122 74h8M104 96h8M122 96h8M104 118h8M122 118h8" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="196" cy="44" r="22" fill="var(--orange)"/>
+    </svg>`,
+
+    savoir: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <path d="M120 50c-16-12-40-16-64-12v96c24-4 48 0 64 12 16-12 40-16 64-12V38c-24-4-48 0-64 12Z"
+            fill="var(--navy-wash)" stroke="var(--navy-ink)" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M120 50v96" stroke="var(--navy-ink)" stroke-width="2.5"/>
+      <circle cx="120" cy="34" r="16" fill="var(--orange)"/>
+    </svg>`,
+
+    croissance: `<svg viewBox="0 0 240 180" fill="none" aria-hidden="true">
+      <rect x="30" y="110" width="34" height="48" fill="var(--navy-wash)"/>
+      <rect x="80" y="84" width="34" height="74" fill="var(--navy-wash)"/>
+      <rect x="130" y="58" width="34" height="100" fill="var(--navy-ink)"/>
+      <rect x="180" y="30" width="34" height="128" fill="var(--orange)"/>
+      <path d="M40 96 96 66l50-24 56-20" stroke="var(--navy-ink)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 8"/>
+    </svg>`,
+  };
+
+  const illus = (nom) => ILLUS[nom] || '';
 
   /* ═══════════════════════ Icônes, en trait fin ═══════════════════════ */
 
@@ -846,11 +906,14 @@
 
   /* ═══════════════════════ Sections ═══════════════════════ */
 
-  function entete(titre, chapo) {
-    return `<header class="head">
-      <p class="eyebrow">${esc(t(state.data.site && state.data.site.title) || 'Soft Landing')}</p>
-      <h1>${esc(titre)}</h1>
-      ${chapo ? `<p class="head__lede">${chapo}</p>` : ''}
+  function entete(titre, chapo, dessin) {
+    return `<header class="head${dessin ? ' head--illus' : ''}">
+      <div class="head__t">
+        <p class="eyebrow">${esc(t(state.data.site && state.data.site.title) || 'Soft Landing')}</p>
+        <h1>${esc(titre)}</h1>
+        ${chapo ? `<p class="head__lede">${chapo}</p>` : ''}
+      </div>
+      ${dessin ? `<div class="head__i" aria-hidden="true">${illus(dessin)}</div>` : ''}
     </header>`;
   }
 
@@ -1162,22 +1225,33 @@
       </${balise}>`;
     }).join('');
 
-    return `<div class="hero hero--grand">
-        <div class="hero__txt">
-          <h1>${field('site.title', site.title)}
-            <span class="hero__sub">${field('site.subtitle', site.subtitle)}</span></h1>
-          <p class="hero__lede">${field('site.tagline', site.tagline)}</p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#installation">${svg('installation', 15)}${esc(ui('nav.installation'))}</a>
-            <a class="btn" href="#programme">${svg('programme', 15)}${esc(ui('nav.programme'))}</a>
-          </div>
+    /* L'accroche sort de la laisse du contenu et prend toute la largeur.
+       Un fond profond, des halos qui bougent lentement, et les chiffres
+       posés dessus : c'est là que se joue la première seconde. */
+    return `<div class="scene">
+        <div class="scene__halos" aria-hidden="true">
+          <span class="halo halo--1"></span><span class="halo halo--2"></span><span class="halo halo--3"></span>
         </div>
-        <div class="hero__side">${rendreJour()}</div>
+        <div class="scene__grain" aria-hidden="true"></div>
+        <div class="scene__in">
+          <div class="scene__txt">
+            <h1>${field('site.title', site.title)}
+              <span class="hero__sub">${field('site.subtitle', site.subtitle)}</span></h1>
+            <p class="hero__lede">${field('site.tagline', site.tagline)}</p>
+            <div class="hero__cta">
+              <a class="btn btn--accent btn--lg" href="#installation">${svg('installation', 16)}${esc(ui('nav.installation'))}</a>
+              <a class="btn btn--verre btn--lg" href="#programme">${svg('programme', 16)}${esc(ui('nav.programme'))}</a>
+            </div>
+          </div>
+          <div class="scene__side">${rendreJour()}</div>
+        </div>
+        ${CHIFFRES ? `<div class="scene__kpis">${CHIFFRES}</div>` : ''}
       </div>
 
-      ${CHIFFRES ? `<div class="kpis">${CHIFFRES}</div>` : ''}
-
-      ${filled(home.intro) ? `<p class="hero__intro">${field('home.intro', home.intro)}</p>` : ''}
+      ${filled(home.intro) ? `<div class="intro"><div class="intro__t">
+          <p class="eyebrow">${esc(ui('home.what'))}</p>
+          <p class="hero__intro">${field('home.intro', home.intro)}</p>
+        </div><div class="intro__i">${illus('arrivee')}</div></div>` : ''}
       ${dates.length || reperes ? `<div class="stats">${dates.length ? `<div class="stat">
           <p class="stat__k">${esc(state.lang === 'en' ? 'Dates' : 'Dates')}</p>
           <p class="stat__v num">${markTodo(esc(dates.join(' → ')))}</p>
@@ -1238,7 +1312,7 @@
 
     const ressources = list(bp.resources).map((r) => lien(r.url, t(r.label), 'link')).filter(Boolean).join('');
 
-    return entete(ui('nav.business-plan'), filled(bp.intro) ? field('businessPlan.intro', bp.intro) : '')
+    return entete(ui('nav.business-plan'), filled(bp.intro) ? field('businessPlan.intro', bp.intro) : '', 'croissance')
       + (blocs || vide())
       + (ressources ? `<section class="section"><div class="section__head"><h2>${esc(ui('label.resources'))}</h2></div><div class="card__acts">${ressources}</div></section>` : '');
   }
@@ -1289,7 +1363,7 @@
       ? rubrique('consortium') + rubrique('partenaire')
       : vide(q ? ui('empty.search') : '');
 
-    return entete(ui('nav.acteurs'), esc(ui('sub.acteurs')))
+    return entete(ui('nav.acteurs'), esc(ui('sub.acteurs')), 'reseau')
       + `<div class="tools"><input class="search" type="search" data-filter="acteurs"
             value="${esc(state.filters.acteurs || '')}" placeholder="${esc(ui('search.acteurs'))}"></div>`
       + corps
@@ -1455,7 +1529,7 @@
           </div>`).join('')}</div>
       </section>` : '';
 
-    return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')))
+    return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')), 'chaine')
       + alerte
       + rendreProgression()
       + `<div class="etapes">${etapes}</div>`
@@ -1488,7 +1562,7 @@
     const filtres = categories.map((c) =>
       `<button type="button" class="chipbtn" data-gcat="${esc(c)}" aria-pressed="${cat === c}">${esc(ui(`glo.${c}`))}</button>`).join('');
 
-    return entete(ui('nav.glossaire'), esc(ui('sub.glossaire')))
+    return entete(ui('nav.glossaire'), esc(ui('sub.glossaire')), 'savoir')
       + `<div class="tools">
           <input class="search" type="search" data-filter="glossaire"
                  value="${esc(state.filters.glossaire || '')}" placeholder="${esc(ui('glo.search'))}">
@@ -1560,7 +1634,7 @@
       `<button type="button" class="chipbtn" data-cat="${esc(f)}" aria-pressed="${cat === f}">${esc(libelleCat(f))}</button>`).join('');
 
     const intro = state.data.marseilleIntro;
-    return entete(ui('nav.marseille'), filled(intro) ? field('marseilleIntro', intro) : esc(ui('sub.marseille')))
+    return entete(ui('nav.marseille'), filled(intro) ? field('marseilleIntro', intro) : esc(ui('sub.marseille')), 'ville')
       + bandeauAncrage()
       + `<p class="note">${esc(ui('st.hint'))}</p>`
       + `<div class="tools">
