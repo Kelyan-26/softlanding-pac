@@ -1553,10 +1553,14 @@
       </${balise}>`;
     }).join('');
 
-    const blocBesoins = besoins ? `<section class="section">
-        <div class="section__head"><h2>${esc(ui('need.title'))}</h2></div>
-        <p class="h48__lede">${esc(ui('need.lede'))}</p>
-        <div class="grid grid--2">${besoins}</div>
+    const blocBesoins = besoins ? `<section class="section bande-p">
+        <div class="bande-p__halos" aria-hidden="true"><span class="halo halo--1"></span><span class="halo halo--2"></span></div>
+        <div class="scene__grain" aria-hidden="true"></div>
+        <div class="bande-p__in">
+          <div class="section__head"><h2>${esc(ui('need.title'))}</h2></div>
+          <p class="h48__lede">${esc(ui('need.lede'))}</p>
+          <div class="grid grid--2">${besoins}</div>
+        </div>
       </section>` : '';
 
     return entete(ui('nav.contacts'), esc(ui('sub.contacts')), 'carnet',
@@ -1626,13 +1630,17 @@
     }).join('');
 
     const urgences = list(inst.urgences).length ? `
-      <section class="section">
+      <section class="section bande-p bande-p--sos">
+        <div class="bande-p__halos" aria-hidden="true"><span class="halo halo--1"></span><span class="halo halo--2"></span></div>
+        <div class="scene__grain" aria-hidden="true"></div>
+        <div class="bande-p__in">
         <div class="section__head"><h2>${esc(ui('inst.urgent'))}</h2></div>
         <div class="grid grid--3">${list(inst.urgences).map((u, i) => `
           <div class="sos">
             <p class="sos__n num">${esc(u.numero)}</p>
             <p class="sos__q">${field(`installation.urgences.${i}.quand`, u.quand)}</p>
           </div>`).join('')}</div>
+        </div>
       </section>` : '';
 
     return entete(ui('nav.installation'), filled(inst.intro) ? field('installation.intro', inst.intro) : esc(ui('sub.installation')), 'chaine',
@@ -2628,10 +2636,15 @@
     const contenu = fabrique && fabrique(index);
     if (!contenu) { state.panneau = null; boite.hidden = true; return; }
 
+    /* L'en-tête profond est un vrai bloc, pas une bande de hauteur fixe :
+       un titre sur deux lignes débordait et se faisait couper en deux. */
     $('#panel-body').innerHTML = `
-      <p class="eyebrow">${esc(contenu.surtitre)}</p>
-      <h2 class="pan__t">${contenu.titre}</h2>
-      ${contenu.corps}`;
+      <div class="pan__head">
+        <button type="button" class="btn pan__x" id="panel-close">${esc(ui('pan.close'))}</button>
+        <p class="eyebrow">${esc(contenu.surtitre)}</p>
+        <h2 class="pan__t">${contenu.titre}</h2>
+      </div>
+      <div class="pan__corps">${contenu.corps}</div>`;
     boite.hidden = false;
     document.body.classList.add('paneled');
     $('#panel-close').focus();
@@ -2791,8 +2804,8 @@
     } else {
       porte.classList.add('gate--part');
       app.classList.add('app--entre');
-      setTimeout(() => { porte.hidden = true; porte.classList.remove('gate--part'); }, 420);
-      setTimeout(() => app.classList.remove('app--entre'), 900);
+      setTimeout(() => { porte.hidden = true; porte.classList.remove('gate--part'); }, 720);
+      setTimeout(() => app.classList.remove('app--entre'), 1200);
     }
 
     if (state.timer) clearInterval(state.timer);

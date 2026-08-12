@@ -904,7 +904,7 @@ body.editing .shell { padding-bottom: var(--s9); }
 }
 @keyframes glisse { from { transform: translateX(24px); opacity: 0; } }
 
-.pan__x { position: absolute; top: var(--s4); right: var(--s4); }
+.pan__x { align-self: flex-start; margin-bottom: var(--s5); }
 .pan__t { font-size: var(--fs-h1); letter-spacing: var(--tr-hero); line-height: var(--lh-tight); margin: var(--s2) 0 var(--s6); }
 .pan__b { display: grid; gap: var(--s2); padding: var(--s5) 0; border-top: 1px solid var(--hair); }
 .pan__b:first-of-type { border-top: 0; padding-top: 0; }
@@ -964,23 +964,35 @@ body.editing .shell { padding-bottom: var(--s9); }
 
 /* La porte s'efface en s'éloignant, le site monte derrière elle. Le site est
    déjà rendu quand l'animation commence : sinon on verrait une page vide. */
-.gate--part {
-  pointer-events: none;
-  animation: porte-part .42s var(--ease) forwards;
-}
-@keyframes porte-part {
-  to { opacity: 0; transform: scale(1.03); filter: blur(3px); }
-}
+/* ════════════ Le déverrouillage devient un moment ═══════════════════
+   La porte ne disparaissait pas, elle s'effaçait. Maintenant elle se lève :
+   le fond s'ouvre en deux, la carte de saisie recule, et le site arrive
+   par en dessous. C'est la seconde où seize personnes découvrent le site. */
 
-.app--entre .bar { animation: entre-bar .5s var(--ease-out) both; }
-.app--entre .main { animation: entre-main .55s .08s var(--ease-out) both; }
-.app--entre .foot { animation: entre-main .55s .16s var(--ease-out) both; }
+.gate--part { pointer-events: none; animation: porte-leve .72s cubic-bezier(.65, 0, .35, 1) forwards; }
+.gate--part .gate__card { animation: carte-recule .42s var(--ease) forwards; }
+.gate--part .gate__mot > * { animation: mot-part .38s var(--ease) forwards; }
+.gate--part .gate__mot > *:nth-child(2) { animation-delay: .04s; }
+.gate--part .gate__mot > *:nth-child(3) { animation-delay: .08s; }
+.gate--part .halo { animation: halo-eclate .72s var(--ease-out) forwards; }
 
-@keyframes entre-bar { from { opacity: 0; transform: translateY(-12px); } }
-@keyframes entre-main { from { opacity: 0; transform: translateY(14px); } }
+@keyframes porte-leve { 60% { opacity: 1; } to { opacity: 0; clip-path: inset(0 0 100% 0); } }
+@keyframes carte-recule { to { opacity: 0; transform: translateY(18px) scale(.96); } }
+@keyframes mot-part { to { opacity: 0; transform: translateY(-14px); } }
+@keyframes halo-eclate { to { transform: scale(1.7); opacity: 0; } }
+
+.app--entre .bar { animation: entre-bar .55s var(--ease-out) both; }
+.app--entre .main { animation: entre-main .7s .1s var(--ease-out) both; }
+.app--entre .foot { animation: entre-main .7s .2s var(--ease-out) both; }
+.app--entre .scene { animation: entre-scene .9s var(--ease-out) both; }
+
+@keyframes entre-bar { from { opacity: 0; transform: translateY(-14px); } }
+@keyframes entre-main { from { opacity: 0; transform: translateY(18px); } }
+@keyframes entre-scene { from { transform: scale(1.06); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .gate--part, .app--entre .bar, .app--entre .main, .app--entre .foot { animation: none; }
+  .gate--part, .gate--part *, .app--entre .bar, .app--entre .main,
+  .app--entre .foot, .app--entre .scene { animation: none !important; }
 }
 
 /* ══════════════════════════════ Ma progression ═════════════════ */
@@ -1439,7 +1451,8 @@ body.editing .shell { padding-bottom: var(--s9); }
 
 /* Un en-tête collant à fond blanc DANS un bloc coloré recouvre son propre
    contenu. Le collant ne vaut que pour les sections posées sur la page. */
-.h48 .section__head, .pan .section__head { position: static; background: none; padding-top: 0; }
+.h48 .section__head, .pan .section__head, .bande-p .section__head,
+.scene .section__head, .suivi__gate .section__head { position: static; background: none; padding-top: 0; }
 .h48 .section__head::before { background: linear-gradient(90deg, var(--orange-deep), var(--navy-ink)); }
 .h48 .section__head h2 {
   background: none; color: var(--navy-deep);
@@ -1670,3 +1683,87 @@ body.editing .shell { padding-bottom: var(--s9); }
   background: radial-gradient(420px circle at var(--sx, 50%) var(--sy, 0%), rgb(237 117 44 / .1), transparent 62%);
 }
 .card--ouvrable:hover::after, .boite:hover::after, .mot:hover::after, .tile:hover::after { opacity: 1; }
+
+/* ════════════ Des bandes profondes en cours de page ════════════════
+   La scène du haut portait toute la page ; passé le premier écran, tout
+   redevenait blanc. Une ou deux bandes profondes par page redonnent du
+   rythme là où la lecture s'installe. */
+
+.bande-p {
+  position: relative; isolation: isolate; overflow: hidden;
+  margin: var(--s9) calc(50% - 50vw);
+  padding: var(--s8) calc(50vw - min(var(--page) / 2, 50vw - var(--s6)));
+  color: #fff;
+  background: linear-gradient(150deg, #232B60 0%, #171C42 100%);
+}
+.bande-p__halos { position: absolute; inset: -30%; z-index: -2; filter: blur(80px); opacity: .7; }
+.bande-p .scene__grain { z-index: -1; }
+.bande-p__in { position: relative; }
+.bande-p .section__head h2 {
+  background: none; color: #fff; -webkit-text-fill-color: #fff;
+}
+.bande-p .section__head::before { background: linear-gradient(90deg, var(--orange), #fff); }
+.bande-p .h48__lede { color: rgb(255 255 255 / .68); }
+
+.bande-p .need {
+  background: rgb(255 255 255 / .07); backdrop-filter: blur(10px);
+  box-shadow: none; border-left: 3px solid rgb(237 117 44 / .5);
+}
+.bande-p a.need:hover { background: rgb(255 255 255 / .14); }
+.bande-p .need__p { color: #fff; }
+.bande-p .need__r { color: rgb(255 255 255 / .66); }
+
+.bande-p--sos { background: linear-gradient(150deg, #3A1414 0%, #1B0E12 100%); }
+.bande-p--sos .halo--1 { background: rgb(158 43 20 / .5); }
+.bande-p--sos .halo--2 { background: rgb(237 117 44 / .3); }
+.bande-p .sos { background: rgb(255 255 255 / .07); backdrop-filter: blur(10px); padding: var(--s5); }
+.bande-p .sos__n { color: var(--orange); }
+.bande-p .sos__q { color: rgb(255 255 255 / .7); }
+
+@media (max-width: 900px) {
+  .bande-p { margin: var(--s7) calc(50% - 50vw); padding: var(--s6) var(--s4); }
+}
+
+/* ════════════ Le panneau reçoit son en-tête profond ════════════════
+   On l'ouvre des dizaines de fois ; il restait blanc de haut en bas. */
+.pan__body { padding: 0; }
+.pan__head {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: var(--s6) var(--s7) var(--s7);
+  background: linear-gradient(150deg, #232B60 0%, #171C42 100%);
+}
+.pan__head .eyebrow { color: rgb(255 255 255 / .55); }
+.pan__t { color: #fff; margin: 0; }
+.pan__corps { padding: var(--s6); }
+.pan__x { position: relative; z-index: 2; color: #fff; background: rgb(255 255 255 / .14); }
+.pan__x:hover { color: #fff; background: rgb(255 255 255 / .26); }
+
+/* ════════════ Les cartes s'animent au survol ═══════════════════════ */
+.card--ouvrable, .boite, .mot {
+  border-top: 2px solid transparent;
+  transition: background .16s var(--ease), transform .16s var(--ease),
+              box-shadow .16s var(--ease), border-top-color .2s var(--ease);
+}
+.card--ouvrable:hover, .boite:hover, .mot:hover { border-top-color: var(--orange); }
+.tile__go { transition: gap .18s var(--ease); display: inline-flex; align-items: center; gap: var(--s2); }
+a.tile:hover .tile__go { gap: var(--s4); }
+
+/* ════════════ La carte s'accorde au site ═══════════════════════════ */
+.mapwrap { background: var(--navy-deep); }
+.map__gate { background: linear-gradient(150deg, #232B60 0%, #171C42 100%); color: #fff; }
+.map__avert { color: rgb(255 255 255 / .72); }
+.map__tools { background: var(--navy-deep); }
+.map__tools .chipbtn { color: rgb(255 255 255 / .7); }
+.map__tools .chipbtn:hover { color: #fff; background: rgb(255 255 255 / .14); }
+.map__tools .chipbtn[aria-pressed="true"] { color: var(--navy-deep); background: #fff; }
+.leaflet-container { background: var(--navy-deep); }
+/* Le titre du panneau : sa marge basse vivait dans l'ancienne règle. */
+.pan__head .pan__t { margin: var(--s2) 0 0; }
+.pan__corps > .pan__b:first-child { border-top: 0; padding-top: 0; }
+/* Le bouton « Fermer » flottait au-dessus du bandeau, en blanc sur blanc.
+   La boîte n'a plus de marge propre : l'en-tête profond part du haut et le
+   bouton se pose dessus. */
+.pan__box { padding: 0 0 var(--s9); }
+
+.pan__corps { padding: var(--s6) var(--s7); }
+
