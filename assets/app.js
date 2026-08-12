@@ -116,6 +116,13 @@
     'bp.detail':     { fr: 'Ce que couvre cette thématique', en: 'What this theme covers' },
     'bp.cover':      { fr: 'Les points à traiter', en: 'The points to cover' },
 
+    'ent.grpM':      { fr: 'Accompagnées par l’Accélérateur M', en: 'Supported by Accélérateur M' },
+    'ent.grpMSub':   { fr: 'Les startups dont l’Accélérateur M assure le suivi au quotidien.',
+                       en: 'The startups Accélérateur M follows day to day.' },
+    'ent.grpC':      { fr: 'Accompagnées par ANIMA et Marseille Innovation', en: 'Supported by ANIMA and Marseille Innovation' },
+    'ent.grpCSub':   { fr: 'Les autres startups de la promotion, suivies par les deux autres membres du consortium.',
+                       en: 'The cohort’s other startups, followed by the two other consortium members.' },
+
     'suivi.title':   { fr: 'Suivi de promotion', en: 'Cohort tracking' },
     'suivi.lede':    { fr: 'Espace réservé à l’équipe du programme. Les participants n’y ont pas accès et ne voient rien de ce qui est saisi ici.',
                        en: 'Reserved for the programme team. Participants have no access and see nothing entered here.' },
@@ -1836,10 +1843,7 @@
     const choisi = state.filters.entPays || '';
     const paysDispo = [...new Set(list(state.data.entreprises).map(pays).filter(Boolean))].sort();
 
-    const cartes = list(state.data.entreprises)
-      .map((e, i) => ({ e, i }))
-      .filter(({ e }) => !choisi || pays(e) === choisi)
-      .map(({ e, i }) => {
+    const carteEntreprise = (e, i) => {
       const logo = typeof e.logo === 'string' && e.logo.startsWith('data:image/')
         ? `<img src="${esc(e.logo)}" alt="${esc(t(e.nom))}">`
         : `<span class="boite__vide">${esc(ui('ent.noLogo'))}</span>`;
@@ -1857,7 +1861,7 @@
           <button type="button" class="btn" data-del="entreprises.${i}">${svg('trash', 13)}${esc(ui('edit.remove'))}</button>
         </div>
       </article>`;
-    }).join('');
+    };
 
     const filtresPays = paysDispo.length > 1 ? `<div class="tools">
         <button type="button" class="chipbtn" data-epays="" aria-pressed="${choisi === ''}">${esc(ui('label.all'))}</button>
@@ -1865,9 +1869,27 @@
             aria-pressed="${choisi === p}">${esc(p)}</button>`).join('')}
       </div>` : '';
 
+    /* Le programme compte seize startups, mais l'Accélérateur M n'en suit
+       que huit — les autres relèvent d'ANIMA et de Marseille Innovation.
+       Deux rubriques, parce que l'interlocuteur n'est pas le même. */
+    const rubrique = (g, cle) => {
+      const dedans = list(state.data.entreprises)
+        .map((e, i) => ({ e, i }))
+        .filter(({ e }) => (e.groupe || 'accelerateur-m') === g)
+        .filter(({ e }) => !choisi || pays(e) === choisi);
+      if (!dedans.length) return '';
+      return `<section class="section">
+        <div class="section__head"><h2>${esc(ui(cle))}</h2><span class="day__c num">${dedans.length}</span></div>
+        <p class="h48__lede">${esc(ui(cle + 'Sub'))}</p>
+        <div class="boites">${dedans.map(({ e, i }) => carteEntreprise(e, i)).join('')}</div>
+      </section>`;
+    };
+
+    const corps = rubrique('accelerateur-m', 'ent.grpM') + rubrique('consortium', 'ent.grpC');
+
     return entete(ui('nav.entreprises'), esc(ui('sub.entreprises')))
       + filtresPays
-      + (cartes ? `<div class="boites">${cartes}</div>` : vide(ui('empty.search')))
+      + (corps || vide(ui('empty.search')))
       + boutonAjout('entreprises');
   }
 
